@@ -2,95 +2,178 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* NeuroFocus 90s Design System - Graphite device with TFT yellow display */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Graphite device colors */
+    --graphite-0: 218 24% 7%;
+    --graphite-1: 218 22% 10%;
+    --graphite-2: 218 20% 17%;
+    --graphite-3: 218 18% 25%;
+    --graphite-edge: 220 28% 4%;
+    --graphite-metal: 218 16% 31%;
+    --graphite-highlight: 218 14% 54%;
+    
+    /* TFT Display colors */
+    --screen-bg: 48 46% 4%;
+    --screen-yellow: 48 87% 68%;
+    --screen-dim: 48 64% 52%;
+    --screen-glow: 48 87% 68%;
+    
+    /* Device accent colors */
+    --device-accent: 215 100% 66%;
+    --device-ok: 142 71% 58%;
+    --device-warn: 25 95% 70%;
+    --device-text: 218 23% 85%;
+    --device-muted: 218 15% 65%;
+    
+    /* Semantic tokens */
+    --background: 218 35% 6%;
+    --foreground: 218 23% 85%;
+    --card: 218 22% 10%;
+    --card-foreground: 218 23% 85%;
+    --popover: 218 22% 10%;
+    --popover-foreground: 218 23% 85%;
+    --primary: 48 87% 68%;
+    --primary-foreground: 218 24% 7%;
+    --secondary: 218 20% 17%;
+    --secondary-foreground: 218 23% 85%;
+    --muted: 218 20% 17%;
+    --muted-foreground: 218 15% 65%;
+    --accent: 215 100% 66%;
+    --accent-foreground: 218 24% 7%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 218 23% 85%;
+    --border: 218 22% 10%;
+    --input: 218 20% 17%;
+    --ring: 48 87% 68%;
+    --radius: 0.75rem;
+    
+    /* Device gradients */
+    --gradient-device: linear-gradient(180deg, hsl(var(--graphite-2)), hsl(var(--graphite-1)) 40%, hsl(var(--graphite-0)));
+    --gradient-panel: linear-gradient(180deg, hsl(var(--graphite-1)), hsl(var(--graphite-0)));
+    --gradient-button: linear-gradient(180deg, hsl(218 22% 14%), hsl(218 24% 8%));
+    --gradient-screen: linear-gradient(180deg, hsl(48 50% 4%), hsl(48 46% 4%) 60%, hsl(48 42% 3%));
+    
+    /* Device shadows */
+    --shadow-device: 0 20px 60px rgba(0,0,0,0.6);
+    --shadow-inset: inset 0 2px 0 rgba(255,255,255,0.04), inset 0 -2px 4px rgba(0,0,0,0.6);
+    --shadow-screen: inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 10px 30px hsla(48, 87%, 68%, 0.03);
+    --shadow-led-green: 0 0 10px hsla(142, 71%, 58%, 0.6);
+    --shadow-led-orange: 0 0 10px hsla(25, 95%, 70%, 0.6);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+@layer base {
+  * {
+    @apply border-border;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+  body {
+    @apply bg-background text-foreground;
+    background: radial-gradient(1400px 1000px at 70% -10%, hsl(218 25% 13%) 0%, hsl(var(--background)) 60%, hsl(218 28% 4%) 100%);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  
+  /* Device texture overlay */
+  .device-texture::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 2px);
+    background-size: 100% 2px;
+    opacity: 0.12;
+    mix-blend-mode: screen;
+  }
+  
+  /* TFT scanlines effect */
+  .tft-scanlines::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.35) 0 1px, transparent 1px 3px);
+    border-radius: inherit;
+  }
+}
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+@layer components {
+  .device-screw {
+    @apply relative w-3.5 h-3.5 rounded-full border border-graphite-edge;
+    background: radial-gradient(circle at 30% 30%, hsl(var(--graphite-highlight)), hsl(var(--graphite-3)) 60%, hsl(var(--graphite-edge)));
+    box-shadow: inset 0 0 2px rgba(0,0,0,0.8);
+  }
+  
+  .device-screw::after {
+    content: "";
+    position: absolute;
+    inset: 3px 2px 2px 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, hsl(var(--graphite-edge)) 40%, hsl(var(--graphite-2)) 40% 60%, hsl(var(--graphite-edge)) 60%);
+  }
+  
+  .device-led {
+    @apply w-2.5 h-2.5 rounded-full border border-graphite-edge;
+    background: hsl(218 20% 15%);
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.9);
+  }
+  
+  .device-led.active.green {
+    background: hsl(var(--device-ok));
+    box-shadow: var(--shadow-led-green), inset 0 0 4px rgba(0,0,0,0.9);
+  }
+  
+  .device-led.active.orange {
+    background: hsl(var(--device-warn));
+    box-shadow: var(--shadow-led-orange), inset 0 0 4px rgba(0,0,0,0.9);
+  }
+  
+  .device-button {
+    background: var(--gradient-button);
+    border: 1px solid hsl(var(--graphite-edge));
+    box-shadow: var(--shadow-inset);
+    transition: var(--transition-smooth);
+  }
+  
+  .device-button:hover {
+    filter: brightness(1.1);
+  }
+  
+  .device-slider {
+    appearance: none;
+    height: 8px;
+    border-radius: 8px;
+    background: hsl(var(--graphite-0));
+    border: 1px solid hsl(var(--graphite-edge));
+  }
+  
+  .device-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, hsl(var(--graphite-highlight)), hsl(var(--graphite-3)) 60%, hsl(var(--graphite-1)));
+    border: 1px solid hsl(var(--graphite-edge));
+    box-shadow: 0 1px 0 rgba(255,255,255,0.1), inset 0 0 4px rgba(0,0,0,0.8);
+  }
+}
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+@layer utilities {
+  .text-tft {
+    color: hsl(var(--screen-yellow));
+    text-shadow: 0 0 6px hsla(48, 87%, 68%, 0.35);
+    font-family: ui-monospace, "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Courier New", monospace;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  
+  .text-tft-dim {
+    color: hsl(var(--screen-dim));
   }
 }
 

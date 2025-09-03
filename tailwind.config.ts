@@ -61,7 +61,26 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Graphite device colors
+				'graphite-0': 'hsl(var(--graphite-0))',
+				'graphite-1': 'hsl(var(--graphite-1))',
+				'graphite-2': 'hsl(var(--graphite-2))',
+				'graphite-3': 'hsl(var(--graphite-3))',
+				'graphite-edge': 'hsl(var(--graphite-edge))',
+				'graphite-metal': 'hsl(var(--graphite-metal))',
+				'graphite-highlight': 'hsl(var(--graphite-highlight))',
+				// TFT Display colors
+				'screen-bg': 'hsl(var(--screen-bg))',
+				'screen-yellow': 'hsl(var(--screen-yellow))',
+				'screen-dim': 'hsl(var(--screen-dim))',
+				'screen-glow': 'hsl(var(--screen-glow))',
+				// Device accent colors
+				'device-accent': 'hsl(var(--device-accent))',
+				'device-ok': 'hsl(var(--device-ok))',
+				'device-warn': 'hsl(var(--device-warn))',
+				'device-text': 'hsl(var(--device-text))',
+				'device-muted': 'hsl(var(--device-muted))'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
