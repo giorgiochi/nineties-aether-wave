@@ -1,7 +1,7 @@
-import { NeuroFocus90s } from "@/components/NeuroFocus90s";
+import { NeuroDeck90 } from "@/components/NeuroDeck90";
 
 const Index = () => {
-  return <NeuroFocus90s />;
+  return <NeuroDeck90 />;
 };
 
 export default Index;
