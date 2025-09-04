@@ -6,21 +6,48 @@ export interface DeviceButtonProps extends React.ButtonHTMLAttributes<HTMLButton
   state?: 'default' | 'active' | 'disabled';
   icon?: React.ReactNode;
   children: React.ReactNode;
+  size?: 'sm' | 'md' | 'lg';
 }
 
-const indicatorColors = {
-  primary: 'hsl(210, 95%, 58%)',    // Blu
-  secondary: 'hsl(215, 18%, 58%)',  // Grigio
-  success: 'hsl(140, 65%, 45%)',    // Verde
-  warning: 'hsl(45, 100%, 60%)',    // Giallo
-  danger: 'hsl(0, 85%, 60%)'        // Rosso
+const colorSchemes = {
+  primary: {
+    symbol: 'hsl(210, 95%, 75%)',      // Blu chiaro
+    led: 'hsl(210, 95%, 58%)',         // Blu LED
+    glow: 'hsl(210, 95%, 58%)'         // Glow blu
+  },
+  secondary: {
+    symbol: 'hsl(215, 25%, 75%)',      // Grigio chiaro
+    led: 'hsl(215, 18%, 58%)',         // Grigio LED
+    glow: 'hsl(215, 18%, 58%)'         // Glow grigio
+  },
+  success: {
+    symbol: 'hsl(140, 65%, 75%)',      // Verde chiaro
+    led: 'hsl(140, 65%, 45%)',         // Verde LED
+    glow: 'hsl(140, 65%, 45%)'         // Glow verde
+  },
+  warning: {
+    symbol: 'hsl(45, 100%, 80%)',      // Giallo chiaro
+    led: 'hsl(45, 100%, 60%)',         // Giallo LED
+    glow: 'hsl(45, 100%, 60%)'         // Glow giallo
+  },
+  danger: {
+    symbol: 'hsl(0, 85%, 75%)',        // Rosso chiaro
+    led: 'hsl(0, 85%, 60%)',           // Rosso LED
+    glow: 'hsl(0, 85%, 60%)'           // Glow rosso
+  }
+};
+
+const sizeClasses = {
+  sm: 'px-3 py-2 text-xs gap-2',
+  md: 'px-4 py-3 text-sm gap-3',
+  lg: 'px-6 py-4 text-base gap-4'
 };
 
 export const DeviceButton = React.forwardRef<HTMLButtonElement, DeviceButtonProps>(
-  ({ className, variant = 'primary', state = 'default', icon, children, disabled, ...props }, ref) => {
+  ({ className, variant = 'primary', state = 'default', icon, children, size = 'md', disabled, ...props }, ref) => {
     const isActive = state === 'active';
     const isDisabled = disabled || state === 'disabled';
-    const indicatorColor = indicatorColors[variant];
+    const colors = colorSchemes[variant];
     
     return (
       <button
@@ -28,8 +55,8 @@ export const DeviceButton = React.forwardRef<HTMLButtonElement, DeviceButtonProp
         disabled={isDisabled}
         className={cn(
           // Base button style - rettangolare con angoli arrotondati
-          "relative inline-flex items-center gap-3 px-4 py-3 rounded-lg font-bold text-xs uppercase tracking-wider",
-          "transition-all duration-100 select-none",
+          "relative inline-flex items-center justify-center font-bold uppercase tracking-wider",
+          "transition-all duration-100 select-none rounded-lg",
           
           // Superficie scura grafite con effetto 3D
           "bg-gradient-to-br from-graphite-2 to-graphite-0",
@@ -48,8 +75,8 @@ export const DeviceButton = React.forwardRef<HTMLButtonElement, DeviceButtonProp
           // Stato disabilitato
           isDisabled && "opacity-40 cursor-not-allowed",
           
-          // Testo grigio chiaro
-          "text-device-text",
+          // Sizing
+          sizeClasses[size],
           
           className
         )}
@@ -58,33 +85,48 @@ export const DeviceButton = React.forwardRef<HTMLButtonElement, DeviceButtonProp
         {/* Overlay per effetto plastica */}
         <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-white/10 via-transparent to-black/5 pointer-events-none" />
         
-        {/* Indicatore circolare colorato a sinistra */}
-        <div 
-          className={cn(
-            "relative w-3 h-3 rounded-full border border-graphite-edge",
-            "shadow-inner"
-          )}
-          style={{
-            background: isActive && !isDisabled 
-              ? `radial-gradient(circle at 30% 30%, ${indicatorColor}, ${indicatorColor}cc 60%, ${indicatorColor}66)`
-              : 'radial-gradient(circle at 30% 30%, hsl(215 20% 25%), hsl(215 25% 15%) 60%, hsl(215 30% 8%))',
-            boxShadow: isActive && !isDisabled 
-              ? `0 0 4px ${indicatorColor}88, 0 0 8px ${indicatorColor}44, inset 0 1px 2px rgba(0,0,0,0.3)`
-              : 'inset 0 1px 2px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05)'
-          }}
-        >
-          {/* Riflesso sull'indicatore */}
-          <div className="absolute inset-0.5 rounded-full bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
-        </div>
-        
-        {/* Contenuto del bottone (icona + testo) */}
-        <div className="relative z-10 flex items-center gap-2">
+        {/* Contenuto del bottone centrato */}
+        <div className="relative z-10 flex items-center justify-center gap-2 w-full">
+          {/* Simbolo con colore coordinato */}
           {icon && (
-            <span className="text-device-text opacity-90">
+            <span 
+              className="shrink-0"
+              style={{
+                color: colors.symbol
+              }}
+            >
               {icon}
             </span>
           )}
-          <span className="relative">{children}</span>
+          
+          {/* LED circolare */}
+          <div 
+            className="relative w-2 h-2 rounded-full border border-black/30 shrink-0"
+            style={{
+              background: isActive && !isDisabled 
+                ? `radial-gradient(circle at 30% 30%, ${colors.led}, ${colors.led}cc 60%, ${colors.led}88)`
+                : 'radial-gradient(circle at 30% 30%, hsl(215 20% 25%), hsl(215 25% 15%) 60%, hsl(215 30% 8%))',
+              boxShadow: isActive && !isDisabled 
+                ? `0 0 3px ${colors.glow}88, 0 0 6px ${colors.glow}44, inset 0 0.5px 1px rgba(255,255,255,0.2)`
+                : 'inset 0 0.5px 1px rgba(0,0,0,0.8), 0 0 0 0.5px rgba(255,255,255,0.05)'
+            }}
+          >
+            {/* Riflesso sul LED */}
+            <div className="absolute top-0 left-0 w-1 h-1 rounded-full bg-white/30" />
+          </div>
+          
+          {/* Testo adattato */}
+          <span 
+            className="flex-1 text-center leading-tight"
+            style={{
+              color: colors.symbol,
+              fontSize: size === 'sm' ? '0.65rem' : size === 'lg' ? '0.9rem' : '0.75rem',
+              wordWrap: 'break-word',
+              hyphens: 'auto'
+            }}
+          >
+            {children}
+          </span>
         </div>
         
         {/* Riflesso interno per effetto 3D */}
