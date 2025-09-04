@@ -8,7 +8,7 @@ interface NeuroDeckControlsProps {
 }
 
 export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck }) => {
-  const { state, start, pause, stop, applyPreset, updateMasterVolume, updateNeuralVolume, updateAmbientVolume } = neuroDeck;
+  const { state, start, pause, stop, applyPreset, updateAmbientVolume, updateNeuralVolume, updateAmbientSound } = neuroDeck;
 
   return (
     <div className="w-full max-w-lg mx-auto space-y-4 sm:space-y-5 px-2 sm:px-0">
@@ -205,7 +205,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
                   textShadow: '0 0 2px hsl(var(--lcd-green-dim) / 0.3)'
                 }}
               >
-                {Math.round(state.masterVolume * 100).toString().padStart(3, '0')}%
+                {Math.round(state.ambientVolume * 100).toString().padStart(3, '0')}%
               </span>
             </div>
             
@@ -234,7 +234,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
               <div className="absolute inset-2 flex items-center">
                 {Array.from({ length: 20 }, (_, i) => {
                   const segmentValue = (i + 1) / 20;
-                  const isActive = state.masterVolume >= segmentValue;
+                  const isActive = state.ambientVolume >= segmentValue;
                   return (
                     <div 
                       key={i}
@@ -270,8 +270,8 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
                 min="0"
                 max="1"
                 step="0.05"
-                value={state.masterVolume}
-                onChange={(e) => updateMasterVolume(parseFloat(e.target.value))}
+                value={state.ambientVolume}
+                onChange={(e) => updateAmbientVolume(parseFloat(e.target.value))}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                 aria-label="Ambient Volume"
               />
@@ -280,7 +280,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
               <div 
                 className="absolute top-0 h-8 w-4 transition-all duration-150 pointer-events-none"
                 style={{
-                  left: `calc(${state.masterVolume * 100}% - 8px)`,
+                  left: `calc(${state.ambientVolume * 100}% - 8px)`,
                   background: `
                     linear-gradient(135deg,
                       hsl(var(--graphite-highlight)) 0%,
@@ -362,7 +362,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
               key={key}
               variant={volume > 0 ? 'success' : 'secondary'}
               state={volume > 0 ? 'active' : 'default'}
-              onClick={() => updateAmbientVolume(key as any, volume > 0 ? 0 : defaultVol)}
+              onClick={() => updateAmbientSound(key as any, volume > 0 ? 0 : defaultVol)}
               icon={icon}
               size="md"
               className="h-10 sm:h-12 min-w-0 whitespace-nowrap text-xs sm:text-sm"

@@ -42,7 +42,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
   };
 
   const getSafetyStatus = (): string => {
-    return state.masterVolume > 0.7 ? 'ATTENZIONE' : 'OK';
+    return state.ambientVolume > 0.7 ? 'ATTENZIONE' : 'OK';
   };
 
   const getAmbientStatus = (): string => {
@@ -67,10 +67,10 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
   };
 
   const getAmbientVolume = (): number => {
-    return state.masterVolume;
+    return state.ambientVolume;
   };
 
-  const vuLevel = Math.min(100, Math.round(state.masterVolume * 100));
+  const vuLevel = Math.min(100, Math.round(state.ambientVolume * 100));
 
   return (
     <div 

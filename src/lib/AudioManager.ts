@@ -2,9 +2,9 @@ interface AudioState {
   isPlaying: boolean;
   isPaused: boolean;
   activeMode: string;
-  masterVolume: number; // Per ambientali
-  neuralVolume: number; // Per onde binaurali
-  binauralVolume: number;
+  ambientVolume: number; // Master volume for ambient sounds
+  neuralVolume: number; // Master volume for neural sounds
+  binauralVolume: number; // Deprecated - kept for compatibility
   brownVolume: number;
   pinkVolume: number;
   rainVolume: number;
@@ -18,33 +18,43 @@ interface AudioState {
 interface AudioPreset {
   beat: number;
   carrier: number;
-  bVol: number;
-  master: number;
+  neuralVolume: number;
+  ambientVolume: number;
+}
+
+interface AmbientSource {
+  element: HTMLAudioElement;
+  source: MediaElementAudioSourceNode | null;
+  gain: GainNode | null;
+  isActive: boolean;
 }
 
 class AudioManagerSingleton {
   private static instance: AudioManagerSingleton;
   
-  // Audio Context Globale
+  // Web Audio API Core
   private audioCtx: AudioContext | null = null;
-  private neuralGain: GainNode | null = null;
-  private ambientGain: GainNode | null = null;
+  private masterGain: GainNode | null = null;
+  private neuralChain: GainNode | null = null;
+  private ambientChain: GainNode | null = null;
   private limiter: DynamicsCompressorNode | null = null;
   
-  // Binaural beats
-  private binauralNodes: { left: OscillatorNode | null; right: OscillatorNode | null; gain: GainNode | null } = {
-    left: null, right: null, gain: null
-  };
+  // Neural Audio (Binaural Beats)
+  private binauralNodes: { 
+    left: OscillatorNode | null; 
+    right: OscillatorNode | null; 
+    gain: GainNode | null 
+  } = { left: null, right: null, gain: null };
   
-  // Elementi Audio HTML per ambientali
-  private audioElements: {
-    brown: HTMLAudioElement | null;
-    pink: HTMLAudioElement | null;  
-    rain: HTMLAudioElement | null;
-    ocean: HTMLAudioElement | null;
+  // Ambient Audio Sources
+  private ambientSources: {
+    brown: AmbientSource | null;
+    pink: AmbientSource | null;  
+    rain: AmbientSource | null;
+    ocean: AmbientSource | null;
   } = { brown: null, pink: null, rain: null, ocean: null };
   
-  // Timer e stato
+  // Timer and State
   private timer: NodeJS.Timeout | null = null;
   private endTime: number | null = null;
   private listeners: ((state: AudioState) => void)[] = [];
@@ -53,9 +63,9 @@ class AudioManagerSingleton {
     isPlaying: false,
     isPaused: false,
     activeMode: 'CONCENTRAZIONE',
-    masterVolume: 0.85,
-    neuralVolume: 0.18,
-    binauralVolume: 0.18,
+    ambientVolume: 0.85, // Master ambient volume
+    neuralVolume: 0.18,  // Master neural volume
+    binauralVolume: 0.18, // Deprecated - kept for compatibility
     brownVolume: 0.00,
     pinkVolume: 0.00,
     rainVolume: 0.00,
@@ -67,10 +77,10 @@ class AudioManagerSingleton {
   };
 
   private presets: Record<string, () => AudioPreset> = {
-    CONCENTRAZIONE: () => ({ beat: 16.0, carrier: 220, bVol: 0.18, master: 0.70 }),
-    ADHD: () => ({ beat: 13.0, carrier: 210, bVol: 0.20, master: 0.68 }),
-    STRESS: () => ({ beat: 10.0, carrier: 200, bVol: 0.16, master: 0.66 }),
-    INTRUSIVE_OFF: () => ({ beat: 8.0, carrier: 190, bVol: 0.16, master: 0.64 })
+    CONCENTRAZIONE: () => ({ beat: 16.0, carrier: 220, neuralVolume: 0.18, ambientVolume: 0.70 }),
+    ADHD: () => ({ beat: 13.0, carrier: 210, neuralVolume: 0.20, ambientVolume: 0.68 }),
+    STRESS: () => ({ beat: 10.0, carrier: 200, neuralVolume: 0.16, ambientVolume: 0.66 }),
+    INTRUSIVE_OFF: () => ({ beat: 8.0, carrier: 190, neuralVolume: 0.16, ambientVolume: 0.64 })
   };
 
   constructor() {
@@ -78,7 +88,7 @@ class AudioManagerSingleton {
     this.setupGlobalRefs();
     this.setupVisibilityHandlers();
     this.setupMediaSession();
-    this.createAudioElements();
+    this.createAmbientElements();
   }
 
   static getInstance(): AudioManagerSingleton {
@@ -89,7 +99,6 @@ class AudioManagerSingleton {
   }
 
   private setupGlobalRefs() {
-    // Riferimenti globali per debug e persistenza
     (window as any).__audioCtx = this.audioCtx;
     (window as any).__audioMgr = this;
   }
@@ -109,20 +118,13 @@ class AudioManagerSingleton {
     });
 
     window.addEventListener('pagehide', () => {
-      console.log('[AudioManager] PageHide event');
-      this.persistState();
-    });
-
-    window.addEventListener('beforeunload', () => {
       this.persistState();
     });
   }
 
   private handleForeground() {
     console.log('[AudioManager] App in foreground');
-    this.audioCtx?.resume();
     
-    // Auto-riprendi se era in riproduzione e audio è sbloccato
     if (this.state.isPlaying && this.state.userUnlockedAudio) {
       setTimeout(() => this.resumeAll(), 100);
     }
@@ -130,12 +132,10 @@ class AudioManagerSingleton {
 
   private handleBackground() {
     console.log('[AudioManager] App in background - soft pause timers only');
-    // Non fermiamo l'audio, solo i timer UI
     this.softPauseTimersOnly();
   }
 
   private softPauseTimersOnly() {
-    // Ferma solo il countdown timer, non l'audio
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = null;
@@ -167,7 +167,7 @@ class AudioManagerSingleton {
     }
   }
 
-  private createAudioElements() {
+  private createAmbientElements() {
     const audioFiles = [
       { key: 'brown', src: '/AREOPORTO.mp3' },
       { key: 'pink', src: '/FORESTA.mp3' },
@@ -181,9 +181,8 @@ class AudioManagerSingleton {
       audio.setAttribute('playsinline', 'true');
       audio.preload = 'auto';
       audio.crossOrigin = 'anonymous';
-      audio.volume = 0; // Inizia muto, sarà controllato dai gain
+      audio.volume = 0; // Will be controlled by Web Audio gain
       
-      // Gestione errori
       audio.addEventListener('error', (e) => {
         console.error(`[AudioManager] Error loading ${key}:`, e);
       });
@@ -192,7 +191,12 @@ class AudioManagerSingleton {
         console.log(`[AudioManager] ${key} loaded and ready`);
       });
 
-      this.audioElements[key as keyof typeof this.audioElements] = audio;
+      this.ambientSources[key as keyof typeof this.ambientSources] = {
+        element: audio,
+        source: null,
+        gain: null,
+        isActive: false
+      };
     });
   }
 
@@ -201,15 +205,17 @@ class AudioManagerSingleton {
       try {
         this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
         
-        // Gain per onde neurali
-        this.neuralGain = this.audioCtx.createGain();
-        this.neuralGain.gain.value = this.state.neuralVolume;
+        // Create audio routing chain: sources -> chains -> master -> limiter -> output
+        this.masterGain = this.audioCtx.createGain();
+        this.masterGain.gain.value = 1.0;
         
-        // Gain per ambientali
-        this.ambientGain = this.audioCtx.createGain(); 
-        this.ambientGain.gain.value = this.state.masterVolume;
+        this.neuralChain = this.audioCtx.createGain();
+        this.neuralChain.gain.value = this.state.neuralVolume;
         
-        // Limiter comune
+        this.ambientChain = this.audioCtx.createGain(); 
+        this.ambientChain.gain.value = this.state.ambientVolume;
+        
+        // Limiter to prevent clipping
         this.limiter = this.audioCtx.createDynamicsCompressor();
         this.limiter.threshold.value = -6;
         this.limiter.knee.value = 0;
@@ -217,12 +223,15 @@ class AudioManagerSingleton {
         this.limiter.attack.value = 0.003;
         this.limiter.release.value = 0.25;
         
-        // Collegamento: neural + ambient → limiter → output
-        this.neuralGain.connect(this.limiter);
-        this.ambientGain.connect(this.limiter);
+        // Connect the audio chain
+        this.neuralChain.connect(this.masterGain);
+        this.ambientChain.connect(this.masterGain);
+        this.masterGain.connect(this.limiter);
         this.limiter.connect(this.audioCtx.destination);
         
-        // Riferimento globale aggiornato
+        // Setup ambient sources with Web Audio integration
+        await this.setupAmbientSources();
+        
         (window as any).__audioCtx = this.audioCtx;
         
         console.log('[AudioManager] AudioContext initialized');
@@ -235,6 +244,31 @@ class AudioManagerSingleton {
     return true;
   }
 
+  private async setupAmbientSources() {
+    if (!this.audioCtx || !this.ambientChain) return;
+
+    Object.entries(this.ambientSources).forEach(([key, ambientSource]) => {
+      if (ambientSource && !ambientSource.source) {
+        try {
+          // Create MediaElementAudioSourceNode for better Web Audio integration
+          ambientSource.source = this.audioCtx!.createMediaElementSource(ambientSource.element);
+          
+          // Create individual gain node for this ambient source
+          ambientSource.gain = this.audioCtx!.createGain();
+          ambientSource.gain.gain.value = 0; // Start muted
+          
+          // Connect: source -> individual gain -> ambient chain
+          ambientSource.source.connect(ambientSource.gain);
+          ambientSource.gain.connect(this.ambientChain!);
+          
+          console.log(`[AudioManager] ${key} connected to Web Audio chain`);
+        } catch (error) {
+          console.error(`[AudioManager] Failed to setup ${key} source:`, error);
+        }
+      }
+    });
+  }
+
   private smoothGain(param: AudioParam, target: number, seconds: number = 0.3) {
     if (!this.audioCtx) return;
     const now = this.audioCtx.currentTime;
@@ -243,7 +277,7 @@ class AudioManagerSingleton {
   }
 
   private async startBinaural(beat: number, carrier: number) {
-    if (!this.audioCtx || !this.neuralGain) return;
+    if (!this.audioCtx || !this.neuralChain) return;
 
     this.stopBinaural(true);
 
@@ -264,12 +298,13 @@ class AudioManagerSingleton {
 
     leftOsc.connect(leftPanner).connect(gain);
     rightOsc.connect(rightPanner).connect(gain);
-    gain.connect(this.neuralGain);
+    gain.connect(this.neuralChain);
 
     leftOsc.start();
     rightOsc.start();
 
-    this.smoothGain(gain.gain, this.state.binauralVolume, 2.5);
+    // Use the current neural volume (not the deprecated binauralVolume)
+    this.smoothGain(gain.gain, this.state.neuralVolume, 2.5);
 
     this.binauralNodes = { left: leftOsc, right: rightOsc, gain };
   }
@@ -291,14 +326,13 @@ class AudioManagerSingleton {
     this.binauralNodes = { left: null, right: null, gain: null };
   }
 
-  private updateAmbientVolumes() {
-    // Aggiorna volumi degli elementi <audio>
-    Object.entries(this.audioElements).forEach(([key, audio]) => {
-      if (audio) {
+  private updateAmbientGains() {
+    // Only update gain values, never trigger playback
+    Object.entries(this.ambientSources).forEach(([key, ambientSource]) => {
+      if (ambientSource?.gain) {
         const volumeKey = `${key}Volume` as keyof AudioState;
         const individualVolume = this.state[volumeKey] as number;
-        const masterVolume = this.state.masterVolume;
-        audio.volume = individualVolume * masterVolume;
+        ambientSource.gain.gain.value = individualVolume;
       }
     });
   }
@@ -320,7 +354,7 @@ class AudioManagerSingleton {
     }, 200);
   }
 
-  // API Pubblica
+  // PUBLIC API
 
   async unlockAudio(): Promise<boolean> {
     console.log('[AudioManager] Unlocking audio...');
@@ -347,7 +381,7 @@ class AudioManagerSingleton {
   async start(): Promise<boolean> {
     console.log('[AudioManager] Starting session...');
     
-    // Sblocca audio al primo Start se necessario
+    // Ensure audio is unlocked
     if (!this.state.userUnlockedAudio) {
       const unlocked = await this.unlockAudio();
       if (!unlocked) return false;
@@ -358,16 +392,16 @@ class AudioManagerSingleton {
     
     await this.audioCtx.resume();
     
-    // Avvia onde binaurali
+    // Start neural audio (binaural beats)
     if (!this.binauralNodes.left) {
       const preset = this.presets[this.state.activeMode]();
       await this.startBinaural(preset.beat, preset.carrier);
     }
     
-    // Aggiorna volumi ambientali
-    this.updateAmbientVolumes();
+    // Update gain values (but don't start ambient sounds automatically)
+    this.updateAmbientGains();
     
-    // Avvia timer
+    // Start timer
     this.startTimer();
     
     this.setState({ 
@@ -376,8 +410,8 @@ class AudioManagerSingleton {
       lastActiveTime: Date.now() 
     });
 
-    // Ensure ambient elements with volume > 0 actually play
-    this.resumeAll();
+    // Only resume ambient sounds that were previously active
+    this.resumeActiveAmbientSounds();
     
     return true;
   }
@@ -385,14 +419,14 @@ class AudioManagerSingleton {
   pause() {
     console.log('[AudioManager] Pausing session...');
     
-    if (this.audioCtx) {
+    if (this.audioCtx?.state === 'running') {
       this.audioCtx.suspend();
     }
     
-    // Pausa elementi audio
-    Object.values(this.audioElements).forEach(audio => {
-      if (audio && !audio.paused) {
-        audio.pause();
+    // Pause ambient elements
+    Object.values(this.ambientSources).forEach(ambientSource => {
+      if (ambientSource?.element && !ambientSource.element.paused) {
+        ambientSource.element.pause();
       }
     });
     
@@ -404,24 +438,19 @@ class AudioManagerSingleton {
     
     this.stopBinaural();
     
-    if (this.audioCtx) {
-      this.audioCtx.suspend();
-    }
-    
-    // Ferma elementi audio
-    Object.values(this.audioElements).forEach(audio => {
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-    });
-    
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = null;
     }
     
-    this.endTime = null;
+    // Stop and reset ambient elements
+    Object.values(this.ambientSources).forEach(ambientSource => {
+      if (ambientSource?.element) {
+        ambientSource.element.pause();
+        ambientSource.element.currentTime = 0;
+        ambientSource.isActive = false;
+      }
+    });
     
     this.setState({ 
       isPlaying: false, 
@@ -430,87 +459,114 @@ class AudioManagerSingleton {
     });
   }
 
-  resumeAll() {
-    console.log('[AudioManager] Resuming all audio...');
-    
-    if (!this.state.userUnlockedAudio) return;
-    
-    this.audioCtx?.resume();
-    
-    // Riprendi elementi audio che erano in play
-    Object.entries(this.audioElements).forEach(([key, audio]) => {
-      if (audio) {
+  private resumeActiveAmbientSounds() {
+    Object.entries(this.ambientSources).forEach(([key, ambientSource]) => {
+      if (ambientSource && ambientSource.isActive) {
         const volumeKey = `${key}Volume` as keyof AudioState;
         const volume = this.state[volumeKey] as number;
         if (volume > 0 && this.state.isPlaying) {
-          audio.play().catch(e => console.warn(`[AudioManager] Could not resume ${key}:`, e));
+          ambientSource.element.play().catch(e => 
+            console.warn(`[AudioManager] Could not resume ${key}:`, e)
+          );
         }
       }
     });
+  }
+
+  resumeAll() {
+    console.log('[AudioManager] Resuming all audio...');
     
-    // Riavvia timer se necessario
+    if (this.audioCtx?.state === 'suspended') {
+      this.audioCtx.resume();
+    }
+    
+    this.resumeActiveAmbientSounds();
+    
     if (this.state.isPlaying && !this.timer) {
       this.startTimer();
     }
   }
 
-  // Controlli Volume
+  // VOLUME CONTROLS - PURE GAIN ADJUSTMENT, NO PLAYBACK SIDE EFFECTS
 
-  setMasterVolume(volume: number) {
-    this.setState({ masterVolume: volume });
-    if (this.ambientGain) {
-      this.ambientGain.gain.value = volume;
+  setAmbientVolume(volume: number) {
+    this.setState({ ambientVolume: volume });
+    if (this.ambientChain) {
+      this.ambientChain.gain.value = volume;
     }
-    this.updateAmbientVolumes();
   }
 
   setNeuralVolume(volume: number) {
     this.setState({ neuralVolume: volume });
-    if (this.neuralGain) {
-      this.neuralGain.gain.value = volume;
+    if (this.neuralChain) {
+      this.neuralChain.gain.value = volume;
+    }
+    // Update binaural gain if active
+    if (this.binauralNodes.gain) {
+      this.binauralNodes.gain.gain.value = volume;
     }
   }
 
   setBinauralVolume(volume: number) {
-    this.setState({ binauralVolume: volume });
-    if (this.binauralNodes.gain) {
-      this.smoothGain(this.binauralNodes.gain.gain, volume, 0.4);
-    }
+    // Deprecated - redirect to neural volume for compatibility
+    console.warn('[AudioManager] setBinauralVolume is deprecated, use setNeuralVolume');
+    this.setNeuralVolume(volume);
   }
 
-  setAmbientVolume(type: 'brown' | 'pink' | 'rain' | 'ocean', volume: number) {
+  // AMBIENT SOUND ACTIVATION - EXPLICIT USER CONTROL
+
+  setAmbientSoundActive(type: 'brown' | 'pink' | 'rain' | 'ocean', volume: number) {
     const volumeKey = `${type}Volume` as keyof AudioState;
     this.setState({ [volumeKey]: volume } as Partial<AudioState>);
     
-    const audio = this.audioElements[type];
-    if (audio) {
-      const masterVolume = this.state.masterVolume;
-      audio.volume = volume * masterVolume;
-      
-      // Auto-play/pause basato su volume
-      if (volume > 0 && this.state.isPlaying && this.state.userUnlockedAudio) {
-        audio.play().catch(e => console.warn(`[AudioManager] Could not play ${type}:`, e));
-      } else if (volume === 0) {
-        audio.pause();
+    const ambientSource = this.ambientSources[type];
+    if (!ambientSource) return;
+
+    if (volume > 0) {
+      // Activate ambient sound
+      ambientSource.isActive = true;
+      if (ambientSource.gain) {
+        ambientSource.gain.gain.value = volume;
       }
+      
+      // Start playing if session is active
+      if (this.state.isPlaying && this.state.userUnlockedAudio) {
+        ambientSource.element.play().catch(e => 
+          console.warn(`[AudioManager] Could not play ${type}:`, e)
+        );
+      }
+    } else {
+      // Deactivate ambient sound
+      ambientSource.isActive = false;
+      if (ambientSource.gain) {
+        ambientSource.gain.gain.value = 0;
+      }
+      ambientSource.element.pause();
     }
   }
 
+  // PRESETS
+
   applyPreset(mode: string) {
-    console.log('[AudioManager] Applying preset:', mode);
-    
-    const preset = this.presets[mode];
-    if (!preset) return;
-    
-    const config = preset();
-    
+    console.log(`[AudioManager] Applying preset: ${mode}`);
+    const config = this.presets[mode]?.();
+    if (!config) return;
+
     this.setState({
       activeMode: mode,
-      neuralVolume: config.master,
-      binauralVolume: config.bVol
+      neuralVolume: config.neuralVolume,
+      ambientVolume: config.ambientVolume
     });
 
-    // Aggiorna onde binaurali se in riproduzione
+    // Update gain nodes
+    if (this.neuralChain) {
+      this.neuralChain.gain.value = config.neuralVolume;
+    }
+    if (this.ambientChain) {
+      this.ambientChain.gain.value = config.ambientVolume;
+    }
+
+    // Update binaural beats if active
     if (this.state.isPlaying && this.audioCtx?.state === 'running') {
       this.startBinaural(config.beat, config.carrier);
     }
@@ -520,18 +576,29 @@ class AudioManagerSingleton {
     this.setState({ duration: hours });
   }
 
-  // Gestione Stato
+  // STATE MANAGEMENT
 
   private setState(updates: Partial<AudioState>) {
     this.state = { ...this.state, ...updates };
-    this.persistState();
     this.notifyListeners();
+    this.persistState();
+  }
+
+  private notifyListeners() {
+    this.listeners.forEach(listener => listener(this.state));
   }
 
   private persistState() {
     const stateToSave = {
-      ...this.state,
-      userUnlockedAudio: localStorage.getItem('userUnlockedAudio') === 'true'
+      activeMode: this.state.activeMode,
+      ambientVolume: this.state.ambientVolume,
+      neuralVolume: this.state.neuralVolume,
+      brownVolume: this.state.brownVolume,
+      pinkVolume: this.state.pinkVolume,
+      rainVolume: this.state.rainVolume,
+      oceanVolume: this.state.oceanVolume,
+      duration: this.state.duration,
+      userUnlockedAudio: this.state.userUnlockedAudio
     };
     localStorage.setItem('audioManagerState', JSON.stringify(stateToSave));
   }
@@ -542,52 +609,44 @@ class AudioManagerSingleton {
       const userUnlocked = localStorage.getItem('userUnlockedAudio') === 'true';
       
       if (saved) {
-        const savedState = JSON.parse(saved);
-        this.state = { 
-          ...this.state, 
-          ...savedState, 
+        const parsedState = JSON.parse(saved);
+        this.state = {
+          ...this.state,
+          ...parsedState,
           userUnlockedAudio: userUnlocked,
-          isPlaying: false, // Non auto-riprendi al caricamento
+          isPlaying: false,
           isPaused: false
         };
       } else {
         this.state.userUnlockedAudio = userUnlocked;
       }
-      
-      console.log('[AudioManager] State loaded:', this.state);
-    } catch (e) {
-      console.warn('[AudioManager] Could not load saved state:', e);
+    } catch (error) {
+      console.error('[AudioManager] Failed to load state:', error);
     }
   }
+
+  // PUBLIC GETTERS
 
   getState(): AudioState {
     return { ...this.state };
   }
 
-  subscribe(listener: (state: AudioState) => void) {
+  subscribe(listener: (state: AudioState) => void): () => void {
     this.listeners.push(listener);
     return () => {
-      this.listeners = this.listeners.filter(l => l !== listener);
+      const index = this.listeners.indexOf(listener);
+      if (index > -1) {
+        this.listeners.splice(index, 1);
+      }
     };
   }
 
-  private notifyListeners() {
-    this.listeners.forEach(listener => {
-      try {
-        listener(this.getState());
-      } catch (e) {
-        console.error('[AudioManager] Listener error:', e);
-      }
-    });
-  }
-
-  // Utility
   needsUserInteraction(): boolean {
     return !this.state.userUnlockedAudio;
   }
 
   canAutoResume(): boolean {
-    return this.state.userUnlockedAudio && this.state.isPlaying;
+    return this.state.userUnlockedAudio && this.audioCtx?.state !== 'suspended';
   }
 }
 
