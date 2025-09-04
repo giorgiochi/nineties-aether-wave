@@ -170,7 +170,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
               <div 
                 className="absolute top-2 left-2"
                 style={{
-                  fontSize: 'clamp(0.18rem, 0.4vw, 0.22rem)',
+                  fontSize: 'clamp(0.25rem, 0.6vw, 0.32rem)',
                   color: 'hsl(var(--lcd-green-dim))',
                   textShadow: '0 0 1px hsl(var(--lcd-green-dim) / 0.3)'
                 }}
@@ -180,56 +180,30 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
 
               {/* Riga 1: Modalità neurale (centrata in alto) */}
               <div className="flex items-center justify-center" style={{ gridColumn: '1', marginTop: '8px' }}>
-                <div className="flex flex-col items-center text-center">
-                  <div 
-                    className="leading-none"
-                    style={{
-                      fontSize: 'clamp(0.6rem, 1.5vw, 0.8rem)',
-                      color: 'hsl(var(--lcd-green-soft))',
-                      textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
-                    }}
-                  >
-                    {getModeName(state.activeMode)}
-                  </div>
-                  <div 
-                    className="uppercase tracking-wider"
-                    style={{
-                      fontSize: 'clamp(0.12rem, 0.3vw, 0.16rem)',
-                      color: 'hsl(var(--lcd-green-dim))',
-                      textShadow: '0 0 1px hsl(var(--lcd-green-dim) / 0.4)',
-                      marginTop: '1px'
-                    }}
-                  >
-                    MODE
-                  </div>
+                <div 
+                  className="leading-none"
+                  style={{
+                    fontSize: 'clamp(0.6rem, 1.5vw, 0.8rem)',
+                    color: 'hsl(var(--lcd-green-soft))',
+                    textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
+                  }}
+                >
+                  {getModeName(state.activeMode)}
                 </div>
               </div>
 
               {/* Riga 2: Timer (centrato) */}
               <div className="flex items-center justify-center">
-                <div className="flex flex-col items-center text-center">
-                  <div 
-                    className="leading-none"
-                    style={{
-                      fontSize: 'clamp(0.5rem, 1.3vw, 0.7rem)',
-                      color: 'hsl(var(--lcd-green-soft))',
-                      textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
-                    }}
-                   >
-                     {formatTime(state.elapsedTime)}
-                   </div>
-                  <div 
-                    className="uppercase tracking-wider"
-                    style={{
-                      fontSize: 'clamp(0.1rem, 0.25vw, 0.14rem)',
-                      color: 'hsl(var(--lcd-green-dim))',
-                      textShadow: '0 0 1px hsl(var(--lcd-green-dim) / 0.4)',
-                      marginTop: '1px'
-                    }}
-                  >
-                    TIME
-                  </div>
-                </div>
+                <div 
+                  className="leading-none"
+                  style={{
+                    fontSize: 'clamp(0.5rem, 1.3vw, 0.7rem)',
+                    color: 'hsl(var(--lcd-green-soft))',
+                    textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
+                  }}
+                 >
+                   {formatTime(state.elapsedTime)}
+                 </div>
               </div>
 
               {/* Riga 3: Volumi (sinistra Neural, destra Ambient) */}
@@ -322,9 +296,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                   <div 
                     className="uppercase tracking-wider"
                     style={{
-                      fontSize: 'clamp(0.3rem, 0.7vw, 0.4rem)',
+                      fontSize: 'clamp(0.6rem, 1.5vw, 0.8rem)',
                       color: 'hsl(var(--lcd-green-soft))',
-                      textShadow: '0 0 1px hsl(var(--lcd-green-soft) / 0.4)'
+                      textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
                     }}
                   >
                     {state.isPlaying && !state.isPaused ? 'RUNNING' : 
@@ -335,16 +309,16 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                   <div 
                     className="relative flex items-center justify-center"
                     style={{
-                      width: 'clamp(6px, 1.2vw, 8px)',
-                      height: 'clamp(5px, 0.8vw, 6px)'
+                      width: 'clamp(12px, 2.4vw, 16px)',
+                      height: 'clamp(10px, 1.6vw, 12px)'
                     }}
                   >
                     <div 
                       className="leading-none select-none"
                       style={{
-                        fontSize: 'clamp(4px, 0.6vw, 5px)',
-                        color: 'hsl(var(--lcd-green-dim))',
-                        textShadow: '0 0 1px hsl(var(--lcd-green-dim) / 0.3)',
+                        fontSize: 'clamp(0.6rem, 1.5vw, 0.8rem)',
+                        color: 'hsl(var(--lcd-green-soft))',
+                        textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)',
                         animation: state.isPlaying && !state.isPaused ? 'pulse 1.5s ease-in-out infinite' : 'none'
                       }}
                     >
