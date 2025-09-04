@@ -1,8 +1,8 @@
 import React from 'react';
-import { useNeuroDeck } from '@/hooks/useNeuroDeck';
+import { useAudioManager } from '@/hooks/useAudioManager';
 
 interface NeuroDeckDisplayProps {
-  neuroDeck: ReturnType<typeof useNeuroDeck>;
+  neuroDeck: ReturnType<typeof useAudioManager>;
 }
 
 export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck }) => {
@@ -215,7 +215,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                       textShadow: '0 0 4px hsl(var(--lcd-green-soft) / 0.5)'
                     }}
                   >
-                    {Math.round(state.masterVolume * 100).toString().padStart(3, '0')}%
+                    {Math.round(state.neuralVolume * 100).toString().padStart(3, '0')}%
                   </div>
                   <div 
                     className="uppercase tracking-wider"
@@ -225,7 +225,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                       textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
                     }}
                   >
-                    VOLUME
+                    NEURALI
                   </div>
                 </div>
               </div>

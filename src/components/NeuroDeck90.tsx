@@ -1,10 +1,54 @@
-import React from 'react';
-import { useNeuroDeck } from '@/hooks/useNeuroDeck';
+import React, { useState, useEffect } from 'react';
+import { useAudioManager } from '@/hooks/useAudioManager';
 import { NeuroDeckDisplay } from './NeuroDeckDisplay';
 import { NeuroDeckControls } from './NeuroDeckControls';
+import { AudioUnlockPrompt } from './AudioUnlockPrompt';
 
 export const NeuroDeck90: React.FC = () => {
-  const neuroDeck = useNeuroDeck();
+  const neuroDeck = useAudioManager();
+  const [showUnlockPrompt, setShowUnlockPrompt] = useState(false);
+
+  // Controlla se è necessario mostrare il prompt di sblocco
+  useEffect(() => {
+    const checkUnlockNeeded = () => {
+      if (neuroDeck.needsUserInteraction()) {
+        // Mostra il prompt solo se l'utente cerca di fare qualcosa che richiede audio
+        // Per ora, non lo mostriamo automaticamente
+      }
+    };
+
+    checkUnlockNeeded();
+  }, [neuroDeck.state.isPlaying]);
+
+  const handleUnlock = async () => {
+    console.log('[NeuroDeck90] Attempting to unlock audio');
+    const success = await neuroDeck.unlockAudio();
+    if (success) {
+      setShowUnlockPrompt(false);
+      // Se aveva tentato di avviare, riprova ora
+      if (neuroDeck.state.isPlaying) {
+        neuroDeck.start();
+      }
+    }
+    return success;
+  };
+
+  const handleStart = async (): Promise<boolean> => {
+    if (neuroDeck.needsUserInteraction()) {
+      console.log('[NeuroDeck90] Need user interaction, showing unlock prompt');
+      setShowUnlockPrompt(true);
+      return false;
+    }
+    
+    const success = await neuroDeck.start();
+    return success;
+  };
+
+  // Override del neuroDeck per intercettare start
+  const neuroDeckWithUnlock = {
+    ...neuroDeck,
+    start: handleStart
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-2 sm:p-4 bg-gradient-to-br from-background via-graphite-1 to-graphite-0">
@@ -58,10 +102,10 @@ export const NeuroDeck90: React.FC = () => {
         {/* Vertical Layout - Mobile Optimized e Responsive */}
         <div className="space-y-3 sm:space-y-4">
           {/* Display Section - Senza wrapper aggiuntivo */}
-          <NeuroDeckDisplay neuroDeck={neuroDeck} />
+          <NeuroDeckDisplay neuroDeck={neuroDeckWithUnlock} />
 
           {/* Controls Section - Senza wrapper aggiuntivo */}
-          <NeuroDeckControls neuroDeck={neuroDeck} />
+          <NeuroDeckControls neuroDeck={neuroDeckWithUnlock} />
         </div>
 
         {/* Ventilation Grilles - Responsive */}
@@ -78,6 +122,13 @@ export const NeuroDeck90: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Audio Unlock Prompt */}
+      <AudioUnlockPrompt
+        isVisible={showUnlockPrompt}
+        onUnlock={handleUnlock}
+        onClose={() => setShowUnlockPrompt(false)}
+      />
     </div>
   );
 };
