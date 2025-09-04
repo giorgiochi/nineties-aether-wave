@@ -150,13 +150,14 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
           >
             {/* Layout modulare con griglia perfettamente centrata e responsive */}
             <div 
-              className="h-full w-full font-pixel text-tft text-tft-dim"
+              className="h-full w-full text-tft text-tft-dim"
               style={{
                 display: 'grid',
-                gridTemplateRows: '1fr auto auto auto 1fr',
+                gridTemplateRows: '1fr auto auto auto auto 1fr',
                 gridTemplateColumns: '1fr',
                 gap: 'clamp(4px, 2vw, 8px)',
-                padding: 'clamp(4px, 2vw, 8px)'
+                padding: 'clamp(4px, 2vw, 8px)',
+                fontFamily: '"Press Start 2P", "Courier New", monospace'
               }}
             >
               

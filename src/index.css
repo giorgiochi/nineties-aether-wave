@@ -427,8 +427,9 @@
   /* Pixelated LCD Font - Authentic squared pixels */
   .text-tft {
     color: hsl(var(--screen-text));
-    font-family: 'Press Start 2P', monospace;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
     font-weight: 400;
+    font-size: inherit;
     letter-spacing: 0.05em;
     text-shadow: 
       0 0 0.5px hsl(var(--screen-glow) / 1),
