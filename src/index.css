@@ -71,12 +71,12 @@
       linear-gradient(145deg, hsl(215 27% 8%) 0%, hsl(215 25% 10%) 45%, hsl(215 23% 14%) 100%);
     
     --gradient-screen: 
-      radial-gradient(ellipse 600px 200px at 50% 0%, rgba(0,0,0,0.3), transparent 90%),
-      linear-gradient(180deg, 
-        hsl(120 100% 2%) 0%, 
-        hsl(var(--screen-bg)) 15%, 
-        hsl(var(--screen-bg)) 85%, 
-        hsl(120 100% 2%) 100%
+      radial-gradient(ellipse 80% 70% at 50% 50%, 
+        hsl(120 45% 4%) 0%, 
+        hsl(120 40% 3%) 30%, 
+        hsl(120 35% 2%) 60%, 
+        hsl(120 30% 1%) 85%, 
+        hsl(120 25% 0.2%) 100%
       );
     
     --gradient-lcd-bezel:
@@ -378,19 +378,23 @@
 }
 
 @layer utilities {
-  /* Exact LCD text matching reference image */
+  /* Pixelated LCD Font - Authentic squared pixels */
   .text-tft {
     color: hsl(var(--screen-text));
-    font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Courier New", monospace;
+    font-family: "Perfect DOS VGA 437", "SF Mono", "Monaco", monospace;
     font-weight: 500;
     letter-spacing: 0.05em;
-    text-rendering: optimizeLegibility;
     text-shadow: 
-      0 0 2px hsl(var(--screen-glow) / 0.6),
-      0 0 4px hsl(var(--screen-glow) / 0.4),
-      0 0 6px hsl(var(--screen-glow) / 0.2);
-    filter: contrast(1.0) brightness(1.0);
-    position: relative;
+      0 0 0.5px hsl(var(--screen-glow) / 1),
+      0 0 1px hsl(var(--screen-glow) / 0.8),
+      0 0 2px hsl(var(--screen-glow) / 0.3);
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    font-feature-settings: "liga" off;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    text-rendering: geometricPrecision;
   }
   
   .text-tft-dim {
