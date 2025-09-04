@@ -131,6 +131,13 @@
     /* Animations */
     --transition-smooth: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-button: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* LCD color tokens (HSL) for softer green and lighter background */
+    --lcd-bg: 140 18% 10%;
+    --lcd-bg-center: 140 18% 18%;
+    --lcd-green-soft: 140 65% 40%;
+    --lcd-green-dim: 140 45% 32%;
+    --lcd-green-off: 140 25% 14%;
   }
 }
 
