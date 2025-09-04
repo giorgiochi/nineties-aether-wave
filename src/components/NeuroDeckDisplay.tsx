@@ -60,54 +60,53 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
       }}
     >
       <div 
-        className="relative p-4 rounded-lg overflow-hidden tft-scanlines"
+        className="relative p-4 rounded-lg overflow-hidden"
         style={{ 
           height: '180px',
-          background: `
-            radial-gradient(600px 140px at 50% -40%, hsla(48, 87%, 68%, 0.15), transparent 60%),
-            var(--gradient-screen)
-          `
+          background: 'hsl(var(--screen-bg))',
+          border: '2px inset hsl(var(--graphite-edge))',
+          boxShadow: 'inset 2px 2px 4px rgba(0,0,0,0.3)'
         }}
         aria-live="polite"
       >
-        <div className="text-tft space-y-4 text-center">
+        <div className="text-tft space-y-4 text-center h-full flex flex-col justify-center">
           {/* Timer - Large Display */}
-          <div className="text-3xl font-bold tracking-wider">
+          <div className="text-4xl font-bold tracking-wider" style={{
+            textShadow: '1px 1px 0 rgba(0,0,0,0.3), inset 0 0 2px rgba(0,0,0,0.2)'
+          }}>
             {state.timeLeft > 0 ? formatTime(state.timeLeft) : formatTime(state.duration * 3600)}
           </div>
 
           {/* Active Mode */}
-          <div className="text-lg">
-            MODALITÀ: <span className="font-bold">{getModeName(state.activeMode)}</span>
+          <div className="text-lg font-bold">
+            MODALITÀ: {getModeName(state.activeMode)}
           </div>
 
           {/* Volume Level */}
-          <div className="text-lg">
-            VOLUME: <span className="font-bold">{Math.round(state.masterVolume * 100)}%</span>
+          <div className="text-lg font-bold">
+            VOLUME: {Math.round(state.masterVolume * 100)}%
           </div>
 
           {/* VU Meter */}
           <div className="mt-4">
             <div 
-              className="h-3 border border-screen-dim rounded-lg overflow-hidden mx-4"
+              className="h-4 border-2 border-gray-600 rounded-lg overflow-hidden mx-8"
               style={{ 
-                background: 'rgba(0,0,0,0.3)'
+                background: 'rgba(0,0,0,0.3)',
+                boxShadow: 'inset 1px 1px 2px rgba(0,0,0,0.5)'
               }}
             >
               <div 
                 className="h-full transition-all duration-300 ease-out"
                 style={{ 
                   width: `${vuLevel}%`,
-                  background: 'linear-gradient(90deg, hsl(48, 60%, 35%), hsl(var(--screen-yellow)))',
-                  boxShadow: '0 0 8px hsla(48, 87%, 68%, 0.35)'
+                  background: `linear-gradient(90deg, 
+                    hsl(var(--screen-text)) 0%, 
+                    hsl(var(--screen-text)) 100%
+                  )`
                 }}
               />
             </div>
-          </div>
-
-          {/* Warning text */}
-          <div className="text-xs text-tft-dim mt-3">
-            Usa cuffie per il binaurale
           </div>
         </div>
       </div>
