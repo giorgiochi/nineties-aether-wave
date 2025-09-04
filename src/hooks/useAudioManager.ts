@@ -29,8 +29,10 @@ export function useAudioManager() {
     updateAmbientSound: (type: 'brown' | 'pink' | 'rain' | 'ocean', volume: number) => 
       AudioManager.setAmbientSoundActive(type, volume),
     
-    // Preset e configurazione
+    // Preset and neural mode control
     applyPreset: (mode: string) => AudioManager.applyPreset(mode),
+    // Neural mode and ambient mode activation - explicit control
+    toggleNeuralMode: (mode: string) => AudioManager.toggleNeuralMode(mode),
     updateDuration: (hours: number) => AudioManager.setDuration(hours),
     
     // Metodi legacy per compatibilità

@@ -8,7 +8,7 @@ interface NeuroDeckControlsProps {
 }
 
 export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck }) => {
-  const { state, start, pause, stop, applyPreset, updateAmbientVolume, updateNeuralVolume, updateAmbientSound } = neuroDeck;
+  const { state, start, pause, stop, toggleNeuralMode, updateAmbientVolume, updateNeuralVolume, updateAmbientSound } = neuroDeck;
 
   return (
     <div className="w-full max-w-lg mx-auto space-y-4 sm:space-y-5 px-2 sm:px-0">
@@ -25,14 +25,14 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
           {[
             { key: 'CONCENTRAZIONE', label: 'FOCUS', icon: <Brain size={18} />, variant: 'success' },
             { key: 'STRESS', label: 'RELAX', icon: <Shield size={18} />, variant: 'primary' },
-            { key: 'ADHD', label: 'NO THOUGHTS', icon: <Zap size={18} />, variant: 'warning' },
-            { key: 'INTRUSIVE_OFF', label: 'QUIET', icon: <Moon size={18} />, variant: 'danger' }
+            { key: 'ADHD', label: 'ADHD', icon: <Zap size={18} />, variant: 'warning' },
+            { key: 'NO THOUGHTS', label: 'NO THOUGHTS', icon: <Moon size={18} />, variant: 'danger' }
           ].map(({ key, label, icon, variant }) => (
             <DeviceButton
               key={key}
               variant={variant as any}
               state={state.activeMode === key ? 'active' : 'default'}
-              onClick={() => applyPreset(key as any)}
+              onClick={() => toggleNeuralMode(key)}
               icon={icon}
               size="md"
               className="h-12 sm:h-16 min-w-0 whitespace-nowrap text-xs sm:text-sm"

@@ -561,7 +561,31 @@ class AudioManagerSingleton {
     }
   }
 
-  // PRESETS
+  // NEURAL MODE TOGGLE - NEW METHOD
+  
+  deactivateNeuralMode() {
+    console.log('[AudioManager] Deactivating neural mode...');
+    this.stopBinaural();
+    this.setState({ 
+      activeMode: '', // Clear active mode
+      neuralVolume: 0 // Set neural volume to 0
+    });
+    
+    // Update gain nodes
+    if (this.neuralChain) {
+      this.smoothGain(this.neuralChain.gain, 0, 0.2);
+    }
+  }
+
+  toggleNeuralMode(mode: string) {
+    if (this.state.activeMode === mode) {
+      // Same mode pressed - deactivate
+      this.deactivateNeuralMode();
+    } else {
+      // Different mode or no mode active - apply preset
+      this.applyPreset(mode);
+    }
+  }
 
   applyPreset(mode: string) {
     console.log(`[AudioManager] Applying preset: ${mode}`);
