@@ -39,7 +39,8 @@ export function useNeuroDeck() {
   });
 
   const contextRef = useRef<AudioContext | null>(null);
-  const masterGainRef = useRef<GainNode | null>(null);
+  const binauralGainRef = useRef<GainNode | null>(null);
+  const ambientGainRef = useRef<GainNode | null>(null);
   const limiterRef = useRef<DynamicsCompressorNode | null>(null);
   const binauralRef = useRef<{ left: OscillatorNode | null; right: OscillatorNode | null; gain: GainNode | null }>({
     left: null, right: null, gain: null
@@ -73,17 +74,27 @@ export function useNeuroDeck() {
   const ensureContext = useCallback(() => {
     if (!contextRef.current) {
       contextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      masterGainRef.current = contextRef.current.createGain();
-      limiterRef.current = contextRef.current.createDynamicsCompressor();
       
+      // Gain separato per onde binaurali (controllato da master volume)
+      binauralGainRef.current = contextRef.current.createGain();
+      binauralGainRef.current.gain.value = state.masterVolume;
+      
+      // Gain separato per suoni ambientali (controllato da ambient volume)  
+      ambientGainRef.current = contextRef.current.createGain();
+      ambientGainRef.current.gain.value = state.ambientMasterVolume;
+      
+      // Limiter comune
+      limiterRef.current = contextRef.current.createDynamicsCompressor();
       limiterRef.current.threshold.value = -6;
       limiterRef.current.knee.value = 0;
       limiterRef.current.ratio.value = 12;
       limiterRef.current.attack.value = 0.003;
       limiterRef.current.release.value = 0.25;
       
-      masterGainRef.current.gain.value = state.masterVolume;
-      masterGainRef.current.connect(limiterRef.current).connect(contextRef.current.destination);
+      // Collegamento: entrambi i gain → limiter → output
+      binauralGainRef.current.connect(limiterRef.current);
+      ambientGainRef.current.connect(limiterRef.current);
+      limiterRef.current.connect(contextRef.current.destination);
       
       createAmbient();
     }
@@ -134,9 +145,9 @@ export function useNeuroDeck() {
   }, []);
 
   const createAmbient = useCallback(async () => {
-    if (!contextRef.current || !masterGainRef.current) return;
+    if (!contextRef.current || !ambientGainRef.current) return;
     const ctx = contextRef.current;
-    const master = masterGainRef.current;
+    const ambientMaster = ambientGainRef.current;
 
     const loadBuffer = async (url: string) => {
       const res = await fetch(url);
@@ -149,8 +160,8 @@ export function useNeuroDeck() {
       source.buffer = buffer;
       source.loop = true;
       const gain = ctx.createGain();
-      gain.gain.value = volume * state.ambientMasterVolume;
-      source.connect(gain).connect(master);
+      gain.gain.value = volume;
+      source.connect(gain).connect(ambientMaster);
       try { source.start(); } catch {}
       return { node: source, gain } as { node: AudioBufferSourceNode; gain: GainNode };
     };
@@ -175,10 +186,10 @@ export function useNeuroDeck() {
       ambientRef.current.rain = ambientRef.current.rain || { node: null, gain: null } as any;
       ambientRef.current.ocean = ambientRef.current.ocean || { node: null, gain: null } as any;
     }
-  }, [state.brownVolume, state.pinkVolume, state.rainVolume, state.oceanVolume, state.ambientMasterVolume]);
+  }, [state.brownVolume, state.pinkVolume, state.rainVolume, state.oceanVolume]);
 
   const startBinaural = useCallback((beat: number, carrier: number) => {
-    if (!contextRef.current || !masterGainRef.current) return;
+    if (!contextRef.current || !binauralGainRef.current) return;
 
     stopBinaural(true);
 
@@ -199,7 +210,7 @@ export function useNeuroDeck() {
 
     leftOsc.connect(leftPanner).connect(gain);
     rightOsc.connect(rightPanner).connect(gain);
-    gain.connect(masterGainRef.current);
+    gain.connect(binauralGainRef.current);
 
     leftOsc.start();
     rightOsc.start();
@@ -246,18 +257,18 @@ export function useNeuroDeck() {
 
   const updateAmbientVolumes = useCallback(() => {
     if (ambientRef.current.brown?.gain) {
-      ambientRef.current.brown.gain.gain.value = state.brownVolume * state.ambientMasterVolume;
+      ambientRef.current.brown.gain.gain.value = state.brownVolume;
     }
     if (ambientRef.current.pink?.gain) {
-      ambientRef.current.pink.gain.gain.value = state.pinkVolume * state.ambientMasterVolume;
+      ambientRef.current.pink.gain.gain.value = state.pinkVolume;
     }
     if (ambientRef.current.rain?.gain) {
-      ambientRef.current.rain.gain.gain.value = state.rainVolume * state.ambientMasterVolume;
+      ambientRef.current.rain.gain.gain.value = state.rainVolume;
     }
     if (ambientRef.current.ocean?.gain) {
-      ambientRef.current.ocean.gain.gain.value = state.oceanVolume * state.ambientMasterVolume;
+      ambientRef.current.ocean.gain.gain.value = state.oceanVolume;
     }
-  }, [state.brownVolume, state.pinkVolume, state.rainVolume, state.oceanVolume, state.ambientMasterVolume]);
+  }, [state.brownVolume, state.pinkVolume, state.rainVolume, state.oceanVolume]);
 
   const start = useCallback(() => {
     ensureContext();
@@ -318,8 +329,15 @@ export function useNeuroDeck() {
 
   const updateMasterVolume = useCallback((volume: number) => {
     setState(prev => ({ ...prev, masterVolume: volume }));
-    if (masterGainRef.current) {
-      masterGainRef.current.gain.value = volume;
+    if (binauralGainRef.current) {
+      binauralGainRef.current.gain.value = volume;
+    }
+  }, []);
+
+  const updateAmbientMasterVolume = useCallback((volume: number) => {
+    setState(prev => ({ ...prev, ambientMasterVolume: volume }));
+    if (ambientGainRef.current) {
+      ambientGainRef.current.gain.value = volume;
     }
   }, []);
 
@@ -335,14 +353,9 @@ export function useNeuroDeck() {
     
     const ambient = ambientRef.current[type];
     if (ambient?.gain) {
-      ambient.gain.gain.value = volume * state.ambientMasterVolume;
+      ambient.gain.gain.value = volume;
     }
-  }, [state.ambientMasterVolume]);
-
-  const updateAmbientMasterVolume = useCallback((volume: number) => {
-    setState(prev => ({ ...prev, ambientMasterVolume: volume }));
-    updateAmbientVolumes();
-  }, [updateAmbientVolumes]);
+  }, []);
 
   const muteAmbient = useCallback(() => {
     setState(prev => ({
