@@ -24,7 +24,7 @@ export function useAudioManager() {
     
     // Controlli volume
     updateMasterVolume: (volume: number) => AudioManager.setMasterVolume(volume),
-    updateAmbientMasterVolume: (volume: number) => AudioManager.setNeuralVolume(volume),
+    updateNeuralVolume: (volume: number) => AudioManager.setNeuralVolume(volume),
     updateBinauralVolume: (volume: number) => AudioManager.setBinauralVolume(volume),
     updateAmbientVolume: (type: 'brown' | 'pink' | 'rain' | 'ocean', volume: number) => 
       AudioManager.setAmbientVolume(type, volume),

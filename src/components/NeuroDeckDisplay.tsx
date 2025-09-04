@@ -67,10 +67,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
   };
 
   const getAmbientVolume = (): number => {
-    const volumes = [state.oceanVolume, state.rainVolume, state.pinkVolume, state.brownVolume];
-    const activeVolumes = volumes.filter(v => v > 0);
-    if (activeVolumes.length === 0) return 0;
-    return Math.max(...activeVolumes);
+    return state.masterVolume;
   };
 
   const vuLevel = Math.min(100, Math.round(state.masterVolume * 100));

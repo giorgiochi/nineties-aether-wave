@@ -8,7 +8,7 @@ interface NeuroDeckControlsProps {
 }
 
 export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck }) => {
-  const { state, start, pause, stop, applyPreset, updateMasterVolume, updateAmbientMasterVolume, updateAmbientVolume } = neuroDeck;
+  const { state, start, pause, stop, applyPreset, updateMasterVolume, updateNeuralVolume, updateAmbientVolume } = neuroDeck;
 
   return (
     <div className="w-full max-w-lg mx-auto space-y-4 sm:space-y-5 px-2 sm:px-0">
@@ -133,7 +133,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
                 max="1"
                 step="0.05"
                 value={state.neuralVolume}
-                onChange={(e) => updateAmbientMasterVolume(parseFloat(e.target.value))}
+                onChange={(e) => updateNeuralVolume(parseFloat(e.target.value))}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                 aria-label="Volume Neurali"
               />
