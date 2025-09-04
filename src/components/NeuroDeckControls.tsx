@@ -6,23 +6,11 @@ interface NeuroDeckControlsProps {
 }
 
 export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck }) => {
-  const { 
-    state, 
-    start, 
-    pause, 
-    stop, 
-    applyPreset,
-    updateMasterVolume,
-    updateBinauralVolume,
-    updateAmbientVolume,
-    updateDuration,
-    muteAmbient,
-    resetAmbient 
-  } = neuroDeck;
+  const { state, start, pause, stop, applyPreset, updateMasterVolume } = neuroDeck;
 
   return (
     <div className="space-y-4">
-      {/* Quick Commands */}
+      {/* Mode Selection Buttons */}
       <div 
         className="p-4 rounded-xl border border-graphite-edge"
         style={{ 
@@ -30,37 +18,94 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
           boxShadow: 'var(--shadow-inset)'
         }}
       >
-        <h3 className="text-device-text font-semibold text-sm mb-3 tracking-wide">COMANDI RAPIDI</h3>
-        
+        <h3 className="text-device-text font-semibold text-sm mb-3 tracking-wide text-center">MODALITÀ</h3>
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={() => applyPreset('CONCENTRAZIONE')}
-            className="device-button px-3 py-2 rounded-lg text-device-text text-xs font-medium"
-            aria-label="Aumenta concentrazione"
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 border ${
+              state.activeMode === 'CONCENTRAZIONE' 
+                ? 'bg-screen-yellow text-graphite-0 border-screen-yellow' 
+                : 'device-button text-device-text border-graphite-edge'
+            }`}
           >
-            Aumenta Concentrazione
+            CONCENTRAZIONE
           </button>
           <button
             onClick={() => applyPreset('ADHD')}
-            className="device-button px-3 py-2 rounded-lg text-device-text text-xs font-medium"
-            aria-label="Blocca distrazioni ADHD"
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 border ${
+              state.activeMode === 'ADHD' 
+                ? 'bg-screen-yellow text-graphite-0 border-screen-yellow' 
+                : 'device-button text-device-text border-graphite-edge'
+            }`}
           >
-            Blocca Distrazioni (ADHD)
+            BLOCCA DISTRAZIONI
           </button>
           <button
             onClick={() => applyPreset('STRESS')}
-            className="device-button px-3 py-2 rounded-lg text-device-text text-xs font-medium"
-            aria-label="Riduci stress"
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 border ${
+              state.activeMode === 'STRESS' 
+                ? 'bg-screen-yellow text-graphite-0 border-screen-yellow' 
+                : 'device-button text-device-text border-graphite-edge'
+            }`}
           >
-            Riduci Stress
+            RIDUCI STRESS
           </button>
           <button
             onClick={() => applyPreset('INTRUSIVE_OFF')}
-            className="device-button px-3 py-2 rounded-lg text-device-text text-xs font-medium"
-            aria-label="Ferma pensieri intrusivi"
+            className={`px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 border ${
+              state.activeMode === 'INTRUSIVE_OFF' 
+                ? 'bg-screen-yellow text-graphite-0 border-screen-yellow' 
+                : 'device-button text-device-text border-graphite-edge'
+            }`}
           >
-            Pensieri Intrusivi OFF
+            PENSIERI OFF
           </button>
+        </div>
+      </div>
+
+      {/* Volume Knob */}
+      <div 
+        className="p-4 rounded-xl border border-graphite-edge"
+        style={{ 
+          background: 'var(--gradient-panel)',
+          boxShadow: 'var(--shadow-inset)'
+        }}
+      >
+        <h3 className="text-device-text font-semibold text-sm mb-3 tracking-wide text-center">VOLUME</h3>
+        <div className="flex flex-col items-center space-y-2">
+          <div 
+            className="relative w-20 h-20 rounded-full border-2 border-graphite-edge cursor-pointer"
+            style={{
+              background: `
+                radial-gradient(circle at 30% 30%, hsl(var(--graphite-3)), hsl(var(--graphite-1)) 60%, hsl(var(--graphite-0))),
+                conic-gradient(from ${state.masterVolume * 270 + 135}deg, 
+                  hsl(var(--screen-yellow)) 0deg 3deg, 
+                  transparent 3deg)
+              `,
+              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.3)'
+            }}
+          >
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={state.masterVolume}
+              onChange={(e) => updateMasterVolume(parseFloat(e.target.value))}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              aria-label="Volume Master"
+            />
+            <div 
+              className="absolute w-1 h-6 bg-device-text rounded-full top-2 left-1/2"
+              style={{
+                transform: `translateX(-50%) rotate(${(state.masterVolume - 0.5) * 270}deg)`,
+                transformOrigin: '50% 280%'
+              }}
+            />
+          </div>
+          <div className="text-xs text-device-muted font-mono">
+            {Math.round(state.masterVolume * 100)}%
+          </div>
         </div>
       </div>
 
@@ -72,188 +117,47 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
           boxShadow: 'var(--shadow-inset)'
         }}
       >
-        <h3 className="text-device-text font-semibold text-sm mb-3 tracking-wide">TRASPORTO</h3>
-        
-        <div className="flex gap-3">
+        <h3 className="text-device-text font-semibold text-sm mb-3 tracking-wide text-center">CONTROLLI</h3>
+        <div className="flex justify-center space-x-3">
           <button
             onClick={start}
-            className="device-button flex items-center gap-2 px-4 py-2 rounded-lg text-device-text text-sm font-medium transition-colors"
-            aria-label="Start"
+            disabled={state.isPlaying}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all duration-200 border ${
+              state.isPlaying
+                ? 'bg-device-ok text-graphite-0 border-device-ok cursor-default'
+                : 'device-button text-device-text border-graphite-edge active:scale-95'
+            }`}
           >
             <span className={`device-led ${state.isPlaying ? 'active green' : ''}`} />
             START
           </button>
           <button
             onClick={pause}
-            className="device-button flex items-center gap-2 px-4 py-2 rounded-lg text-device-text text-sm font-medium"
-            aria-label="Pausa"
+            disabled={!state.isPlaying || state.isPaused}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all duration-200 border ${
+              state.isPaused
+                ? 'bg-device-warn text-graphite-0 border-device-warn cursor-default'
+                : state.isPlaying
+                ? 'device-button text-device-text border-graphite-edge active:scale-95'
+                : 'device-button text-device-muted border-graphite-edge cursor-not-allowed opacity-50'
+            }`}
           >
             <span className={`device-led ${state.isPaused ? 'active orange' : ''}`} />
             PAUSA
           </button>
           <button
             onClick={stop}
-            className="device-button flex items-center gap-2 px-4 py-2 rounded-lg text-device-text text-sm font-medium"
-            aria-label="Stop"
+            disabled={!state.isPlaying && !state.isPaused}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all duration-200 border ${
+              !state.isPlaying && !state.isPaused
+                ? 'device-button text-device-muted border-graphite-edge cursor-not-allowed opacity-50'
+                : 'device-button text-device-text border-graphite-edge active:scale-95'
+            }`}
           >
             <span className={`device-led ${!state.isPlaying && !state.isPaused ? 'active orange' : ''}`} />
             STOP
           </button>
         </div>
-      </div>
-
-      {/* Volume Controls */}
-      <div 
-        className="p-4 rounded-xl border border-graphite-edge"
-        style={{ 
-          background: 'var(--gradient-panel)',
-          boxShadow: 'var(--shadow-inset)'
-        }}
-      >
-        <h3 className="text-device-text font-semibold text-sm mb-3 tracking-wide">LIVELLI & SESSIONE</h3>
-        
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <label htmlFor="master-volume" className="text-xs text-device-muted min-w-[100px]">
-              Volume Master
-            </label>
-            <input
-              id="master-volume"
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={state.masterVolume}
-              onChange={(e) => updateMasterVolume(Number(e.target.value))}
-              className="flex-1 device-slider"
-              aria-label="Volume Master"
-            />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <label htmlFor="binaural-volume" className="text-xs text-device-muted min-w-[100px]">
-              Volume Binaurale
-            </label>
-            <input
-              id="binaural-volume"
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={state.binauralVolume}
-              onChange={(e) => updateBinauralVolume(Number(e.target.value))}
-              className="flex-1 device-slider"
-              aria-label="Volume binaurale"
-            />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <label htmlFor="duration-input" className="text-xs text-device-muted min-w-[100px]">
-              Durata (ore)
-            </label>
-            <input
-              id="duration-input"
-              type="number"
-              min="0.25"
-              step="0.25"
-              value={state.duration}
-              onChange={(e) => updateDuration(Number(e.target.value))}
-              className="flex-1 bg-graphite-0 border border-graphite-edge rounded-lg px-3 py-2 text-device-text text-sm focus:outline-none focus:ring-2 focus:ring-screen-yellow"
-              aria-label="Durata sessione in ore"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Ambient Sounds */}
-      <div 
-        className="p-4 rounded-xl border border-graphite-edge"
-        style={{ 
-          background: 'var(--gradient-panel)',
-          boxShadow: 'var(--shadow-inset)'
-        }}
-      >
-        <h3 className="text-device-text font-semibold text-sm mb-3 tracking-wide">AMBIENTI (non invasivi)</h3>
-        
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <label className="text-xs text-device-muted min-w-[60px]">Brown</label>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={state.brownVolume}
-              onChange={(e) => updateAmbientVolume('brown', Number(e.target.value))}
-              className="flex-1 device-slider"
-              aria-label="Volume brown noise"
-            />
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <label className="text-xs text-device-muted min-w-[60px]">Pink</label>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={state.pinkVolume}
-              onChange={(e) => updateAmbientVolume('pink', Number(e.target.value))}
-              className="flex-1 device-slider"
-              aria-label="Volume pink noise"
-            />
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <label className="text-xs text-device-muted min-w-[60px]">Pioggia</label>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={state.rainVolume}
-              onChange={(e) => updateAmbientVolume('rain', Number(e.target.value))}
-              className="flex-1 device-slider"
-              aria-label="Volume pioggia"
-            />
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <label className="text-xs text-device-muted min-w-[60px]">Oceano</label>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={state.oceanVolume}
-              onChange={(e) => updateAmbientVolume('ocean', Number(e.target.value))}
-              className="flex-1 device-slider"
-              aria-label="Volume oceano"
-            />
-          </div>
-
-          <div className="flex gap-2 mt-4">
-            <button
-              onClick={muteAmbient}
-              className="device-button px-3 py-1.5 rounded-lg text-device-text text-xs font-medium"
-              aria-label="Muta tutti gli ambient"
-            >
-              MUTE AMBIENT
-            </button>
-            <button
-              onClick={resetAmbient}
-              className="device-button px-3 py-1.5 rounded-lg text-device-text text-xs font-medium"
-              aria-label="Reset ambient ai valori predefiniti"
-            >
-              RESET
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer Note */}
-      <div className="text-center text-xs text-device-muted px-2">
-        Preset e livelli si salvano automaticamente. Se il master supera 0.7 vedrai un avviso.
       </div>
     </div>
   );

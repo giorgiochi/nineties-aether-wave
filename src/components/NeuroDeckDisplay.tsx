@@ -62,7 +62,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
       <div 
         className="relative p-4 rounded-lg overflow-hidden tft-scanlines"
         style={{ 
-          height: '240px',
+          height: '180px',
           background: `
             radial-gradient(600px 140px at 50% -40%, hsla(48, 87%, 68%, 0.15), transparent 60%),
             var(--gradient-screen)
@@ -70,58 +70,26 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
         }}
         aria-live="polite"
       >
-        <div className="text-tft space-y-2 text-sm">
-          {/* Row 1: Mode and State */}
-          <div className="flex justify-between items-center text-lg">
-            <div>
-              MODALITÀ <span className="ml-2">{getModeName(state.activeMode)}</span>
-            </div>
-            <div>
-              STATO <span className="ml-2">{getState()}</span>
-            </div>
+        <div className="text-tft space-y-4 text-center">
+          {/* Timer - Large Display */}
+          <div className="text-3xl font-bold tracking-wider">
+            {state.timeLeft > 0 ? formatTime(state.timeLeft) : formatTime(state.duration * 3600)}
           </div>
 
-          {/* Row 2: Beat and Master */}
-          <div className="flex justify-between items-center">
-            <div>
-              BEAT <span className="ml-2">{getBeatFrequency(state.activeMode).toFixed(1)} Hz</span>
-            </div>
-            <div>
-              MASTER <span className="ml-2">{state.masterVolume.toFixed(2)}</span>
-            </div>
+          {/* Active Mode */}
+          <div className="text-lg">
+            MODALITÀ: <span className="font-bold">{getModeName(state.activeMode)}</span>
           </div>
 
-          {/* Row 3: Binaural and Timer */}
-          <div className="flex justify-between items-center">
-            <div>
-              BINAURALE <span className="ml-2">{state.binauralVolume.toFixed(2)}</span>
-            </div>
-            <div>
-              TIMER <span className="ml-2">
-                {state.timeLeft > 0 ? formatTime(state.timeLeft) : formatTime(state.duration * 3600)}
-              </span>
-            </div>
-          </div>
-
-          {/* Row 4: Ambient */}
-          <div className="break-all text-xs">
-            AMBIENT <span className="ml-2">{getAmbientStatus()}</span>
-          </div>
-
-          {/* Row 5: Safety and VU */}
-          <div className="flex justify-between items-center">
-            <div>
-              SAFETY <span className={`ml-2 ${getSafetyStatus() === 'ATTENZIONE' ? 'text-device-warn' : ''}`}>
-                {getSafetyStatus()}
-              </span>
-            </div>
-            <div>VU</div>
+          {/* Volume Level */}
+          <div className="text-lg">
+            VOLUME: <span className="font-bold">{Math.round(state.masterVolume * 100)}%</span>
           </div>
 
           {/* VU Meter */}
-          <div className="mt-3">
+          <div className="mt-4">
             <div 
-              className="h-2.5 border border-screen-dim rounded-lg overflow-hidden"
+              className="h-3 border border-screen-dim rounded-lg overflow-hidden mx-4"
               style={{ 
                 background: 'rgba(0,0,0,0.3)'
               }}
@@ -138,8 +106,8 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
           </div>
 
           {/* Warning text */}
-          <div className="text-xs text-tft-dim mt-4">
-            Supporto sonoro. Non è un dispositivo medico. Usa cuffie per il binaurale.
+          <div className="text-xs text-tft-dim mt-3">
+            Usa cuffie per il binaurale
           </div>
         </div>
       </div>
