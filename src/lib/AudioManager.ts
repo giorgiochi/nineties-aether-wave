@@ -536,7 +536,8 @@ class AudioManagerSingleton {
       // Activate ambient sound
       ambientSource.isActive = true;
       if (ambientSource.gain) {
-        ambientSource.gain.gain.value = volume;
+        const mappedVolume = this.mapVolume(volume);
+        this.smoothGain(ambientSource.gain.gain, mappedVolume, 0.1);
       }
       
       // Start playing if session is active
@@ -549,7 +550,7 @@ class AudioManagerSingleton {
       // Deactivate ambient sound
       ambientSource.isActive = false;
       if (ambientSource.gain) {
-        ambientSource.gain.gain.value = 0;
+        this.smoothGain(ambientSource.gain.gain, 0, 0.1);
       }
       ambientSource.element.pause();
     }
