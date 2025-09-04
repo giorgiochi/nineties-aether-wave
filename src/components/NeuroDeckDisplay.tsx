@@ -64,7 +64,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
     >
       {/* Cornice LCD esterna - Più grande del vetro */}
       <div 
-        className="relative p-2 rounded-lg"
+        className="relative p-4 rounded-lg"
         style={{ 
           background: `
             linear-gradient(145deg, 
@@ -81,7 +81,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
       >
         {/* Incasso per il vetro LCD */}
         <div 
-          className="relative p-2 rounded-md"
+          className="relative p-3 rounded-md"
           style={{ 
             background: `
               linear-gradient(145deg, 
@@ -99,10 +99,10 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
         >
           {/* Vetro LCD - Più piccolo e incassato */}
           <div 
-            className="relative p-4 rounded-sm overflow-visible"
+            className="relative p-3 rounded-sm overflow-visible"
             style={{ 
-              height: '160px',
-              width: '380px',
+              height: '120px',
+              width: '300px',
               background: `
                 repeating-linear-gradient(
                   0deg,
