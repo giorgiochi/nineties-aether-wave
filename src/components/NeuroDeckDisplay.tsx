@@ -149,20 +149,15 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
             }}
             aria-live="polite"
           >
-            {/* Layout orizzontale bilanciato */}
+            {/* Layout centrato e bilanciato */}
             <div 
-              className="h-full w-full text-tft text-tft-dim relative"
+              className="h-full w-full text-tft text-tft-dim relative flex flex-col justify-center items-center"
               style={{
-                display: 'grid',
-                gridTemplateRows: 'auto auto auto auto auto 1fr',
-                gridTemplateColumns: '1fr',
-                gap: 'clamp(6px, 2vw, 10px)',
-                padding: 'clamp(6px, 2vw, 10px)',
+                padding: 'clamp(8px, 2.5vw, 12px)',
                 fontFamily: '"Press Start 2P", "Courier New", monospace',
                 letterSpacing: '0.2px',
                 lineHeight: '1.2',
-                justifyContent: 'center',
-                alignItems: 'center'
+                gap: 'clamp(10px, 3vw, 14px)'
               }}
             >
               
@@ -178,12 +173,12 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 Audio Psyco ver.1
               </div>
 
-              {/* Riga 1: Modalità neurale (centrata in alto) */}
-              <div className="flex items-center justify-center" style={{ gridColumn: '1', marginTop: '8px' }}>
+              {/* Modalità neurale */}
+              <div className="text-center">
                 <div 
                   className="leading-none"
                   style={{
-                    fontSize: 'clamp(0.6rem, 1.5vw, 0.8rem)',
+                    fontSize: 'clamp(0.7rem, 1.8vw, 0.9rem)',
                     color: 'hsl(var(--lcd-green-soft))',
                     textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
                   }}
@@ -192,12 +187,12 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 </div>
               </div>
 
-              {/* Riga 2: Timer (centrato) */}
-              <div className="flex items-center justify-center">
+              {/* Timer */}
+              <div className="text-center">
                 <div 
                   className="leading-none"
                   style={{
-                    fontSize: 'clamp(0.5rem, 1.3vw, 0.7rem)',
+                    fontSize: 'clamp(0.7rem, 1.8vw, 0.9rem)',
                     color: 'hsl(var(--lcd-green-soft))',
                     textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
                   }}
@@ -206,31 +201,32 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                  </div>
               </div>
 
-              {/* Riga 3: Volumi (sinistra Neural, destra Ambient) */}
+              {/* Volumi orizzontali */}
               <div 
-                className="grid grid-cols-2 gap-4 w-full"
+                className="flex justify-between w-full"
                 style={{
-                  maxWidth: '200px',
-                  justifySelf: 'center'
+                  maxWidth: '220px',
+                  gap: 'clamp(16px, 4vw, 24px)'
                 }}
               >
-                {/* Volume Neurale (sinistra) */}
-                <div className="flex flex-col items-center">
+                {/* Volume Neurale */}
+                <div className="text-center">
                   <div 
-                    className="leading-none text-center"
+                    className="leading-none"
                     style={{
-                      fontSize: 'clamp(0.3rem, 0.8vw, 0.4rem)',
+                      fontSize: 'clamp(0.4rem, 1.0vw, 0.5rem)',
                       color: 'hsl(var(--lcd-green-soft))',
-                      textShadow: '0 0 1px hsl(var(--lcd-green-soft) / 0.4)'
+                      textShadow: '0 0 1px hsl(var(--lcd-green-soft) / 0.4)',
+                      marginBottom: '4px'
                     }}
                   >
                     NEURAL: {Math.round(state.neuralVolume * 100)}%
                   </div>
                   {/* Progress bar neurale */}
                   <div 
-                    className="w-full h-0.5 rounded-full border border-opacity-30 mt-1"
+                    className="h-1 rounded-full border border-opacity-30 mx-auto"
                     style={{
-                      width: '50px',
+                      width: '60px',
                       backgroundColor: 'hsl(var(--lcd-bg-center))',
                       borderColor: 'hsl(var(--lcd-green-dim))'
                     }}
@@ -246,14 +242,15 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                   </div>
                 </div>
 
-                {/* Volume Ambienti (destra) */}
-                <div className="flex flex-col items-center">
+                {/* Volume Ambienti */}
+                <div className="text-center">
                   <div 
-                    className="leading-none text-center"
+                    className="leading-none"
                     style={{
-                      fontSize: 'clamp(0.3rem, 0.8vw, 0.4rem)',
+                      fontSize: 'clamp(0.4rem, 1.0vw, 0.5rem)',
                       color: isAmbientEnabled() ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-dim))',
-                      textShadow: isAmbientEnabled() ? '0 0 1px hsl(var(--lcd-green-soft) / 0.4)' : '0 0 1px hsl(var(--lcd-green-dim) / 0.3)'
+                      textShadow: isAmbientEnabled() ? '0 0 1px hsl(var(--lcd-green-soft) / 0.4)' : '0 0 1px hsl(var(--lcd-green-dim) / 0.3)',
+                      marginBottom: '4px'
                     }}
                   >
                     {isAmbientEnabled() ? 
@@ -263,9 +260,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                   </div>
                   {/* Progress bar ambienti */}
                   <div 
-                    className="w-full h-0.5 rounded-full border border-opacity-30 mt-1"
+                    className="h-1 rounded-full border border-opacity-30 mx-auto"
                     style={{
-                      width: '50px',
+                      width: '60px',
                       backgroundColor: 'hsl(var(--lcd-bg-center))',
                       borderColor: 'hsl(var(--lcd-green-dim))',
                       opacity: isAmbientEnabled() ? 1 : 0.3
@@ -283,20 +280,20 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 </div>
               </div>
 
-              {/* Riga 4: Status (sinistra) e Ambient Info (destra) */}
+              {/* Status e Info ambientali - riga orizzontale */}
               <div 
-                className="grid grid-cols-2 gap-4 w-full"
+                className="flex justify-between items-center w-full"
                 style={{
-                  maxWidth: '180px',
-                  justifySelf: 'center'
+                  maxWidth: '220px',
+                  gap: 'clamp(12px, 3vw, 20px)'
                 }}
               >
-                {/* Status sessione (sinistra) */}
-                <div className="flex items-center justify-start space-x-1">
+                {/* Status sessione con icone */}
+                <div className="flex items-center space-x-2">
                   <div 
                     className="uppercase tracking-wider"
                     style={{
-                      fontSize: 'clamp(0.6rem, 1.5vw, 0.8rem)',
+                      fontSize: 'clamp(0.5rem, 1.3vw, 0.7rem)',
                       color: 'hsl(var(--lcd-green-soft))',
                       textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
                     }}
@@ -305,33 +302,25 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                      state.isPaused ? 'PAUSED' : 'READY'}
                   </div>
                   
-                  {/* Omino LCD animato */}
+                  {/* Icona LCD animata */}
                   <div 
-                    className="relative flex items-center justify-center"
+                    className="leading-none select-none"
                     style={{
-                      width: 'clamp(12px, 2.4vw, 16px)',
-                      height: 'clamp(10px, 1.6vw, 12px)'
+                      fontSize: 'clamp(0.5rem, 1.3vw, 0.7rem)',
+                      color: 'hsl(var(--lcd-green-soft))',
+                      textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)',
+                      animation: state.isPlaying && !state.isPaused ? 'pulse 1.5s ease-in-out infinite' : 'none'
                     }}
                   >
-                    <div 
-                      className="leading-none select-none"
-                      style={{
-                        fontSize: 'clamp(0.6rem, 1.5vw, 0.8rem)',
-                        color: 'hsl(var(--lcd-green-soft))',
-                        textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)',
-                        animation: state.isPlaying && !state.isPaused ? 'pulse 1.5s ease-in-out infinite' : 'none'
-                      }}
-                    >
-                      {state.isPlaying && !state.isPaused ? '►' : '■'}
-                    </div>
+                    {state.isPlaying && !state.isPaused ? '►' : '■'}
                   </div>
                 </div>
 
-                {/* Info ambientali (destra) */}
+                {/* Info ambientali */}
                 <div 
-                  className="uppercase tracking-wider flex justify-end"
+                  className="uppercase tracking-wider text-right"
                   style={{
-                    fontSize: 'clamp(0.25rem, 0.6vw, 0.35rem)',
+                    fontSize: 'clamp(0.35rem, 0.9vw, 0.45rem)',
                     color: 'hsl(var(--lcd-green-dim))',
                     textShadow: '0 0 1px hsl(var(--lcd-green-dim) / 0.3)'
                   }}
