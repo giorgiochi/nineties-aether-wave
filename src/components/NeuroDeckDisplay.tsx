@@ -55,120 +55,152 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
     <div 
       className="p-4 rounded-2xl border-2 border-graphite-edge device-texture"
       style={{ 
-        background: 'var(--gradient-screen)',
-        boxShadow: 'var(--shadow-screen)'
+        background: `
+          radial-gradient(ellipse at center, hsl(var(--graphite-2)), hsl(var(--graphite-0))),
+          var(--gradient-panel)
+        `,
+        boxShadow: 'var(--shadow-inset)'
       }}
     >
+      {/* Authentic TFT/LCD Bezel */}
       <div 
-        className="relative p-6 rounded-xl overflow-hidden lcd-realistic"
+        className="relative p-2 rounded-xl"
         style={{ 
-          height: '200px',
-          background: 'hsl(var(--screen-bg))',
-          border: '3px inset hsl(var(--graphite-edge))',
+          background: `
+            linear-gradient(145deg, 
+              hsl(var(--screen-bezel)) 0%, 
+              hsl(220 30% 8%) 50%, 
+              hsl(220 35% 6%) 100%
+            )
+          `,
           boxShadow: `
-            var(--gradient-lcd-bezel),
-            inset 0 0 20px rgba(0,0,0,0.2)
+            inset 0 2px 4px rgba(0,0,0,0.6),
+            inset 0 -1px 0 rgba(255,255,255,0.1)
           `
         }}
-        aria-live="polite"
       >
-        {/* LCD Protective Glass Effect */}
+        {/* LCD Screen */}
         <div 
-          className="absolute inset-0 pointer-events-none rounded-xl"
-          style={{
-            background: `
-              linear-gradient(135deg, 
-                rgba(255,255,255,0.1) 0%, 
-                transparent 30%, 
-                transparent 70%, 
-                rgba(255,255,255,0.05) 100%
-              )
+          className="relative p-6 rounded-lg overflow-hidden lcd-realistic"
+          style={{ 
+            height: '220px',
+            background: 'var(--gradient-screen)',
+            boxShadow: `
+              var(--gradient-lcd-bezel),
+              inset 0 0 30px rgba(0,0,0,0.4)
             `
           }}
-        />
-        
-        <div className="text-tft h-full flex flex-col justify-center space-y-6 relative z-10">
-          {/* Timer Display - Large and Prominent */}
-          <div className="text-center">
-            <div className="text-5xl font-bold tracking-wider mb-1" style={{
-              textShadow: `
-                0 0 3px hsl(var(--screen-glow) / 0.4),
-                0 0 6px hsl(var(--screen-glow) / 0.3),
-                2px 2px 0 rgba(0,0,0,0.5)
-              `
-            }}>
-              {state.timeLeft > 0 ? formatTime(state.timeLeft) : formatTime(state.duration * 3600)}
+          aria-live="polite"
+        >
+          {/* LCD Matrix Effect */}
+          <div 
+            className="absolute inset-0 pointer-events-none rounded-lg opacity-20"
+            style={{
+              background: `
+                repeating-conic-gradient(from 0deg at 50% 50%, 
+                  transparent 0deg, 
+                  rgba(0,0,0,0.1) 0.5deg, 
+                  transparent 1deg
+                )
+              `,
+              backgroundSize: '4px 4px'
+            }}
+          />
+          
+          {/* Screen Content */}
+          <div className="text-tft h-full flex flex-col justify-center space-y-5 relative z-10">
+            {/* Header Row */}
+            <div className="flex justify-between items-center text-xs uppercase tracking-widest opacity-80">
+              <span>NEURODECK-90</span>
+              <span>● REC</span>
             </div>
-            <div className="text-xs text-tft-dim uppercase tracking-widest">
-              TEMPO SESSIONE
-            </div>
-          </div>
-
-          {/* Mode and Volume Display */}
-          <div className="grid grid-cols-2 gap-6 text-center">
-            <div>
-              <div className="text-lg font-bold mb-1">
-                {getModeName(state.activeMode)}
-              </div>
-              <div className="text-xs text-tft-dim uppercase tracking-widest">
-                MODALITÀ
-              </div>
-            </div>
-            <div>
-              <div className="text-lg font-bold mb-1">
-                {Math.round(state.masterVolume * 100)}%
-              </div>
-              <div className="text-xs text-tft-dim uppercase tracking-widest">
-                VOLUME
-              </div>
-            </div>
-          </div>
-
-          {/* VU Meter */}
-          <div className="px-8">
-            <div 
-              className="h-4 rounded-lg overflow-hidden relative"
-              style={{ 
-                background: `
-                  linear-gradient(180deg, 
-                    rgba(0,0,0,0.6) 0%, 
-                    rgba(0,0,0,0.4) 50%, 
-                    rgba(0,0,0,0.6) 100%
-                  )
-                `,
-                border: '1px solid rgba(0,0,0,0.6)',
-                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8)'
-              }}
-            >
+            
+            {/* Timer Display - Large and Prominent */}
+            <div className="text-center">
               <div 
-                className="h-full transition-all duration-300 ease-out relative"
-                style={{ 
-                  width: `${vuLevel}%`,
-                  background: `
-                    linear-gradient(90deg, 
-                      hsl(var(--screen-text)) 0%, 
-                      hsl(var(--screen-text)) 60%,
-                      hsl(var(--screen-dim)) 100%
-                    )
-                  `,
-                  boxShadow: '0 0 4px hsl(var(--screen-glow) / 0.3)'
+                className="text-5xl font-bold tracking-widest mb-2 text-tft-glow font-mono"
+                style={{
+                  fontFamily: '"Courier New", "Lucida Console", monospace'
                 }}
               >
-                {/* VU meter segments */}
-                <div 
-                  className="absolute inset-0"
-                  style={{
-                    background: `
-                      repeating-linear-gradient(90deg,
-                        transparent 0px,
-                        transparent 8px,
-                        rgba(0,0,0,0.3) 8px,
-                        rgba(0,0,0,0.3) 9px
-                      )
-                    `
-                  }}
-                />
+                {state.timeLeft > 0 ? formatTime(state.timeLeft) : formatTime(state.duration * 3600)}
               </div>
+              <div className="text-xs text-tft-dim uppercase tracking-[0.2em] opacity-70">
+                ── TEMPO SESSIONE ──
+              </div>
+            </div>
+
+            {/* Mode and Volume Grid */}
+            <div className="grid grid-cols-2 gap-6 text-center">
+              <div className="space-y-1">
+                <div className="text-sm uppercase tracking-wider font-bold">
+                  {getModeName(state.activeMode)}
+                </div>
+                <div className="text-xs text-tft-dim uppercase tracking-[0.15em] opacity-60">
+                  MODALITÀ
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-sm uppercase tracking-wider font-bold">
+                  {Math.round(state.masterVolume * 100)}%
+                </div>
+                <div className="text-xs text-tft-dim uppercase tracking-[0.15em] opacity-60">
+                  VOLUME
+                </div>
+              </div>
+            </div>
+
+            {/* Status Indicators */}
+            <div className="flex justify-center space-x-6 text-xs">
+              <span className={`${state.isPlaying ? 'text-tft-glow' : 'text-tft-dim opacity-50'}`}>
+                ● PLAY
+              </span>
+              <span className={`${state.isPaused ? 'text-tft-glow' : 'text-tft-dim opacity-50'}`}>
+                ● PAUSA  
+              </span>
+              <span className={`${state.masterVolume > 0.7 ? 'text-tft-glow animate-pulse' : 'text-tft-dim opacity-50'}`}>
+                ● WARN
+              </span>
+            </div>
+
+            {/* VU Meter - Authentic LCD Style */}
+            <div className="px-8">
+              <div className="text-xs text-tft-dim uppercase tracking-widest text-center mb-1 opacity-60">
+                VU METER
+              </div>
+              <div 
+                className="h-4 rounded-sm overflow-hidden relative"
+                style={{ 
+                  background: `
+                    linear-gradient(180deg, 
+                      rgba(0,0,0,0.8) 0%, 
+                      rgba(0,0,0,0.6) 50%, 
+                      rgba(0,0,0,0.8) 100%
+                    )
+                  `,
+                  border: '1px solid rgba(0,0,0,0.9)',
+                  boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.9)'
+                }}
+              >
+                {/* VU Segments */}
+                {Array.from({ length: 20 }, (_, i) => (
+                  <div
+                    key={i}
+                    className="absolute top-0 h-full w-1"
+                    style={{
+                      left: `${i * 5}%`,
+                      background: i * 5 <= vuLevel ? 'hsl(var(--screen-text))' : 'rgba(0,0,0,0.3)',
+                      boxShadow: i * 5 <= vuLevel ? '0 0 2px hsl(var(--screen-glow) / 0.6)' : 'none',
+                      transition: 'all 0.1s ease'
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="text-center text-xs text-tft-dim uppercase tracking-[0.2em] opacity-40">
+              ── BINAURALE FOCUS SYSTEM ──
             </div>
           </div>
         </div>

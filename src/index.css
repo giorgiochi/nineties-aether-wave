@@ -16,13 +16,14 @@
     --graphite-highlight: 215 15% 45%;
     --graphite-shine: 215 12% 65%;
     
-    /* Realistic LCD Display - authentic 90s yellow-green */
-    --screen-bg: 55 75% 78%;
-    --screen-yellow: 55 75% 78%;
-    --screen-text: 215 35% 8%;
-    --screen-dim: 215 25% 18%;
-    --screen-glow: 55 85% 75%;
-    --screen-shadow: 215 50% 4%;
+    /* Authentic 90s TFT Display - Yellow-Green LCD like reference */
+    --screen-bg: 54 70% 25%;
+    --screen-yellow: 54 70% 25%;
+    --screen-text: 54 95% 75%;
+    --screen-dim: 54 60% 55%;
+    --screen-glow: 54 95% 75%;
+    --screen-shadow: 220 50% 8%;
+    --screen-bezel: 220 25% 12%;
     
     /* Device accent colors - more authentic */
     --device-accent: 210 95% 58%;
@@ -70,12 +71,17 @@
       linear-gradient(145deg, hsl(215 27% 8%) 0%, hsl(215 25% 10%) 45%, hsl(215 23% 14%) 100%);
     
     --gradient-screen: 
-      radial-gradient(ellipse 300px 100px at 50% 0%, rgba(255,255,255,0.08), transparent 70%),
-      linear-gradient(180deg, hsl(var(--screen-bg)), hsl(55 70% 75%));
+      radial-gradient(ellipse 400px 150px at 50% 0%, rgba(0,0,0,0.15), transparent 80%),
+      linear-gradient(180deg, 
+        hsl(54 50% 20%) 0%, 
+        hsl(var(--screen-bg)) 20%, 
+        hsl(var(--screen-bg)) 80%, 
+        hsl(54 50% 18%) 100%
+      );
     
     --gradient-lcd-bezel:
-      inset 0 0 0 1px rgba(0,0,0,0.4),
-      inset 0 2px 4px rgba(0,0,0,0.6),
+      inset 0 0 0 2px hsl(var(--screen-bezel)),
+      inset 0 3px 6px rgba(0,0,0,0.8),
       inset 0 -2px 0 rgba(255,255,255,0.1);
     
     /* Ultra-realistic shadows and lighting */
@@ -169,21 +175,31 @@
     mix-blend-mode: overlay;
   }
   
-  /* Realistic LCD scanlines and phosphor glow */
+  /* Authentic 90s LCD scanlines and matrix effect */
   .lcd-realistic::before {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
     background: 
+      /* Horizontal scanlines */
       repeating-linear-gradient(
         0deg, 
+        rgba(0,0,0,0.4) 0px, 
+        rgba(0,0,0,0.4) 1px, 
+        transparent 1px, 
+        transparent 3px
+      ),
+      /* Vertical pixel grid */
+      repeating-linear-gradient(
+        90deg, 
         rgba(0,0,0,0.15) 0px, 
         rgba(0,0,0,0.15) 1px, 
         transparent 1px, 
-        transparent 4px
+        transparent 2px
       );
     border-radius: inherit;
+    mix-blend-mode: multiply;
   }
   
   .lcd-realistic::after {
@@ -191,11 +207,19 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(
-      ellipse 120% 30% at 50% 0%, 
-      rgba(255,255,255,0.06) 0%, 
-      transparent 70%
-    );
+    background: 
+      /* CRT-style curve reflection */
+      radial-gradient(
+        ellipse 140% 60% at 50% -20%, 
+        rgba(255,255,255,0.12) 0%, 
+        transparent 50%
+      ),
+      /* Subtle color fringing */
+      radial-gradient(
+        ellipse 120% 80% at 20% 20%, 
+        hsla(54, 100%, 80%, 0.03) 0%, 
+        transparent 40%
+      );
     border-radius: inherit;
   }
 }
@@ -354,25 +378,58 @@
 }
 
 @layer utilities {
-  /* Realistic LCD text with authentic 90s phosphor effect */
+  /* Authentic 90s LCD text with phosphor glow */
   .text-tft {
     color: hsl(var(--screen-text));
-    font-family: "Courier New", "SF Mono", Monaco, Inconsolata, "Roboto Mono", monospace;
-    font-weight: 600;
-    letter-spacing: 0.08em;
+    font-family: "Courier New", "SF Mono", Monaco, "Lucida Console", monospace;
+    font-weight: 700;
+    letter-spacing: 0.1em;
     text-rendering: optimizeLegibility;
     text-shadow: 
-      0 0 2px hsl(var(--screen-glow) / 0.3),
-      0 0 4px hsl(var(--screen-glow) / 0.2),
-      1px 1px 0 rgba(0,0,0,0.4);
-    filter: contrast(1.1);
+      0 0 3px hsl(var(--screen-glow) / 0.8),
+      0 0 6px hsl(var(--screen-glow) / 0.6),
+      0 0 9px hsl(var(--screen-glow) / 0.4),
+      0 1px 0 rgba(0,0,0,0.8);
+    filter: contrast(1.2) brightness(1.1);
+    position: relative;
+  }
+  
+  .text-tft::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: hsl(var(--screen-glow));
+    opacity: 0.3;
+    filter: blur(1px);
+    z-index: -1;
   }
   
   .text-tft-dim {
     color: hsl(var(--screen-dim));
     text-shadow: 
-      0 0 1px hsl(var(--screen-glow) / 0.2),
-      1px 1px 0 rgba(0,0,0,0.3);
+      0 0 2px hsl(var(--screen-dim) / 0.6),
+      0 0 4px hsl(var(--screen-dim) / 0.4),
+      0 1px 0 rgba(0,0,0,0.6);
+  }
+  
+  .text-tft-glow {
+    animation: lcd-flicker 3s ease-in-out infinite alternate;
+  }
+  
+  @keyframes lcd-flicker {
+    0%, 100% { 
+      text-shadow: 
+        0 0 3px hsl(var(--screen-glow) / 0.8),
+        0 0 6px hsl(var(--screen-glow) / 0.6),
+        0 0 9px hsl(var(--screen-glow) / 0.4);
+    }
+    50% { 
+      text-shadow: 
+        0 0 2px hsl(var(--screen-glow) / 0.9),
+        0 0 4px hsl(var(--screen-glow) / 0.7),
+        0 0 6px hsl(var(--screen-glow) / 0.5);
+    }
   }
   
   /* Serigraph-style labels */
