@@ -106,6 +106,17 @@ export const NeuroDeck90: React.FC = () => {
 
           {/* Controls Section - No additional wrapper */}
           <NeuroDeckControls neuroDeck={neuroDeckWithUnlock} />
+          
+          {/* Footer */}
+          <div className="pt-4 text-center">
+            <p 
+              className="text-xs text-device-muted leading-relaxed"
+              style={{ opacity: 0.8 }}
+            >
+              Developed by Giorgio Chiriatti – Audiopsyco is not a medical device.<br />
+              If you experience attention or stress-related issues, we recommend consulting a qualified doctor.
+            </p>
+          </div>
         </div>
 
         {/* Ventilation Grilles - Responsive */}
@@ -129,17 +140,6 @@ export const NeuroDeck90: React.FC = () => {
         onUnlock={handleUnlock}
         onClose={() => setShowUnlockPrompt(false)}
       />
-
-      {/* Footer */}
-      <div className="absolute bottom-4 left-0 right-0 text-center px-4">
-        <p 
-          className="text-xs text-device-muted leading-relaxed"
-          style={{ opacity: 0.8 }}
-        >
-          Developed by Giorgio Chiriatti – Audiopsyco is not a medical device.<br />
-          If you experience attention or stress-related issues, we recommend consulting a qualified doctor.
-        </p>
-      </div>
     </div>
   );
 };
