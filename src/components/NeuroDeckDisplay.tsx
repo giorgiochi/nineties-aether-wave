@@ -17,10 +17,10 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
 
   const getModeName = (mode: string): string => {
     const modeMap: Record<string, string> = {
-      'CONCENTRAZIONE': 'CONCENTRAZIONE',
-      'ADHD': 'BLOCCA DISTRAZIONI',
-      'STRESS': 'RIDUCI STRESS',
-      'INTRUSIVE_OFF': 'PENSIERI OFF'
+      'CONCENTRAZIONE': 'FOCUS',
+      'ADHD': 'ADHD',
+      'STRESS': 'RELAX',
+      'INTRUSIVE_OFF': 'QUIET'
     };
     return modeMap[mode] || mode;
   };
@@ -107,51 +107,55 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
             }}
           />
           
-          {/* Screen Content */}
-          <div className="text-tft h-full flex flex-col justify-center space-y-5 relative z-10">
-            {/* Header Row */}
-            <div className="flex justify-between items-center text-xs uppercase tracking-widest opacity-80">
+          {/* Screen Content - Fixed Layout Grid */}
+          <div className="text-tft h-full flex flex-col justify-between py-2 relative z-10">
+            {/* Header Row - Fixed Position */}
+            <div className="flex justify-between items-center text-xs uppercase tracking-widest opacity-80 h-4">
               <span>NEURODECK-90</span>
               <span>● REC</span>
             </div>
             
-            {/* Timer Display - Large and Prominent */}
-            <div className="text-center">
+            {/* Timer Display - Fixed Large Center */}
+            <div className="text-center flex-1 flex flex-col justify-center">
               <div 
-                className="text-5xl font-bold tracking-widest mb-2 text-tft-glow font-mono"
+                className="text-5xl font-bold tracking-widest mb-2 text-tft-glow font-mono h-16 flex items-center justify-center"
                 style={{
                   fontFamily: '"Courier New", "Lucida Console", monospace'
                 }}
               >
                 {state.timeLeft > 0 ? formatTime(state.timeLeft) : formatTime(state.duration * 3600)}
               </div>
-              <div className="text-xs text-tft-dim uppercase tracking-[0.2em] opacity-70">
+              <div className="text-xs text-tft-dim uppercase tracking-[0.2em] opacity-70 h-4">
                 ── TEMPO SESSIONE ──
               </div>
             </div>
 
-            {/* Mode and Volume Grid */}
-            <div className="grid grid-cols-2 gap-6 text-center">
-              <div className="space-y-1">
-                <div className="text-sm uppercase tracking-wider font-bold">
-                  {getModeName(state.activeMode)}
+            {/* Mode and Volume Grid - Fixed Layout */}
+            <div className="grid grid-cols-2 gap-6 text-center py-4">
+              <div className="space-y-1 h-12 flex flex-col justify-center">
+                <div className="text-sm uppercase tracking-wider font-bold h-5 flex items-center justify-center">
+                  <span className="truncate max-w-full">
+                    {getModeName(state.activeMode)}
+                  </span>
                 </div>
-                <div className="text-xs text-tft-dim uppercase tracking-[0.15em] opacity-60">
+                <div className="text-xs text-tft-dim uppercase tracking-[0.15em] opacity-60 h-4">
                   MODALITÀ
                 </div>
               </div>
-              <div className="space-y-1">
-                <div className="text-sm uppercase tracking-wider font-bold">
-                  {Math.round(state.masterVolume * 100)}%
+              <div className="space-y-1 h-12 flex flex-col justify-center">
+                <div className="text-sm uppercase tracking-wider font-bold h-5 flex items-center justify-center">
+                  <span className="font-mono">
+                    {Math.round(state.masterVolume * 100).toString().padStart(3, '0')}%
+                  </span>
                 </div>
-                <div className="text-xs text-tft-dim uppercase tracking-[0.15em] opacity-60">
+                <div className="text-xs text-tft-dim uppercase tracking-[0.15em] opacity-60 h-4">
                   VOLUME
                 </div>
               </div>
             </div>
 
-            {/* Status Indicators */}
-            <div className="flex justify-center space-x-6 text-xs">
+            {/* Status Indicators - Fixed Position */}
+            <div className="flex justify-center space-x-6 text-xs h-4 items-center">
               <span className={`${state.isPlaying ? 'text-tft-glow' : 'text-tft-dim opacity-50'}`}>
                 ● PLAY
               </span>
@@ -163,9 +167,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
               </span>
             </div>
 
-            {/* VU Meter - Authentic LCD Style */}
-            <div className="px-8">
-              <div className="text-xs text-tft-dim uppercase tracking-widest text-center mb-1 opacity-60">
+            {/* VU Meter - Fixed Position and Size */}
+            <div className="px-8 py-2">
+              <div className="text-xs text-tft-dim uppercase tracking-widest text-center mb-1 opacity-60 h-3">
                 VU METER
               </div>
               <div 
@@ -182,7 +186,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                   boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.9)'
                 }}
               >
-                {/* VU Segments */}
+                {/* VU Segments - Fixed 20 segments */}
                 {Array.from({ length: 20 }, (_, i) => (
                   <div
                     key={i}
@@ -198,8 +202,8 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="text-center text-xs text-tft-dim uppercase tracking-[0.2em] opacity-40">
+            {/* Footer - Fixed Position */}
+            <div className="text-center text-xs text-tft-dim uppercase tracking-[0.2em] opacity-40 h-4 flex items-center justify-center">
               ── BINAURALE FOCUS SYSTEM ──
             </div>
           </div>
