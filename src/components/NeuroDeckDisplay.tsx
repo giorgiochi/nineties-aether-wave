@@ -181,7 +181,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                     textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
                   }}
                 >
-                  ── TEMPO SESSIONE ──
+                  ── SESSION TIME ──
                 </div>
               </div>
 
@@ -205,7 +205,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                     textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
                   }}
                 >
-                  MODALITÀ
+                  MODE
                 </div>
               </div>
 
@@ -227,7 +227,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                         textShadow: '0 0 3px hsl(var(--lcd-green-soft) / 0.4)'
                       }}
                     >
-                      VOLUME NEURALE: {Math.round(state.neuralVolume * 100)}%
+                      NEURAL VOLUME: {Math.round(state.neuralVolume * 100)}%
                     </div>
                   </div>
                   {/* Mini progress bar neurale */}
@@ -262,8 +262,8 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                       }}
                     >
                       {isAmbientEnabled() ? 
-                        `VOLUME AMBIENTI: ${Math.round(getAmbientVolume() * 100)}%` : 
-                        'AMBIENTI: OFF'
+                        `AMBIENT VOLUME: ${Math.round(getAmbientVolume() * 100)}%` : 
+                        'AMBIENT: OFF'
                       }
                     </div>
                   </div>

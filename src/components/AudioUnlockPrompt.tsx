@@ -42,14 +42,14 @@ export const AudioUnlockPrompt: React.FC<AudioUnlockPromptProps> = ({
           </div>
           
           <h3 className="label-serigraph text-lg text-device-text">
-            AUDIO BLOCCATO
+            AUDIO LOCKED
           </h3>
           
           <p 
             className="text-sm text-device-muted"
             style={{ lineHeight: '1.4' }}
           >
-            Per motivi di sicurezza mobile, tocca per sbloccare l'audio una volta sola.
+            For mobile security reasons, tap to unlock audio once.
           </p>
           
           <div className="flex gap-3 justify-center">
@@ -60,7 +60,7 @@ export const AudioUnlockPrompt: React.FC<AudioUnlockPromptProps> = ({
               icon={<Play size={16} />}
               className="flex-1"
             >
-              SBLOCCA AUDIO
+              UNLOCK AUDIO
             </DeviceButton>
             
             <DeviceButton
@@ -69,7 +69,7 @@ export const AudioUnlockPrompt: React.FC<AudioUnlockPromptProps> = ({
               onClick={onClose}
               className="px-4"
             >
-              ANNULLA
+              CANCEL
             </DeviceButton>
           </div>
           
@@ -77,7 +77,7 @@ export const AudioUnlockPrompt: React.FC<AudioUnlockPromptProps> = ({
             className="text-xs text-device-muted mt-2"
             style={{ opacity: 0.7 }}
           >
-            Non verrà più richiesto dopo il primo tocco
+            Won't be asked again after first tap
           </p>
         </div>
       </div>

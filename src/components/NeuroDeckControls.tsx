@@ -20,7 +20,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
           boxShadow: 'var(--shadow-inset)'
         }}
       >
-        <h3 className="label-serigraph text-center mb-3 sm:mb-4">MODALITÀ FOCUS</h3>
+        <h3 className="label-serigraph text-center mb-3 sm:mb-4">FOCUS MODES</h3>
         <div className="grid grid-cols-2 gap-2 sm:gap-4">
           {[
             { key: 'CONCENTRAZIONE', label: 'FOCUS', icon: <Brain size={18} />, variant: 'success' },
@@ -58,7 +58,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
             
             {/* Label e Percentuale integrata */}
             <div className="flex justify-between items-center mb-2">
-              <span className="label-serigraph text-xs">VOLUME NEURALI</span>
+              <span className="label-serigraph text-xs">NEURAL VOLUME</span>
               <span 
                 className="font-mono font-bold"
                 style={{
@@ -135,7 +135,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
                 value={state.neuralVolume}
                 onChange={(e) => updateNeuralVolume(parseFloat(e.target.value))}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-                aria-label="Volume Neurali"
+                aria-label="Neural Volume"
               />
               
               {/* Cursore fisico in grafite */}
@@ -196,7 +196,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
             
             {/* Label e Percentuale integrata */}
             <div className="flex justify-between items-center mb-2">
-              <span className="label-serigraph text-xs">VOLUME AMBIENTALI</span>
+              <span className="label-serigraph text-xs">AMBIENT VOLUME</span>
               <span 
                 className="font-mono font-bold"
                 style={{
@@ -273,7 +273,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
                 value={state.masterVolume}
                 onChange={(e) => updateMasterVolume(parseFloat(e.target.value))}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-                aria-label="Volume Ambientali"
+                aria-label="Ambient Volume"
               />
               
               {/* Cursore fisico in grafite */}
@@ -327,7 +327,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
           boxShadow: 'var(--shadow-inset)'
         }}
       >
-        <h3 className="label-serigraph text-center mb-3 sm:mb-4">CONTROLLO SESSIONE</h3>
+        <h3 className="label-serigraph text-center mb-3 sm:mb-4">SESSION CONTROL</h3>
         <div className="flex justify-center">
           <DeviceButton
             variant={state.isPlaying || state.isPaused ? 'danger' : 'success'}
@@ -350,13 +350,13 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
           boxShadow: 'var(--shadow-inset)'
         }}
       >
-        <h3 className="label-serigraph text-center mb-3 sm:mb-4">AMBIENTI AUDIO</h3>
+        <h3 className="label-serigraph text-center mb-3 sm:mb-4">AMBIENT SOUNDS</h3>
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {[
-            { key: 'ocean', label: 'OCEANO', volume: state.oceanVolume, defaultVol: 0.25, icon: <Waves size={16} /> },
-            { key: 'rain', label: 'PIOGGIA', volume: state.rainVolume, defaultVol: 0.22, icon: <Cloud size={16} /> },
-            { key: 'pink', label: 'FORESTA', volume: state.pinkVolume, defaultVol: 0.20, icon: <TreePine size={16} /> },
-            { key: 'brown', label: 'AEROPORTO', volume: state.brownVolume, defaultVol: 0.18, icon: <Plane size={16} /> }
+            { key: 'ocean', label: 'OCEAN', volume: state.oceanVolume, defaultVol: 0.25, icon: <Waves size={16} /> },
+            { key: 'rain', label: 'RAIN', volume: state.rainVolume, defaultVol: 0.22, icon: <Cloud size={16} /> },
+            { key: 'pink', label: 'FOREST', volume: state.pinkVolume, defaultVol: 0.20, icon: <TreePine size={16} /> },
+            { key: 'brown', label: 'AIRPORT', volume: state.brownVolume, defaultVol: 0.18, icon: <Plane size={16} /> }
           ].map(({ key, label, volume, defaultVol, icon }) => (
             <DeviceButton
               key={key}

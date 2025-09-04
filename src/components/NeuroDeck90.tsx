@@ -8,12 +8,12 @@ export const NeuroDeck90: React.FC = () => {
   const neuroDeck = useAudioManager();
   const [showUnlockPrompt, setShowUnlockPrompt] = useState(false);
 
-  // Controlla se è necessario mostrare il prompt di sblocco
+  // Check if unlock prompt needs to be shown
   useEffect(() => {
     const checkUnlockNeeded = () => {
       if (neuroDeck.needsUserInteraction()) {
-        // Mostra il prompt solo se l'utente cerca di fare qualcosa che richiede audio
-        // Per ora, non lo mostriamo automaticamente
+        // Show prompt only if user tries to do something that requires audio
+        // For now, we don't show it automatically
       }
     };
 
@@ -25,7 +25,7 @@ export const NeuroDeck90: React.FC = () => {
     const success = await neuroDeck.unlockAudio();
     if (success) {
       setShowUnlockPrompt(false);
-      // Se aveva tentato di avviare, riprova ora
+      // If it had tried to start, retry now
       if (neuroDeck.state.isPlaying) {
         neuroDeck.start();
       }
@@ -44,7 +44,7 @@ export const NeuroDeck90: React.FC = () => {
     return success;
   };
 
-  // Override del neuroDeck per intercettare start
+  // Override neuroDeck to intercept start
   const neuroDeckWithUnlock = {
     ...neuroDeck,
     start: handleStart
@@ -59,7 +59,7 @@ export const NeuroDeck90: React.FC = () => {
           boxShadow: 'var(--shadow-device), var(--shadow-inset)'
         }}
         role="region" 
-        aria-label="NeuroDeck 90 dispositivo audio binaurale mobile"
+        aria-label="NeuroDeck 90 binaural audio device mobile"
       >
         {/* Device Screws - Responsive */}
         <div 
@@ -99,12 +99,12 @@ export const NeuroDeck90: React.FC = () => {
           }} 
         />
 
-        {/* Vertical Layout - Mobile Optimized e Responsive */}
+        {/* Vertical Layout - Mobile Optimized and Responsive */}
         <div className="space-y-3 sm:space-y-4">
-          {/* Display Section - Senza wrapper aggiuntivo */}
+          {/* Display Section - No additional wrapper */}
           <NeuroDeckDisplay neuroDeck={neuroDeckWithUnlock} />
 
-          {/* Controls Section - Senza wrapper aggiuntivo */}
+          {/* Controls Section - No additional wrapper */}
           <NeuroDeckControls neuroDeck={neuroDeckWithUnlock} />
         </div>
 
@@ -121,6 +121,17 @@ export const NeuroDeck90: React.FC = () => {
             />
           ))}
         </div>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-6 text-center max-w-lg">
+        <p 
+          className="text-xs text-device-muted leading-relaxed"
+          style={{ opacity: 0.8 }}
+        >
+          Developed by Giorgio Chiriatti – Audiopsyco is not a medical device.<br />
+          If you experience attention or stress-related issues, we recommend consulting a qualified doctor.
+        </p>
       </div>
 
       {/* Audio Unlock Prompt */}
