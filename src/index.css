@@ -16,14 +16,14 @@
     --graphite-highlight: 215 15% 45%;
     --graphite-shine: 215 12% 65%;
     
-    /* Authentic 90s TFT Display - Yellow-Green LCD like reference */
-    --screen-bg: 54 70% 25%;
-    --screen-yellow: 54 70% 25%;
-    --screen-text: 54 95% 75%;
-    --screen-dim: 54 60% 55%;
-    --screen-glow: 54 95% 75%;
-    --screen-shadow: 220 50% 8%;
-    --screen-bezel: 220 25% 12%;
+    /* Authentic LCD Display - Exact match to reference */
+    --screen-bg: 120 100% 4%;
+    --screen-yellow: 120 100% 4%;
+    --screen-text: 120 100% 65%;
+    --screen-dim: 120 80% 45%;
+    --screen-glow: 120 100% 65%;
+    --screen-shadow: 120 50% 2%;
+    --screen-bezel: 120 20% 8%;
     
     /* Device accent colors - more authentic */
     --device-accent: 210 95% 58%;
@@ -71,12 +71,12 @@
       linear-gradient(145deg, hsl(215 27% 8%) 0%, hsl(215 25% 10%) 45%, hsl(215 23% 14%) 100%);
     
     --gradient-screen: 
-      radial-gradient(ellipse 400px 150px at 50% 0%, rgba(0,0,0,0.15), transparent 80%),
+      radial-gradient(ellipse 600px 200px at 50% 0%, rgba(0,0,0,0.3), transparent 90%),
       linear-gradient(180deg, 
-        hsl(54 50% 20%) 0%, 
-        hsl(var(--screen-bg)) 20%, 
-        hsl(var(--screen-bg)) 80%, 
-        hsl(54 50% 18%) 100%
+        hsl(120 100% 2%) 0%, 
+        hsl(var(--screen-bg)) 15%, 
+        hsl(var(--screen-bg)) 85%, 
+        hsl(120 100% 2%) 100%
       );
     
     --gradient-lcd-bezel:
@@ -378,57 +378,44 @@
 }
 
 @layer utilities {
-  /* Authentic 90s LCD text with phosphor glow */
+  /* Exact LCD text matching reference image */
   .text-tft {
     color: hsl(var(--screen-text));
-    font-family: "Courier New", "SF Mono", Monaco, "Lucida Console", monospace;
-    font-weight: 700;
-    letter-spacing: 0.1em;
+    font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Courier New", monospace;
+    font-weight: 500;
+    letter-spacing: 0.05em;
     text-rendering: optimizeLegibility;
     text-shadow: 
-      0 0 3px hsl(var(--screen-glow) / 0.8),
-      0 0 6px hsl(var(--screen-glow) / 0.6),
-      0 0 9px hsl(var(--screen-glow) / 0.4),
-      0 1px 0 rgba(0,0,0,0.8);
-    filter: contrast(1.2) brightness(1.1);
+      0 0 2px hsl(var(--screen-glow) / 0.6),
+      0 0 4px hsl(var(--screen-glow) / 0.4),
+      0 0 6px hsl(var(--screen-glow) / 0.2);
+    filter: contrast(1.0) brightness(1.0);
     position: relative;
-  }
-  
-  .text-tft::before {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    color: hsl(var(--screen-glow));
-    opacity: 0.3;
-    filter: blur(1px);
-    z-index: -1;
   }
   
   .text-tft-dim {
     color: hsl(var(--screen-dim));
     text-shadow: 
-      0 0 2px hsl(var(--screen-dim) / 0.6),
-      0 0 4px hsl(var(--screen-dim) / 0.4),
-      0 1px 0 rgba(0,0,0,0.6);
+      0 0 1px hsl(var(--screen-dim) / 0.4),
+      0 0 2px hsl(var(--screen-dim) / 0.2);
   }
   
   .text-tft-glow {
-    animation: lcd-flicker 3s ease-in-out infinite alternate;
+    animation: lcd-pulse 2s ease-in-out infinite alternate;
   }
   
-  @keyframes lcd-flicker {
+  @keyframes lcd-pulse {
     0%, 100% { 
+      text-shadow: 
+        0 0 2px hsl(var(--screen-glow) / 0.6),
+        0 0 4px hsl(var(--screen-glow) / 0.4),
+        0 0 6px hsl(var(--screen-glow) / 0.2);
+    }
+    50% { 
       text-shadow: 
         0 0 3px hsl(var(--screen-glow) / 0.8),
         0 0 6px hsl(var(--screen-glow) / 0.6),
         0 0 9px hsl(var(--screen-glow) / 0.4);
-    }
-    50% { 
-      text-shadow: 
-        0 0 2px hsl(var(--screen-glow) / 0.9),
-        0 0 4px hsl(var(--screen-glow) / 0.7),
-        0 0 6px hsl(var(--screen-glow) / 0.5);
     }
   }
   
