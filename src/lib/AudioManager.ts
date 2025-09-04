@@ -457,12 +457,11 @@ class AudioManagerSingleton {
     this.stopBinaural();
     this.stopTimer(); // Use the new stopTimer method
     
-    // Stop and reset ambient elements
+    // Pause ambient elements (preserve isActive and position)
     Object.values(this.ambientSources).forEach(ambientSource => {
       if (ambientSource?.element) {
         ambientSource.element.pause();
-        ambientSource.element.currentTime = 0;
-        ambientSource.isActive = false;
+        // Do not reset isActive or currentTime to preserve user's ambient settings
       }
     });
     
@@ -474,14 +473,15 @@ class AudioManagerSingleton {
 
   private resumeActiveAmbientSounds() {
     Object.entries(this.ambientSources).forEach(([key, ambientSource]) => {
-      if (ambientSource && ambientSource.isActive) {
-        const volumeKey = `${key}Volume` as keyof AudioState;
-        const volume = this.state[volumeKey] as number;
-        if (volume > 0 && this.state.isPlaying) {
-          ambientSource.element.play().catch(e => 
-            console.warn(`[AudioManager] Could not resume ${key}:`, e)
-          );
-        }
+      if (!ambientSource) return;
+      const volumeKey = `${key}Volume` as keyof AudioState;
+      const volume = this.state[volumeKey] as number;
+      if (volume > 0 && this.state.isPlaying) {
+        // Ensure flag reflects actual state derived from volume
+        ambientSource.isActive = true;
+        ambientSource.element.play().catch(e =>
+          console.warn(`[AudioManager] Could not resume ${key}:`, e)
+        );
       }
     });
   }
