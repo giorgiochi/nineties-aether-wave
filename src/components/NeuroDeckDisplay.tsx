@@ -151,184 +151,192 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
           >
             {/* Layout centrato e bilanciato */}
             <div 
-              className="h-full w-full text-tft text-tft-dim relative flex flex-col justify-center items-center"
+              className="h-full w-full text-tft text-tft-dim relative flex flex-col items-center"
               style={{
                 padding: 'clamp(8px, 2.5vw, 12px)',
                 fontFamily: '"Press Start 2P", "Courier New", monospace',
                 letterSpacing: '0.2px',
-                lineHeight: '1.2',
-                gap: 'clamp(10px, 3vw, 14px)'
+                lineHeight: '1.2'
               }}
             >
               
-              {/* Header - Audio Psyco ver.1 in alto a sinistra */}
+              {/* Header centrato in alto */}
               <div 
-                className="absolute top-2 left-2"
+                className="text-center mb-4"
                 style={{
-                  fontSize: 'clamp(0.25rem, 0.6vw, 0.32rem)',
+                  fontSize: 'clamp(0.3rem, 0.7vw, 0.4rem)',
                   color: 'hsl(var(--lcd-green-dim))',
-                  textShadow: '0 0 1px hsl(var(--lcd-green-dim) / 0.3)'
+                  textShadow: '0 0 1px hsl(var(--lcd-green-dim) / 0.3)',
+                  marginBottom: 'clamp(12px, 3.5vw, 16px)'
                 }}
               >
                 Audio Psyco ver.1
               </div>
 
-              {/* Modalità neurale */}
-              <div className="text-center">
-                <div 
-                  className="leading-none"
-                  style={{
-                    fontSize: 'clamp(0.7rem, 1.8vw, 0.9rem)',
-                    color: 'hsl(var(--lcd-green-soft))',
-                    textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
-                  }}
-                >
-                  {getModeName(state.activeMode)}
-                </div>
-              </div>
-
-              {/* Timer */}
-              <div className="text-center">
-                <div 
-                  className="leading-none"
-                  style={{
-                    fontSize: 'clamp(0.7rem, 1.8vw, 0.9rem)',
-                    color: 'hsl(var(--lcd-green-soft))',
-                    textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
-                  }}
-                 >
-                   {formatTime(state.elapsedTime)}
-                 </div>
-              </div>
-
-              {/* Volumi orizzontali */}
+              {/* Contenuto principale centrato */}
               <div 
-                className="flex justify-between w-full"
+                className="flex flex-col justify-center items-center flex-1"
                 style={{
-                  maxWidth: '220px',
-                  gap: 'clamp(16px, 4vw, 24px)'
+                  gap: 'clamp(10px, 3vw, 14px)'
                 }}
               >
-                {/* Volume Neurale */}
+              
+                {/* Modalità neurale */}
                 <div className="text-center">
                   <div 
                     className="leading-none"
                     style={{
-                      fontSize: 'clamp(0.4rem, 1.0vw, 0.5rem)',
-                      color: 'hsl(var(--lcd-green-soft))',
-                      textShadow: '0 0 1px hsl(var(--lcd-green-soft) / 0.4)',
-                      marginBottom: '4px'
-                    }}
-                  >
-                    NEURAL: {Math.round(state.neuralVolume * 100)}%
-                  </div>
-                  {/* Progress bar neurale */}
-                  <div 
-                    className="h-1 rounded-full border border-opacity-30 mx-auto"
-                    style={{
-                      width: '60px',
-                      backgroundColor: 'hsl(var(--lcd-bg-center))',
-                      borderColor: 'hsl(var(--lcd-green-dim))'
-                    }}
-                  >
-                    <div 
-                      className="h-full rounded-full transition-all duration-200"
-                      style={{
-                        width: `${Math.round(state.neuralVolume * 100)}%`,
-                        backgroundColor: 'hsl(var(--lcd-green-soft))',
-                        boxShadow: '0 0 1px hsl(var(--lcd-green-soft) / 0.6)'
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Volume Ambienti */}
-                <div className="text-center">
-                  <div 
-                    className="leading-none"
-                    style={{
-                      fontSize: 'clamp(0.4rem, 1.0vw, 0.5rem)',
-                      color: isAmbientEnabled() ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-dim))',
-                      textShadow: isAmbientEnabled() ? '0 0 1px hsl(var(--lcd-green-soft) / 0.4)' : '0 0 1px hsl(var(--lcd-green-dim) / 0.3)',
-                      marginBottom: '4px'
-                    }}
-                  >
-                    {isAmbientEnabled() ? 
-                      `AMBIENT: ${Math.round(getAmbientVolume() * 100)}%` : 
-                      'AMBIENT: OFF'
-                    }
-                  </div>
-                  {/* Progress bar ambienti */}
-                  <div 
-                    className="h-1 rounded-full border border-opacity-30 mx-auto"
-                    style={{
-                      width: '60px',
-                      backgroundColor: 'hsl(var(--lcd-bg-center))',
-                      borderColor: 'hsl(var(--lcd-green-dim))',
-                      opacity: isAmbientEnabled() ? 1 : 0.3
-                    }}
-                  >
-                    <div 
-                      className="h-full rounded-full transition-all duration-200"
-                      style={{
-                        width: isAmbientEnabled() ? `${Math.round(getAmbientVolume() * 100)}%` : '0%',
-                        backgroundColor: 'hsl(var(--lcd-green-soft))',
-                        boxShadow: isAmbientEnabled() ? '0 0 1px hsl(var(--lcd-green-soft) / 0.6)' : 'none'
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Status e Info ambientali - riga orizzontale */}
-              <div 
-                className="flex justify-between items-center w-full"
-                style={{
-                  maxWidth: '220px',
-                  gap: 'clamp(12px, 3vw, 20px)'
-                }}
-              >
-                {/* Status sessione con icone */}
-                <div className="flex items-center space-x-2">
-                  <div 
-                    className="uppercase tracking-wider"
-                    style={{
-                      fontSize: 'clamp(0.5rem, 1.3vw, 0.7rem)',
+                      fontSize: 'clamp(0.7rem, 1.8vw, 0.9rem)',
                       color: 'hsl(var(--lcd-green-soft))',
                       textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
                     }}
                   >
-                    {state.isPlaying && !state.isPaused ? 'RUNNING' : 
-                     state.isPaused ? 'PAUSED' : 'READY'}
-                  </div>
-                  
-                  {/* Icona LCD animata */}
-                  <div 
-                    className="leading-none select-none"
-                    style={{
-                      fontSize: 'clamp(0.5rem, 1.3vw, 0.7rem)',
-                      color: 'hsl(var(--lcd-green-soft))',
-                      textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)',
-                      animation: state.isPlaying && !state.isPaused ? 'pulse 1.5s ease-in-out infinite' : 'none'
-                    }}
-                  >
-                    {state.isPlaying && !state.isPaused ? '►' : '■'}
+                    {getModeName(state.activeMode)}
                   </div>
                 </div>
 
-                {/* Info ambientali */}
+                {/* Timer */}
+                <div className="text-center">
+                  <div 
+                    className="leading-none"
+                    style={{
+                      fontSize: 'clamp(0.7rem, 1.8vw, 0.9rem)',
+                      color: 'hsl(var(--lcd-green-soft))',
+                      textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
+                    }}
+                   >
+                     {formatTime(state.elapsedTime)}
+                   </div>
+                </div>
+
+                {/* Volumi orizzontali */}
                 <div 
-                  className="uppercase tracking-wider text-right"
+                  className="flex justify-between w-full"
                   style={{
-                    fontSize: 'clamp(0.35rem, 0.9vw, 0.45rem)',
-                    color: 'hsl(var(--lcd-green-dim))',
-                    textShadow: '0 0 1px hsl(var(--lcd-green-dim) / 0.3)'
+                    maxWidth: '220px',
+                    gap: 'clamp(16px, 4vw, 24px)'
                   }}
                 >
-                  AMB: {getActiveAmbient()}
+                  {/* Volume Neurale */}
+                  <div className="text-center">
+                    <div 
+                      className="leading-none"
+                      style={{
+                        fontSize: 'clamp(0.4rem, 1.0vw, 0.5rem)',
+                        color: 'hsl(var(--lcd-green-soft))',
+                        textShadow: '0 0 1px hsl(var(--lcd-green-soft) / 0.4)',
+                        marginBottom: '4px'
+                      }}
+                    >
+                      NEURAL: {Math.round(state.neuralVolume * 100)}%
+                    </div>
+                    {/* Progress bar neurale */}
+                    <div 
+                      className="h-1 rounded-full border border-opacity-30 mx-auto"
+                      style={{
+                        width: '60px',
+                        backgroundColor: 'hsl(var(--lcd-bg-center))',
+                        borderColor: 'hsl(var(--lcd-green-dim))'
+                      }}
+                    >
+                      <div 
+                        className="h-full rounded-full transition-all duration-200"
+                        style={{
+                          width: `${Math.round(state.neuralVolume * 100)}%`,
+                          backgroundColor: 'hsl(var(--lcd-green-soft))',
+                          boxShadow: '0 0 1px hsl(var(--lcd-green-soft) / 0.6)'
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Volume Ambienti */}
+                  <div className="text-center">
+                    <div 
+                      className="leading-none"
+                      style={{
+                        fontSize: 'clamp(0.4rem, 1.0vw, 0.5rem)',
+                        color: isAmbientEnabled() ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-dim))',
+                        textShadow: isAmbientEnabled() ? '0 0 1px hsl(var(--lcd-green-soft) / 0.4)' : '0 0 1px hsl(var(--lcd-green-dim) / 0.3)',
+                        marginBottom: '4px'
+                      }}
+                    >
+                      {isAmbientEnabled() ? 
+                        `AMBIENT: ${Math.round(getAmbientVolume() * 100)}%` : 
+                        'AMBIENT: OFF'
+                      }
+                    </div>
+                    {/* Progress bar ambienti */}
+                    <div 
+                      className="h-1 rounded-full border border-opacity-30 mx-auto"
+                      style={{
+                        width: '60px',
+                        backgroundColor: 'hsl(var(--lcd-bg-center))',
+                        borderColor: 'hsl(var(--lcd-green-dim))',
+                        opacity: isAmbientEnabled() ? 1 : 0.3
+                      }}
+                    >
+                      <div 
+                        className="h-full rounded-full transition-all duration-200"
+                        style={{
+                          width: isAmbientEnabled() ? `${Math.round(getAmbientVolume() * 100)}%` : '0%',
+                          backgroundColor: 'hsl(var(--lcd-green-soft))',
+                          boxShadow: isAmbientEnabled() ? '0 0 1px hsl(var(--lcd-green-soft) / 0.6)' : 'none'
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status e Info ambientali - riga orizzontale */}
+                <div 
+                  className="flex justify-between items-center w-full"
+                  style={{
+                    maxWidth: '220px',
+                    gap: 'clamp(12px, 3vw, 20px)'
+                  }}
+                >
+                  {/* Status sessione con icone */}
+                  <div className="flex items-center space-x-2">
+                    <div 
+                      className="uppercase tracking-wider"
+                      style={{
+                        fontSize: 'clamp(0.5rem, 1.3vw, 0.7rem)',
+                        color: 'hsl(var(--lcd-green-soft))',
+                        textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)'
+                      }}
+                    >
+                      {state.isPlaying && !state.isPaused ? 'RUNNING' : 
+                       state.isPaused ? 'PAUSED' : 'READY'}
+                    </div>
+                    
+                    {/* Icona LCD animata */}
+                    <div 
+                      className="leading-none select-none"
+                      style={{
+                        fontSize: 'clamp(0.5rem, 1.3vw, 0.7rem)',
+                        color: 'hsl(var(--lcd-green-soft))',
+                        textShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.5)',
+                        animation: state.isPlaying && !state.isPaused ? 'pulse 1.5s ease-in-out infinite' : 'none'
+                      }}
+                    >
+                      {state.isPlaying && !state.isPaused ? '►' : '■'}
+                    </div>
+                  </div>
+
+                  {/* Info ambientali */}
+                  <div 
+                    className="uppercase tracking-wider text-right"
+                    style={{
+                      fontSize: 'clamp(0.35rem, 0.9vw, 0.45rem)',
+                      color: 'hsl(var(--lcd-green-dim))',
+                      textShadow: '0 0 1px hsl(var(--lcd-green-dim) / 0.3)'
+                    }}
+                  >
+                    AMB: {getActiveAmbient()}
+                  </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
