@@ -19,12 +19,6 @@ interface AudioPreset {
   carrier: number;
   bVol: number;
   master: number;
-  amb: {
-    brown: number;
-    pink: number;
-    rain: number;
-    ocean: number;
-  };
 }
 
 export function useNeuroDeck() {
@@ -61,20 +55,16 @@ export function useNeuroDeck() {
 
   const presets: Record<string, () => AudioPreset> = {
     CONCENTRAZIONE: () => ({
-      beat: 16.0, carrier: 220, bVol: 0.18, master: 0.70,
-      amb: { brown: 0.12, pink: 0.10, rain: 0.00, ocean: 0.06 }
+      beat: 16.0, carrier: 220, bVol: 0.18, master: 0.70
     }),
     ADHD: () => ({
-      beat: 13.0, carrier: 210, bVol: 0.20, master: 0.68,
-      amb: { brown: 0.10, pink: 0.06, rain: 0.00, ocean: 0.04 }
+      beat: 13.0, carrier: 210, bVol: 0.20, master: 0.68
     }),
     STRESS: () => ({
-      beat: 10.0, carrier: 200, bVol: 0.16, master: 0.66,
-      amb: { brown: 0.06, pink: 0.00, rain: 0.00, ocean: 0.14 }
+      beat: 10.0, carrier: 200, bVol: 0.16, master: 0.66
     }),
     INTRUSIVE_OFF: () => ({
-      beat: 8.0, carrier: 190, bVol: 0.16, master: 0.64,
-      amb: { brown: 0.00, pink: 0.06, rain: 0.10, ocean: 0.10 }
+      beat: 8.0, carrier: 190, bVol: 0.16, master: 0.64
     })
   };
 
@@ -260,15 +250,12 @@ export function useNeuroDeck() {
       activeMode: mode,
       masterVolume: preset.master,
       binauralVolume: preset.bVol,
-      brownVolume: preset.amb.brown,
-      pinkVolume: preset.amb.pink,
-      rainVolume: preset.amb.rain,
-      oceanVolume: preset.amb.ocean,
+      // NON imposta più i volumi ambientali - restano invariati
     }));
 
     if (contextRef.current?.state === 'running') {
       startBinaural(preset.beat, preset.carrier);
-      updateAmbientVolumes();
+      // NON chiama più updateAmbientVolumes automaticamente
     }
   }, [ensureContext, startBinaural]);
 
@@ -379,16 +366,16 @@ export function useNeuroDeck() {
   }, [updateAmbientVolumes]);
 
   const resetAmbient = useCallback(() => {
-    const preset = presets[state.activeMode]();
+    // Reset ambienti a zero invece di usare i preset
     setState(prev => ({
       ...prev,
-      brownVolume: preset.amb.brown,
-      pinkVolume: preset.amb.pink,
-      rainVolume: preset.amb.rain,
-      oceanVolume: preset.amb.ocean,
+      brownVolume: 0,
+      pinkVolume: 0,
+      rainVolume: 0,
+      oceanVolume: 0,
     }));
     updateAmbientVolumes();
-  }, [state.activeMode, updateAmbientVolumes]);
+  }, [updateAmbientVolumes]);
 
   const updateDuration = useCallback((hours: number) => {
     setState(prev => ({ ...prev, duration: hours }));
