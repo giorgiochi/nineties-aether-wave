@@ -53,7 +53,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
 
   return (
     <div 
-      className="w-full max-w-sm mx-auto p-3 sm:p-4 rounded-2xl border-2 border-graphite-edge device-texture"
+      className="w-full max-w-sm mx-auto p-2 sm:p-3 rounded-2xl border-2 border-graphite-edge device-texture"
       style={{ 
         background: `
           radial-gradient(ellipse at center, hsl(var(--graphite-2)), hsl(var(--graphite-0))),
@@ -62,9 +62,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
         boxShadow: 'var(--shadow-inset)'
       }}
     >
-      {/* Cornice LCD esterna - Centrata perfettamente */}
+      {/* Cornice LCD esterna minimale */}
       <div 
-        className="relative flex items-center justify-center p-3 sm:p-4 rounded-lg mx-auto"
+        className="relative h-full w-full p-1 rounded-lg"
         style={{ 
           background: `
             linear-gradient(145deg, 
@@ -79,9 +79,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
           `
         }}
       >
-        {/* Incasso per il vetro LCD - Centrato */}
+        {/* Incasso minimale per il vetro LCD */}
         <div 
-          className="relative flex items-center justify-center p-2 sm:p-3 rounded-md"
+          className="relative h-full w-full p-1 rounded-md"
           style={{ 
             background: `
               linear-gradient(145deg, 
@@ -97,11 +97,11 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
             `
           }}
         >
-          {/* Vetro LCD - Responsive e perfettamente centrato */}
+          {/* Vetro LCD - Riempie tutto il contenitore */}
           <div 
-            className="relative p-2 sm:p-3 rounded-sm overflow-visible w-full max-w-[280px] sm:max-w-[320px]"
+            className="relative w-full h-full p-3 sm:p-4 rounded-sm overflow-visible"
             style={{ 
-              height: 'clamp(100px, 20vw, 140px)',
+              minHeight: 'clamp(120px, 25vw, 160px)',
               background: `
                 repeating-linear-gradient(
                   0deg,

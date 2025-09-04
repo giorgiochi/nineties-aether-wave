@@ -43,7 +43,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
         </div>
       </div>
 
-      {/* Ultra-Realistic Volume Knob - Responsive */}
+      {/* Volume Slider - Vintage LED Style */}
       <div 
         className="p-3 sm:p-5 rounded-2xl border-2 border-graphite-edge device-texture"
         style={{ 
@@ -54,102 +54,53 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
         <h3 className="label-serigraph text-center mb-3 sm:mb-4">VOLUME MASTER</h3>
         <div className="flex flex-col items-center space-y-4">
           
-          {/* Manopola realistica anni '90 hi-fi - Responsive */}
-          <div className="relative" style={{ width: 'clamp(120px, 30vw, 144px)', height: 'clamp(120px, 30vw, 144px)' }}>
+          {/* Vintage LED Slider */}
+          <div className="w-full max-w-xs relative">
             
-            {/* Incasso nella scocca */}
+            {/* Slider Track Container */}
             <div 
-              className="absolute inset-0 rounded-full"
+              className="relative w-full h-6 rounded-full"
               style={{
                 background: `
-                  radial-gradient(ellipse 80% 80% at 50% 50%, 
+                  linear-gradient(180deg,
                     hsl(var(--graphite-edge)) 0%,
-                    hsl(var(--graphite-0)) 40%,
-                    hsl(var(--graphite-1)) 100%
-                  )
-                `,
-                boxShadow: `
-                  inset 0 4px 8px rgba(0,0,0,0.6),
-                  inset 0 8px 16px rgba(0,0,0,0.4)
-                `
-              }}
-            />
-            
-            {/* Scala numerica esterna (0-10) - Responsive */}
-            <div className="absolute inset-0">
-              {Array.from({ length: 11 }, (_, i) => {
-                const angle = (i * 27) - 135;
-                const number = i;
-                const radius = 'clamp(60px, 15vw, 72px)';
-                return (
-                  <div key={i}>
-                    {/* Tacche spesse */}
-                    <div
-                      className="absolute bg-device-text opacity-90"
-                      style={{
-                        width: 'clamp(2px, 0.8vw, 3px)',
-                        height: 'clamp(8px, 2.5vw, 12px)',
-                        top: 'clamp(6px, 1.5vw, 8px)',
-                        left: '50%',
-                        transformOrigin: `50% ${radius}`,
-                        transform: `translateX(-50%) rotate(${angle}deg)`,
-                        borderRadius: '1px'
-                      }}
-                    />
-                    {/* Numeri ben spaziati */}
-                    <div
-                      className="absolute font-bold text-device-text"
-                      style={{
-                        fontSize: 'clamp(10px, 2.5vw, 14px)',
-                        top: 'clamp(18px, 4vw, 22px)',
-                        left: '50%',
-                        transformOrigin: `50% calc(${radius} - 12px)`,
-                        transform: `translateX(-50%) rotate(${angle}deg)`,
-                        opacity: 0.9
-                      }}
-                    >
-                      {number}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            
-            {/* Manopola principale con bordo metallico */}
-            <div 
-              className="absolute cursor-pointer rounded-full"
-              style={{
-                inset: 'clamp(12px, 3vw, 16px)',
-                background: `
-                  conic-gradient(from 45deg,
-                    hsl(var(--graphite-highlight)) 0deg,
-                    hsl(var(--graphite-3)) 60deg,
-                    hsl(var(--graphite-2)) 120deg,
-                    hsl(var(--graphite-1)) 180deg,
-                    hsl(var(--graphite-2)) 240deg,
-                    hsl(var(--graphite-3)) 300deg,
-                    hsl(var(--graphite-highlight)) 360deg
-                  ),
-                  radial-gradient(ellipse 70% 70% at 40% 40%, 
-                    hsl(var(--graphite-shine)) 0%,
-                    hsl(var(--graphite-highlight)) 20%,
-                    hsl(var(--graphite-3)) 50%,
-                    hsl(var(--graphite-2)) 80%,
+                    hsl(var(--graphite-0)) 20%,
+                    hsl(var(--graphite-1)) 80%,
                     hsl(var(--graphite-edge)) 100%
                   )
                 `,
                 border: '2px solid hsl(var(--graphite-edge))',
                 boxShadow: `
-                  inset 0 0 0 1px rgba(255,255,255,0.15),
-                  inset 0 3px 6px rgba(255,255,255,0.1),
-                  inset 0 -3px 6px rgba(0,0,0,0.4),
-                  0 6px 12px rgba(0,0,0,0.4),
-                  0 12px 24px rgba(0,0,0,0.3),
-                  0 0 0 1px rgba(0,0,0,0.1)
-                `,
-                filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+                  inset 0 3px 6px rgba(0,0,0,0.8),
+                  inset 0 6px 12px rgba(0,0,0,0.6),
+                  inset 0 -1px 2px rgba(255,255,255,0.05)
+                `
               }}
             >
+              
+              {/* LED Track Fill */}
+              <div 
+                className="absolute top-1 left-1 h-4 rounded-full transition-all duration-200"
+                style={{
+                  width: `calc(${state.masterVolume * 100}% - 8px)`,
+                  background: `
+                    linear-gradient(90deg,
+                      hsl(140, 90%, 40%) 0%,
+                      hsl(140, 90%, 60%) 50%,
+                      hsl(140, 90%, 70%) 100%
+                    )
+                  `,
+                  boxShadow: `
+                    0 0 6px hsl(140, 90%, 70%),
+                    0 0 3px hsl(140, 90%, 70%),
+                    inset 0 1px 2px rgba(255,255,255,0.3),
+                    inset 0 -1px 1px rgba(0,0,0,0.2)
+                  `,
+                  filter: 'brightness(1.1)'
+                }}
+              />
+              
+              {/* Slider Input */}
               <input
                 type="range"
                 min="0"
@@ -161,90 +112,77 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
                 aria-label="Volume Master"
               />
               
-              {/* Texture metallica satinata */}
+              {/* LED Thumb */}
               <div 
-                className="absolute rounded-full opacity-20 pointer-events-none"
+                className="absolute top-0 h-6 w-6 rounded-full transition-all duration-200 pointer-events-none"
                 style={{
-                  inset: 'clamp(6px, 1.5vw, 8px)',
+                  left: `calc(${state.masterVolume * 100}% - 12px)`,
                   background: `
-                    repeating-conic-gradient(
-                      from 0deg,
-                      rgba(255,255,255,0.1) 0deg,
-                      rgba(255,255,255,0.1) 1deg,
-                      transparent 1deg,
-                      transparent 3deg
-                    ),
-                    radial-gradient(circle at 50% 50%,
-                      rgba(255,255,255,0.05) 0%,
-                      transparent 60%
+                    radial-gradient(circle,
+                      hsl(140, 90%, 80%) 0%,
+                      hsl(140, 90%, 70%) 40%,
+                      hsl(140, 90%, 50%) 80%,
+                      hsl(140, 70%, 30%) 100%
                     )
+                  `,
+                  border: '2px solid hsl(140, 60%, 25%)',
+                  boxShadow: `
+                    0 0 12px hsl(140, 90%, 70%),
+                    0 0 6px hsl(140, 90%, 70%),
+                    0 2px 4px rgba(0,0,0,0.4),
+                    inset 0 1px 2px rgba(255,255,255,0.4),
+                    inset 0 -1px 2px rgba(0,0,0,0.3)
                   `
                 }}
-              />
-              
-              {/* Display digitale integrato al centro */}
-              <div 
-                className="absolute inset-0 flex items-center justify-center pointer-events-none"
               >
+                {/* LED Center Glow */}
                 <div 
-                  className="rounded font-mono font-bold"
+                  className="absolute inset-1 rounded-full"
                   style={{
-                    padding: 'clamp(4px, 2vw, 16px) clamp(8px, 3vw, 16px)',
-                    fontSize: 'clamp(14px, 4vw, 18px)',
                     background: `
-                      radial-gradient(ellipse 80% 60% at 50% 50%, 
-                        hsl(120 80% 8%) 0%, 
-                        hsl(120 60% 6%) 40%, 
-                        hsl(120 40% 4%) 80%,
-                        hsl(120 20% 2%) 100%
+                      radial-gradient(circle,
+                        hsl(140, 90%, 90%) 0%,
+                        hsl(140, 90%, 75%) 60%,
+                        transparent 100%
                       )
-                    `,
-                    color: 'hsl(140, 90%, 70%)',
-                    textShadow: `
-                      0 0 6px hsl(140, 90%, 70%),
-                      0 0 3px hsl(140, 90%, 70%),
-                      0 0 1px hsl(140, 90%, 70%)
-                    `,
-                    border: '1px solid hsl(120, 40%, 10%)',
-                    boxShadow: `
-                      inset 0 2px 4px rgba(0,0,0,0.8),
-                      inset 0 -1px 2px rgba(255,255,255,0.02),
-                      0 0 12px hsl(140, 90%, 70%)22,
-                      0 0 0 1px rgba(0,0,0,0.3)
                     `
                   }}
-                >
-                  {Math.round(state.masterVolume * 100)}%
-                </div>
+                />
               </div>
-              
-              {/* Riflesso principale per effetto lucido */}
+            </div>
+            
+            {/* Digital Percentage Display */}
+            <div className="flex justify-center mt-3">
               <div 
-                className="absolute rounded-full opacity-15 pointer-events-none"
+                className="px-3 py-1 rounded font-mono font-bold"
                 style={{
-                  top: 'clamp(8px, 2vw, 12px)',
-                  left: 'clamp(8px, 2vw, 12px)',
-                  width: 'clamp(20px, 6vw, 32px)',
-                  height: 'clamp(20px, 6vw, 32px)',
-                  background: 'radial-gradient(ellipse 60% 60% at 30% 30%, rgba(255,255,255,0.9), transparent 70%)'
+                  fontSize: 'clamp(14px, 3.5vw, 18px)',
+                  background: `
+                    radial-gradient(ellipse 80% 60% at 50% 50%, 
+                      hsl(120 80% 8%) 0%, 
+                      hsl(120 60% 6%) 40%, 
+                      hsl(120 40% 4%) 80%,
+                      hsl(120 20% 2%) 100%
+                    )
+                  `,
+                  color: 'hsl(140, 90%, 70%)',
+                  textShadow: `
+                    0 0 6px hsl(140, 90%, 70%),
+                    0 0 3px hsl(140, 90%, 70%),
+                    0 0 1px hsl(140, 90%, 70%)
+                  `,
+                  border: '1px solid hsl(120, 40%, 10%)',
+                  boxShadow: `
+                    inset 0 2px 4px rgba(0,0,0,0.8),
+                    inset 0 -1px 2px rgba(255,255,255,0.02),
+                    0 0 12px hsl(140, 90%, 70%)22
+                  `
                 }}
-              />
-              
-              {/* Riflessi secondari per realismo */}
-              <div 
-                className="absolute rounded-full opacity-10 pointer-events-none"
-                style={{
-                  top: 'clamp(20px, 5vw, 24px)',
-                  right: 'clamp(12px, 3vw, 16px)',
-                  width: 'clamp(8px, 2vw, 12px)',
-                  height: 'clamp(8px, 2vw, 12px)',
-                  background: 'radial-gradient(circle, rgba(255,255,255,0.8), transparent 60%)'
-                }}
-              />
-              
+              >
+                {Math.round(state.masterVolume * 100)}%
+              </div>
             </div>
           </div>
-          
         </div>
       </div>
 
