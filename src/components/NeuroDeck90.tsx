@@ -123,8 +123,15 @@ export const NeuroDeck90: React.FC = () => {
         </div>
       </div>
 
+      {/* Audio Unlock Prompt */}
+      <AudioUnlockPrompt
+        isVisible={showUnlockPrompt}
+        onUnlock={handleUnlock}
+        onClose={() => setShowUnlockPrompt(false)}
+      />
+
       {/* Footer */}
-      <div className="mt-6 text-center max-w-lg">
+      <div className="absolute bottom-4 left-0 right-0 text-center px-4">
         <p 
           className="text-xs text-device-muted leading-relaxed"
           style={{ opacity: 0.8 }}
@@ -133,13 +140,6 @@ export const NeuroDeck90: React.FC = () => {
           If you experience attention or stress-related issues, we recommend consulting a qualified doctor.
         </p>
       </div>
-
-      {/* Audio Unlock Prompt */}
-      <AudioUnlockPrompt
-        isVisible={showUnlockPrompt}
-        onUnlock={handleUnlock}
-        onClose={() => setShowUnlockPrompt(false)}
-      />
     </div>
   );
 };
