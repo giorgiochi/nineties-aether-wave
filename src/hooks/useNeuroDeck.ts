@@ -27,20 +27,20 @@ export function useNeuroDeck() {
     isPlaying: false,
     isPaused: false,
     activeMode: 'CONCENTRAZIONE',
-    masterVolume: 0.70,
-    ambientMasterVolume: 0.80,
+    masterVolume: 0.85, // Ora controlla solo gli ambientali
+    ambientMasterVolume: 0.18, // Ora controlla le binaurali
     binauralVolume: 0.18,
-    brownVolume: 0.12,
-    pinkVolume: 0.10,
+    brownVolume: 0.00, // Tutti gli ambientali partono a zero
+    pinkVolume: 0.00,
     rainVolume: 0.00,
-    oceanVolume: 0.06,
+    oceanVolume: 0.00,
     duration: 3,
     timeLeft: 0,
   });
 
   const contextRef = useRef<AudioContext | null>(null);
-  const binauralGainRef = useRef<GainNode | null>(null);
   const ambientGainRef = useRef<GainNode | null>(null);
+  const binauralGainRef = useRef<GainNode | null>(null);
   const limiterRef = useRef<DynamicsCompressorNode | null>(null);
   const binauralRef = useRef<{ left: OscillatorNode | null; right: OscillatorNode | null; gain: GainNode | null }>({
     left: null, right: null, gain: null
@@ -75,13 +75,13 @@ export function useNeuroDeck() {
     if (!contextRef.current) {
       contextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
       
-      // Gain separato per onde binaurali (controllato da master volume)
-      binauralGainRef.current = contextRef.current.createGain();
-      binauralGainRef.current.gain.value = state.masterVolume;
-      
-      // Gain separato per suoni ambientali (controllato da ambient volume)  
+      // Gain per suoni ambientali (controllato da master volume)
       ambientGainRef.current = contextRef.current.createGain();
-      ambientGainRef.current.gain.value = state.ambientMasterVolume;
+      ambientGainRef.current.gain.value = state.masterVolume;
+      
+      // Gain per onde binaurali (controllato da ambientMasterVolume)  
+      binauralGainRef.current = contextRef.current.createGain();
+      binauralGainRef.current.gain.value = state.ambientMasterVolume;
       
       // Limiter comune
       limiterRef.current = contextRef.current.createDynamicsCompressor();
@@ -92,8 +92,8 @@ export function useNeuroDeck() {
       limiterRef.current.release.value = 0.25;
       
       // Collegamento: entrambi i gain → limiter → output
-      binauralGainRef.current.connect(limiterRef.current);
       ambientGainRef.current.connect(limiterRef.current);
+      binauralGainRef.current.connect(limiterRef.current);
       limiterRef.current.connect(contextRef.current.destination);
       
       createAmbient();
@@ -244,7 +244,7 @@ export function useNeuroDeck() {
     setState(prev => ({
       ...prev,
       activeMode: mode,
-      masterVolume: preset.master,
+      ambientMasterVolume: preset.master, // Ora imposta il volume neurali
       binauralVolume: preset.bVol,
       // NON imposta più i volumi ambientali - restano invariati
     }));
@@ -329,15 +329,15 @@ export function useNeuroDeck() {
 
   const updateMasterVolume = useCallback((volume: number) => {
     setState(prev => ({ ...prev, masterVolume: volume }));
-    if (binauralGainRef.current) {
-      binauralGainRef.current.gain.value = volume;
+    if (ambientGainRef.current) {
+      ambientGainRef.current.gain.value = volume;
     }
   }, []);
 
   const updateAmbientMasterVolume = useCallback((volume: number) => {
     setState(prev => ({ ...prev, ambientMasterVolume: volume }));
-    if (ambientGainRef.current) {
-      ambientGainRef.current.gain.value = volume;
+    if (binauralGainRef.current) {
+      binauralGainRef.current.gain.value = volume;
     }
   }, []);
 

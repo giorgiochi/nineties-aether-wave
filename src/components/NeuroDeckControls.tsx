@@ -58,7 +58,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
             
             {/* Label e Percentuale integrata */}
             <div className="flex justify-between items-center mb-2">
-              <span className="label-serigraph text-xs">VOLUME MASTER</span>
+              <span className="label-serigraph text-xs">VOLUME AMBIENTALI</span>
               <span 
                 className="font-mono font-bold"
                 style={{
@@ -135,7 +135,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
                 value={state.masterVolume}
                 onChange={(e) => updateMasterVolume(parseFloat(e.target.value))}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-                aria-label="Volume Master"
+                aria-label="Volume Ambientali"
               />
               
               {/* Cursore fisico in grafite */}
@@ -196,7 +196,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
             
             {/* Label e Percentuale integrata */}
             <div className="flex justify-between items-center mb-2">
-              <span className="label-serigraph text-xs">VOLUME AMBIENTALE</span>
+              <span className="label-serigraph text-xs">VOLUME NEURALI</span>
               <span 
                 className="font-mono font-bold"
                 style={{
@@ -273,7 +273,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
                 value={state.ambientMasterVolume}
                 onChange={(e) => updateAmbientMasterVolume(parseFloat(e.target.value))}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-                aria-label="Volume Ambientale"
+                aria-label="Volume Neurali"
               />
               
               {/* Cursore fisico in grafite */}
@@ -353,10 +353,10 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
         <h3 className="label-serigraph text-center mb-3 sm:mb-4">AMBIENTI AUDIO</h3>
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {[
-            { key: 'ocean', label: 'OCEANO', volume: state.oceanVolume, defaultVol: 0.15, icon: <Waves size={16} /> },
-            { key: 'rain', label: 'PIOGGIA', volume: state.rainVolume, defaultVol: 0.12, icon: <Cloud size={16} /> },
-            { key: 'pink', label: 'FORESTA', volume: state.pinkVolume, defaultVol: 0.08, icon: <TreePine size={16} /> },
-            { key: 'brown', label: 'AEROPORTO', volume: state.brownVolume, defaultVol: 0.06, icon: <Plane size={16} /> }
+            { key: 'ocean', label: 'OCEANO', volume: state.oceanVolume, defaultVol: 0.25, icon: <Waves size={16} /> },
+            { key: 'rain', label: 'PIOGGIA', volume: state.rainVolume, defaultVol: 0.22, icon: <Cloud size={16} /> },
+            { key: 'pink', label: 'FORESTA', volume: state.pinkVolume, defaultVol: 0.20, icon: <TreePine size={16} /> },
+            { key: 'brown', label: 'AEROPORTO', volume: state.brownVolume, defaultVol: 0.18, icon: <Plane size={16} /> }
           ].map(({ key, label, volume, defaultVol, icon }) => (
             <DeviceButton
               key={key}
