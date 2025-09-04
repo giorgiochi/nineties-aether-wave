@@ -128,13 +128,22 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
             }}
             aria-live="polite"
           >
-            {/* Layout esatto della reference */}
-            <div className="text-tft text-tft-dim h-full flex flex-col justify-between py-3">
+            {/* Layout modulare con griglia perfettamente centrata */}
+            <div 
+              className="h-full w-full text-tft text-tft-dim"
+              style={{
+                display: 'grid',
+                gridTemplateRows: '1fr auto 1fr auto',
+                gridTemplateColumns: '1fr',
+                gap: '8px',
+                padding: '8px'
+              }}
+            >
               
-              {/* Timer principale - In alto */}
-              <div className="text-center">
+              {/* Riga 1: Timer principale centrato */}
+              <div className="flex flex-col items-center justify-center text-center">
                 <div 
-                  className="text-3xl font-mono font-bold mb-1 leading-none"
+                  className="text-2xl font-mono font-bold leading-none mb-1"
                   style={{
                     color: 'hsl(var(--lcd-green-soft))',
                     textShadow: '0 0 6px hsl(var(--lcd-green-soft) / 0.5)',
@@ -154,11 +163,16 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 </div>
               </div>
 
-              {/* Modalità e Volume - Centro */}
-              <div className="grid grid-cols-2 gap-8 text-center px-4">
-                <div>
+              {/* Riga 2: Modalità e Volume bilanciati */}
+              <div 
+                className="grid grid-cols-2 items-center text-center"
+                style={{
+                  gap: '16px'
+                }}
+              >
+                <div className="flex flex-col items-center justify-center">
                   <div 
-                    className="text-xl font-mono font-bold mb-1"
+                    className="text-lg font-mono font-bold leading-none mb-1"
                     style={{
                       color: 'hsl(var(--lcd-green-soft))',
                       textShadow: '0 0 4px hsl(var(--lcd-green-soft) / 0.5)'
@@ -167,7 +181,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                     {getModeName(state.activeMode)}
                   </div>
                   <div 
-                    className="text-xs uppercase tracking-wider opacity-80"
+                    className="text-xs uppercase tracking-wider"
                     style={{
                       color: 'hsl(var(--lcd-green-dim))',
                       textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
@@ -176,9 +190,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                     MODALITÀ
                   </div>
                 </div>
-                <div>
+                <div className="flex flex-col items-center justify-center">
                   <div 
-                    className="text-xl font-mono font-bold mb-1"
+                    className="text-lg font-mono font-bold leading-none mb-1"
                     style={{
                       color: 'hsl(var(--lcd-green-soft))',
                       textShadow: '0 0 4px hsl(var(--lcd-green-soft) / 0.5)'
@@ -187,7 +201,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                     {Math.round(state.masterVolume * 100).toString().padStart(3, '0')}%
                   </div>
                   <div 
-                    className="text-xs uppercase tracking-wider opacity-80"
+                    className="text-xs uppercase tracking-wider"
                     style={{
                       color: 'hsl(var(--lcd-green-dim))',
                       textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
@@ -198,10 +212,13 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 </div>
               </div>
 
-              {/* VU Meter - In basso */}
-              <div className="px-4">
+              {/* Riga 3: Spazio vuoto */}
+              <div></div>
+
+              {/* Riga 4: VU Meter centrato in basso */}
+              <div className="flex flex-col items-center justify-end">
                 <div 
-                  className="text-xs uppercase tracking-wider text-center mb-2 opacity-80"
+                  className="text-xs uppercase tracking-wider text-center mb-2"
                   style={{
                     color: 'hsl(var(--lcd-green-dim))',
                     textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
@@ -210,22 +227,22 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                   VU METER
                 </div>
                 <div 
-                  className="h-2 rounded-sm overflow-hidden relative border"
+                  className="h-2 rounded-sm overflow-hidden relative border w-full max-w-[200px]"
                   style={{ 
                     backgroundColor: 'hsl(var(--lcd-bg))',
                     borderColor: 'hsl(var(--lcd-green-off))'
                   }}
                 >
-                  {Array.from({ length: 30 }, (_, i) => (
+                  {Array.from({ length: 20 }, (_, i) => (
                     <div
                       key={i}
                       className="absolute top-0 h-full border-r"
                       style={{
-                        left: `${i * (100/30)}%`,
-                        width: `${100/30 - 0.5}%`,
-                        backgroundColor: i * (100/30) <= vuLevel ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-off))',
+                        left: `${i * (100/20)}%`,
+                        width: `${100/20 - 0.5}%`,
+                        backgroundColor: i * (100/20) <= vuLevel ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-off))',
                         borderRightColor: 'hsl(var(--lcd-green-off))',
-                        boxShadow: i * (100/30) <= vuLevel ? '0 0 4px hsl(var(--lcd-green-soft) / 0.5)' : 'none',
+                        boxShadow: i * (100/20) <= vuLevel ? '0 0 4px hsl(var(--lcd-green-soft) / 0.5)' : 'none',
                         transition: 'all 0.1s ease'
                       }}
                     />
