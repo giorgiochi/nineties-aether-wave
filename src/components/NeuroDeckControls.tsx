@@ -53,69 +53,174 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
       >
         <h3 className="label-serigraph text-center mb-4">VOLUME MASTER</h3>
         <div className="flex flex-col items-center space-y-4">
-          <div 
-            className="relative w-28 h-28 rounded-full cursor-pointer realistic-knob"
-            style={{
-              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
-            }}
-          >
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.001"
-              value={state.masterVolume}
-              onChange={(e) => updateMasterVolume(parseFloat(e.target.value))}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-              aria-label="Volume Master"
-            />
+          
+          {/* Manopola realistica anni '90 */}
+          <div className="relative w-32 h-32">
             
-            {/* Knob markings */}
+            {/* Base della manopola con scala numerica */}
             <div className="absolute inset-0 rounded-full">
-              {Array.from({ length: 11 }, (_, i) => (
-                <div
-                  key={i}
-                  className="absolute w-0.5 h-2 bg-device-muted"
-                  style={{
-                    top: '6px',
-                    left: '50%',
-                    transformOrigin: '50% 50px',
-                    transform: `translateX(-50%) rotate(${(i - 5) * 27}deg)`,
-                    opacity: i === 5 ? 1 : 0.6
-                  }}
-                />
-              ))}
+              {/* Scala numerica esterna */}
+              {Array.from({ length: 11 }, (_, i) => {
+                const angle = (i * 27) - 135; // Da -135° a +135°
+                const isMainMark = i % 2 === 0;
+                const number = i;
+                return (
+                  <div key={i}>
+                    {/* Tacche della scala */}
+                    <div
+                      className="absolute bg-device-text"
+                      style={{
+                        width: isMainMark ? '3px' : '2px',
+                        height: isMainMark ? '8px' : '5px',
+                        top: isMainMark ? '4px' : '6px',
+                        left: '50%',
+                        transformOrigin: '50% 60px',
+                        transform: `translateX(-50%) rotate(${angle}deg)`,
+                        opacity: isMainMark ? 0.9 : 0.6
+                      }}
+                    />
+                    {/* Numeri della scala */}
+                    {isMainMark && (
+                      <div
+                        className="absolute text-xs font-bold text-device-text"
+                        style={{
+                          top: '-2px',
+                          left: '50%',
+                          transformOrigin: '50% 68px',
+                          transform: `translateX(-50%) rotate(${angle}deg)`,
+                          opacity: 0.8
+                        }}
+                      >
+                        {number}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
             
-            {/* Reference line inside knob */}
+            {/* Manopola principale */}
             <div 
-              className="absolute w-1 h-10 rounded-full top-3 left-1/2 z-10"
+              className="absolute inset-2 rounded-full cursor-pointer"
               style={{
                 background: `
-                  linear-gradient(180deg, 
-                    hsl(var(--screen-text)) 0%, 
-                    hsl(var(--screen-dim)) 100%
+                  radial-gradient(ellipse 60% 60% at 35% 35%, 
+                    hsl(var(--graphite-highlight)) 0%,
+                    hsl(var(--graphite-3)) 25%,
+                    hsl(var(--graphite-2)) 50%,
+                    hsl(var(--graphite-1)) 75%,
+                    hsl(var(--graphite-edge)) 100%
+                  ),
+                  conic-gradient(from 45deg,
+                    rgba(255,255,255,0.1) 0deg,
+                    rgba(255,255,255,0.05) 90deg,
+                    rgba(0,0,0,0.1) 180deg,
+                    rgba(0,0,0,0.05) 270deg,
+                    rgba(255,255,255,0.1) 360deg
                   )
                 `,
-                transform: `translateX(-50%) rotate(${(state.masterVolume - 0.5) * 270}deg)`,
-                transformOrigin: '50% 400%',
-                boxShadow: '0 0 2px rgba(0,0,0,0.8)'
+                border: '2px solid hsl(var(--graphite-edge))',
+                boxShadow: `
+                  inset 0 0 0 1px rgba(255,255,255,0.1),
+                  inset 0 2px 4px rgba(0,0,0,0.3),
+                  inset 0 -2px 4px rgba(255,255,255,0.05),
+                  0 4px 8px rgba(0,0,0,0.3),
+                  0 8px 16px rgba(0,0,0,0.2)
+                `,
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
               }}
-            />
+            >
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.001"
+                value={state.masterVolume}
+                onChange={(e) => updateMasterVolume(parseFloat(e.target.value))}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                aria-label="Volume Master"
+              />
+              
+              {/* Texture satinata */}
+              <div 
+                className="absolute inset-1 rounded-full opacity-30 pointer-events-none"
+                style={{
+                  background: `
+                    repeating-conic-gradient(
+                      from 0deg,
+                      rgba(255,255,255,0.02) 0deg,
+                      rgba(255,255,255,0.02) 2deg,
+                      transparent 2deg,
+                      transparent 4deg
+                    )
+                  `
+                }}
+              />
+              
+              {/* Lancetta interna verde */}
+              <div 
+                className="absolute w-1 h-8 top-4 left-1/2 z-10 rounded-full"
+                style={{
+                  background: `
+                    linear-gradient(180deg, 
+                      hsl(140, 80%, 70%) 0%, 
+                      hsl(140, 65%, 45%) 50%,
+                      hsl(140, 50%, 35%) 100%
+                    )
+                  `,
+                  transform: `translateX(-50%) rotate(${(state.masterVolume - 0.5) * 270}deg)`,
+                  transformOrigin: '50% 360%',
+                  boxShadow: `
+                    0 0 6px hsl(140, 65%, 45%),
+                    0 0 3px hsl(140, 65%, 45%),
+                    inset 0 1px 1px rgba(255,255,255,0.3)
+                  `,
+                  border: '0.5px solid rgba(0,0,0,0.3)'
+                }}
+              />
+              
+              {/* Display digitale al centro */}
+              <div 
+                className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              >
+                <div 
+                  className="px-3 py-1 rounded-md font-mono text-sm font-bold"
+                  style={{
+                    background: `
+                      linear-gradient(145deg, 
+                        hsl(120 50% 8%) 0%, 
+                        hsl(120 40% 6%) 50%, 
+                        hsl(120 30% 4%) 100%
+                      )
+                    `,
+                    color: 'hsl(140, 80%, 65%)',
+                    textShadow: `
+                      0 0 4px hsl(140, 80%, 65%),
+                      0 0 2px hsl(140, 80%, 65%)
+                    `,
+                    border: '1px solid hsl(120, 30%, 15%)',
+                    boxShadow: `
+                      inset 0 1px 2px rgba(0,0,0,0.8),
+                      inset 0 -1px 1px rgba(255,255,255,0.02),
+                      0 0 8px hsl(140, 80%, 65%)22
+                    `
+                  }}
+                >
+                  {Math.round(state.masterVolume * 100).toString().padStart(2, '0')}%
+                </div>
+              </div>
+              
+              {/* Riflesso centrale realistico */}
+              <div 
+                className="absolute top-2 left-2 w-4 h-4 rounded-full opacity-20 pointer-events-none"
+                style={{
+                  background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), transparent 70%)'
+                }}
+              />
+              
+            </div>
           </div>
           
-          {/* Digital Volume Display */}
-          <div 
-            className="px-4 py-2 rounded-lg font-mono text-sm font-bold"
-            style={{
-              background: 'hsl(var(--graphite-0))',
-              border: '1px inset hsl(var(--graphite-edge))',
-              color: 'hsl(var(--screen-text))',
-              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.6)'
-            }}
-          >
-            {Math.round(state.masterVolume * 100).toString().padStart(3, '0')}%
-          </div>
         </div>
       </div>
 
