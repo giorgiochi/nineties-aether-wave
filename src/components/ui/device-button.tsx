@@ -31,9 +31,9 @@ const colorSchemes = {
     glow: 'hsl(45, 100%, 60%)'         // Glow giallo
   },
   danger: {
-    symbol: 'hsl(0, 85%, 75%)',        // Rosso chiaro
-    led: 'hsl(0, 85%, 60%)',           // Rosso LED
-    glow: 'hsl(0, 85%, 60%)'           // Glow rosso
+    symbol: 'hsl(25, 100%, 75%)',      // Arancione chiaro
+    led: 'hsl(25, 100%, 60%)',         // Arancione LED
+    glow: 'hsl(25, 100%, 60%)'         // Glow arancione
   }
 };
 

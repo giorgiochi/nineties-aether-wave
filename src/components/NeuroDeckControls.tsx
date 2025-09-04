@@ -21,19 +21,21 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
         }}
       >
         <h3 className="label-serigraph text-center mb-4">MODALITÀ FOCUS</h3>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {[
-            { key: 'CONCENTRAZIONE', label: 'CONCENTRAZIONE', icon: <Brain size={16} /> },
-            { key: 'STRESS', label: 'RIDUCI STRESS', icon: <Shield size={16} /> },
-            { key: 'ADHD', label: 'BLOCCA DISTRAZIONI', icon: <Zap size={16} /> },
-            { key: 'INTRUSIVE_OFF', label: 'PENSIERI OFF', icon: <Moon size={16} /> }
-          ].map(({ key, label, icon }) => (
+            { key: 'CONCENTRAZIONE', label: 'FOCUS', icon: <Brain size={18} />, variant: 'success' },
+            { key: 'STRESS', label: 'RELAX', icon: <Shield size={18} />, variant: 'primary' },
+            { key: 'ADHD', label: 'BLOCK', icon: <Zap size={18} />, variant: 'warning' },
+            { key: 'INTRUSIVE_OFF', label: 'QUIET', icon: <Moon size={18} />, variant: 'danger' }
+          ].map(({ key, label, icon, variant }) => (
             <DeviceButton
               key={key}
-              variant={state.activeMode === key ? 'warning' : 'primary'}
+              variant={variant as any}
               state={state.activeMode === key ? 'active' : 'default'}
               onClick={() => applyPreset(key as any)}
               icon={icon}
+              size="lg"
+              className="h-16 min-w-0 whitespace-nowrap"
             >
               {label}
             </DeviceButton>
