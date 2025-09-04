@@ -5,6 +5,7 @@ interface AudioState {
   isPaused: boolean;
   activeMode: string;
   masterVolume: number;
+  ambientMasterVolume: number;
   binauralVolume: number;
   brownVolume: number;
   pinkVolume: number;
@@ -27,6 +28,7 @@ export function useNeuroDeck() {
     isPaused: false,
     activeMode: 'CONCENTRAZIONE',
     masterVolume: 0.70,
+    ambientMasterVolume: 0.80,
     binauralVolume: 0.18,
     brownVolume: 0.12,
     pinkVolume: 0.10,
@@ -85,7 +87,7 @@ export function useNeuroDeck() {
       
       createAmbient();
     }
-  }, [state.masterVolume]);
+  }, [state.masterVolume, state.ambientMasterVolume]);
 
   const smoothGain = useCallback((param: AudioParam, target: number, seconds: number) => {
     if (!contextRef.current) return;
@@ -147,7 +149,7 @@ export function useNeuroDeck() {
       source.buffer = buffer;
       source.loop = true;
       const gain = ctx.createGain();
-      gain.gain.value = volume;
+      gain.gain.value = volume * state.ambientMasterVolume;
       source.connect(gain).connect(master);
       try { source.start(); } catch {}
       return { node: source, gain } as { node: AudioBufferSourceNode; gain: GainNode };
@@ -173,7 +175,7 @@ export function useNeuroDeck() {
       ambientRef.current.rain = ambientRef.current.rain || { node: null, gain: null } as any;
       ambientRef.current.ocean = ambientRef.current.ocean || { node: null, gain: null } as any;
     }
-  }, [state.brownVolume, state.pinkVolume, state.rainVolume, state.oceanVolume]);
+  }, [state.brownVolume, state.pinkVolume, state.rainVolume, state.oceanVolume, state.ambientMasterVolume]);
 
   const startBinaural = useCallback((beat: number, carrier: number) => {
     if (!contextRef.current || !masterGainRef.current) return;
@@ -244,18 +246,18 @@ export function useNeuroDeck() {
 
   const updateAmbientVolumes = useCallback(() => {
     if (ambientRef.current.brown?.gain) {
-      ambientRef.current.brown.gain.gain.value = state.brownVolume;
+      ambientRef.current.brown.gain.gain.value = state.brownVolume * state.ambientMasterVolume;
     }
     if (ambientRef.current.pink?.gain) {
-      ambientRef.current.pink.gain.gain.value = state.pinkVolume;
+      ambientRef.current.pink.gain.gain.value = state.pinkVolume * state.ambientMasterVolume;
     }
     if (ambientRef.current.rain?.gain) {
-      ambientRef.current.rain.gain.gain.value = state.rainVolume;
+      ambientRef.current.rain.gain.gain.value = state.rainVolume * state.ambientMasterVolume;
     }
     if (ambientRef.current.ocean?.gain) {
-      ambientRef.current.ocean.gain.gain.value = state.oceanVolume;
+      ambientRef.current.ocean.gain.gain.value = state.oceanVolume * state.ambientMasterVolume;
     }
-  }, [state.brownVolume, state.pinkVolume, state.rainVolume, state.oceanVolume]);
+  }, [state.brownVolume, state.pinkVolume, state.rainVolume, state.oceanVolume, state.ambientMasterVolume]);
 
   const start = useCallback(() => {
     ensureContext();
@@ -333,9 +335,14 @@ export function useNeuroDeck() {
     
     const ambient = ambientRef.current[type];
     if (ambient?.gain) {
-      ambient.gain.gain.value = volume;
+      ambient.gain.gain.value = volume * state.ambientMasterVolume;
     }
-  }, []);
+  }, [state.ambientMasterVolume]);
+
+  const updateAmbientMasterVolume = useCallback((volume: number) => {
+    setState(prev => ({ ...prev, ambientMasterVolume: volume }));
+    updateAmbientVolumes();
+  }, [updateAmbientVolumes]);
 
   const muteAmbient = useCallback(() => {
     setState(prev => ({
@@ -369,6 +376,7 @@ export function useNeuroDeck() {
     const data = {
       mode: state.activeMode,
       master: state.masterVolume,
+      ambientMaster: state.ambientMasterVolume,
       bVol: state.binauralVolume,
       dur: state.duration,
       amb: {
@@ -391,6 +399,7 @@ export function useNeuroDeck() {
           ...prev,
           activeMode: data.mode || prev.activeMode,
           masterVolume: data.master ?? prev.masterVolume,
+          ambientMasterVolume: data.ambientMaster ?? prev.ambientMasterVolume,
           binauralVolume: data.bVol ?? prev.binauralVolume,
           duration: data.dur ?? prev.duration,
           brownVolume: data.amb?.brown ?? prev.brownVolume,
@@ -411,6 +420,7 @@ export function useNeuroDeck() {
     stop,
     applyPreset,
     updateMasterVolume,
+    updateAmbientMasterVolume,
     updateBinauralVolume,
     updateAmbientVolume,
     updateDuration,

@@ -8,7 +8,7 @@ interface NeuroDeckControlsProps {
 }
 
 export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck }) => {
-  const { state, start, pause, stop, applyPreset, updateMasterVolume, updateAmbientVolume } = neuroDeck;
+  const { state, start, pause, stop, applyPreset, updateMasterVolume, updateAmbientMasterVolume, updateAmbientVolume } = neuroDeck;
 
   return (
     <div className="w-full max-w-lg mx-auto space-y-4 sm:space-y-5 px-2 sm:px-0">
@@ -143,6 +143,144 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
                 className="absolute top-0 h-8 w-4 transition-all duration-150 pointer-events-none"
                 style={{
                   left: `calc(${state.masterVolume * 100}% - 8px)`,
+                  background: `
+                    linear-gradient(135deg,
+                      hsl(var(--graphite-highlight)) 0%,
+                      hsl(var(--graphite-3)) 30%,
+                      hsl(var(--graphite-2)) 70%,
+                      hsl(var(--graphite-edge)) 100%
+                    )
+                  `,
+                  border: '1px solid hsl(var(--graphite-edge))',
+                  borderRadius: '2px',
+                  boxShadow: `
+                    0 2px 4px rgba(0,0,0,0.4),
+                    inset 0 1px 1px rgba(255,255,255,0.1),
+                    inset 0 -1px 1px rgba(0,0,0,0.2)
+                  `
+                }}
+              >
+                {/* Texture del cursore */}
+                <div 
+                  className="w-full h-full rounded-[1px] opacity-30"
+                  style={{
+                    background: `
+                      repeating-linear-gradient(
+                        90deg,
+                        rgba(255,255,255,0.1) 0px,
+                        rgba(255,255,255,0.1) 1px,
+                        transparent 1px,
+                        transparent 2px
+                      )
+                    `
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Volume Ambientale - Nuovo Slider */}
+      <div 
+        className="p-3 sm:p-5 rounded-2xl border-2 border-graphite-edge device-texture"
+        style={{ 
+          background: 'var(--gradient-panel)',
+          boxShadow: 'var(--shadow-inset)'
+        }}
+      >
+        <div className="flex flex-col items-center space-y-4">
+          
+          {/* Vintage LCD Segment Slider per Ambientale */}
+          <div className="w-full max-w-xs relative">
+            
+            {/* Label e Percentuale integrata */}
+            <div className="flex justify-between items-center mb-2">
+              <span className="label-serigraph text-xs">VOLUME AMBIENTALE</span>
+              <span 
+                className="font-mono font-bold"
+                style={{
+                  fontSize: 'clamp(12px, 3vw, 14px)',
+                  color: 'hsl(var(--lcd-amber-dim))',
+                  textShadow: '0 0 2px hsl(var(--lcd-amber-dim) / 0.3)'
+                }}
+              >
+                {Math.round(state.ambientMasterVolume * 100).toString().padStart(3, '0')}%
+              </span>
+            </div>
+            
+            {/* Slider Track Container - Incassato */}
+            <div 
+              className="relative w-full h-8 rounded-sm"
+              style={{
+                background: `
+                  linear-gradient(180deg,
+                    hsl(var(--graphite-edge)) 0%,
+                    hsl(var(--graphite-0)) 30%,
+                    hsl(var(--graphite-1)) 70%,
+                    hsl(var(--graphite-edge)) 100%
+                  )
+                `,
+                border: '1px solid hsl(var(--graphite-edge))',
+                boxShadow: `
+                  inset 0 3px 6px rgba(0,0,0,0.8),
+                  inset 0 6px 12px rgba(0,0,0,0.6),
+                  inset 0 -1px 2px rgba(255,255,255,0.03)
+                `
+              }}
+            >
+              
+              {/* Segmenti LED progressivi - colore ambra */}
+              <div className="absolute inset-2 flex items-center">
+                {Array.from({ length: 20 }, (_, i) => {
+                  const segmentValue = (i + 1) / 20;
+                  const isActive = state.ambientMasterVolume >= segmentValue;
+                  return (
+                    <div 
+                      key={i}
+                      className="flex-1 mx-[1px] h-full rounded-[1px]"
+                      style={{
+                        background: isActive 
+                          ? `linear-gradient(180deg,
+                              hsl(var(--lcd-amber-dim)) 0%,
+                              hsl(var(--lcd-amber-soft)) 50%,
+                              hsl(var(--lcd-amber-dim)) 100%
+                            )`
+                          : `linear-gradient(180deg,
+                              hsl(var(--graphite-2)) 0%,
+                              hsl(var(--graphite-1)) 100%
+                            )`,
+                        boxShadow: isActive 
+                          ? `
+                              inset 0 1px 1px rgba(255,255,255,0.2),
+                              0 0 2px hsl(var(--lcd-amber-dim) / 0.3)
+                            `
+                          : `inset 0 1px 1px rgba(0,0,0,0.3)`,
+                        opacity: isActive ? 1 : 0.3,
+                        transition: 'all 0.15s ease-out'
+                      }}
+                    />
+                  );
+                })}
+              </div>
+              
+              {/* Slider Input invisibile */}
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={state.ambientMasterVolume}
+                onChange={(e) => updateAmbientMasterVolume(parseFloat(e.target.value))}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                aria-label="Volume Ambientale"
+              />
+              
+              {/* Cursore fisico in grafite */}
+              <div 
+                className="absolute top-0 h-8 w-4 transition-all duration-150 pointer-events-none"
+                style={{
+                  left: `calc(${state.ambientMasterVolume * 100}% - 8px)`,
                   background: `
                     linear-gradient(135deg,
                       hsl(var(--graphite-highlight)) 0%,

@@ -157,6 +157,11 @@
     --lcd-green-soft: 140 65% 40%;
     --lcd-green-dim: 140 45% 32%;
     --lcd-green-off: 140 25% 14%;
+    
+    /* LCD amber tokens for ambient volume */
+    --lcd-amber-soft: 45 88% 55%;
+    --lcd-amber-dim: 35 75% 45%;
+    --lcd-amber-off: 35 45% 20%;
   }
 }
 
