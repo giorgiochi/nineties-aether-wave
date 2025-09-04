@@ -53,59 +53,122 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
 
   return (
     <div 
-      className="p-3 rounded-xl border border-graphite-edge"
+      className="p-4 rounded-2xl border-2 border-graphite-edge device-texture"
       style={{ 
         background: 'var(--gradient-screen)',
         boxShadow: 'var(--shadow-screen)'
       }}
     >
       <div 
-        className="relative p-4 rounded-lg overflow-hidden"
+        className="relative p-6 rounded-xl overflow-hidden lcd-realistic"
         style={{ 
-          height: '180px',
+          height: '200px',
           background: 'hsl(var(--screen-bg))',
-          border: '2px inset hsl(var(--graphite-edge))',
-          boxShadow: 'inset 2px 2px 4px rgba(0,0,0,0.3)'
+          border: '3px inset hsl(var(--graphite-edge))',
+          boxShadow: `
+            var(--gradient-lcd-bezel),
+            inset 0 0 20px rgba(0,0,0,0.2)
+          `
         }}
         aria-live="polite"
       >
-        <div className="text-tft space-y-4 text-center h-full flex flex-col justify-center">
-          {/* Timer - Large Display */}
-          <div className="text-4xl font-bold tracking-wider" style={{
-            textShadow: '1px 1px 0 rgba(0,0,0,0.3), inset 0 0 2px rgba(0,0,0,0.2)'
-          }}>
-            {state.timeLeft > 0 ? formatTime(state.timeLeft) : formatTime(state.duration * 3600)}
+        {/* LCD Protective Glass Effect */}
+        <div 
+          className="absolute inset-0 pointer-events-none rounded-xl"
+          style={{
+            background: `
+              linear-gradient(135deg, 
+                rgba(255,255,255,0.1) 0%, 
+                transparent 30%, 
+                transparent 70%, 
+                rgba(255,255,255,0.05) 100%
+              )
+            `
+          }}
+        />
+        
+        <div className="text-tft h-full flex flex-col justify-center space-y-6 relative z-10">
+          {/* Timer Display - Large and Prominent */}
+          <div className="text-center">
+            <div className="text-5xl font-bold tracking-wider mb-1" style={{
+              textShadow: `
+                0 0 3px hsl(var(--screen-glow) / 0.4),
+                0 0 6px hsl(var(--screen-glow) / 0.3),
+                2px 2px 0 rgba(0,0,0,0.5)
+              `
+            }}>
+              {state.timeLeft > 0 ? formatTime(state.timeLeft) : formatTime(state.duration * 3600)}
+            </div>
+            <div className="text-xs text-tft-dim uppercase tracking-widest">
+              TEMPO SESSIONE
+            </div>
           </div>
 
-          {/* Active Mode */}
-          <div className="text-lg font-bold">
-            MODALITÀ: {getModeName(state.activeMode)}
-          </div>
-
-          {/* Volume Level */}
-          <div className="text-lg font-bold">
-            VOLUME: {Math.round(state.masterVolume * 100)}%
+          {/* Mode and Volume Display */}
+          <div className="grid grid-cols-2 gap-6 text-center">
+            <div>
+              <div className="text-lg font-bold mb-1">
+                {getModeName(state.activeMode)}
+              </div>
+              <div className="text-xs text-tft-dim uppercase tracking-widest">
+                MODALITÀ
+              </div>
+            </div>
+            <div>
+              <div className="text-lg font-bold mb-1">
+                {Math.round(state.masterVolume * 100)}%
+              </div>
+              <div className="text-xs text-tft-dim uppercase tracking-widest">
+                VOLUME
+              </div>
+            </div>
           </div>
 
           {/* VU Meter */}
-          <div className="mt-4">
+          <div className="px-8">
             <div 
-              className="h-4 border-2 border-gray-600 rounded-lg overflow-hidden mx-8"
+              className="h-4 rounded-lg overflow-hidden relative"
               style={{ 
-                background: 'rgba(0,0,0,0.3)',
-                boxShadow: 'inset 1px 1px 2px rgba(0,0,0,0.5)'
+                background: `
+                  linear-gradient(180deg, 
+                    rgba(0,0,0,0.6) 0%, 
+                    rgba(0,0,0,0.4) 50%, 
+                    rgba(0,0,0,0.6) 100%
+                  )
+                `,
+                border: '1px solid rgba(0,0,0,0.6)',
+                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8)'
               }}
             >
               <div 
-                className="h-full transition-all duration-300 ease-out"
+                className="h-full transition-all duration-300 ease-out relative"
                 style={{ 
                   width: `${vuLevel}%`,
-                  background: `linear-gradient(90deg, 
-                    hsl(var(--screen-text)) 0%, 
-                    hsl(var(--screen-text)) 100%
-                  )`
+                  background: `
+                    linear-gradient(90deg, 
+                      hsl(var(--screen-text)) 0%, 
+                      hsl(var(--screen-text)) 60%,
+                      hsl(var(--screen-dim)) 100%
+                    )
+                  `,
+                  boxShadow: '0 0 4px hsl(var(--screen-glow) / 0.3)'
                 }}
-              />
+              >
+                {/* VU meter segments */}
+                <div 
+                  className="absolute inset-0"
+                  style={{
+                    background: `
+                      repeating-linear-gradient(90deg,
+                        transparent 0px,
+                        transparent 8px,
+                        rgba(0,0,0,0.3) 8px,
+                        rgba(0,0,0,0.3) 9px
+                      )
+                    `
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
