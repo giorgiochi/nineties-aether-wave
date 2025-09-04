@@ -120,9 +120,10 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
         >
           {/* Vetro LCD - Riempie tutto il contenitore */}
           <div 
-            className="relative w-full h-full p-3 sm:p-4 rounded-sm overflow-visible"
+            className="relative w-full h-full rounded-sm overflow-visible"
             style={{ 
-              minHeight: 'clamp(120px, 25vw, 160px)',
+              minHeight: 'clamp(100px, 20vw, 130px)', // Ridotto del 18%
+              padding: 'clamp(12px, 3vw, 18px)', // Padding responsive
               background: `
                 repeating-linear-gradient(
                   0deg,
@@ -155,18 +156,19 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 display: 'grid',
                 gridTemplateRows: '1fr auto auto auto auto 1fr',
                 gridTemplateColumns: '1fr',
-                gap: 'clamp(4px, 2vw, 8px)',
-                padding: 'clamp(4px, 2vw, 8px)',
-                fontFamily: '"Press Start 2P", "Courier New", monospace'
+                gap: 'clamp(6px, 2.5vw, 10px)', // Aumentato spacing del 25%
+                fontFamily: '"Press Start 2P", "Courier New", monospace',
+                letterSpacing: '0.5px',
+                lineHeight: '1.6' // Aumentato da 1.35
               }}
             >
               
               {/* Riga 1: Timer principale centrato */}
-              <div className="flex flex-col items-center justify-center text-center">
+              <div className="flex flex-col items-center justify-center text-center" style={{ marginBlock: '8px' }}>
                 <div 
                   className="leading-none mb-1"
                   style={{
-                    fontSize: 'clamp(1.2rem, 4vw, 1.8rem)',
+                    fontSize: 'clamp(2.8rem, 8vw, 3.5rem)', // 56px equivalente
                     color: 'hsl(var(--lcd-green-soft))',
                     textShadow: '0 0 6px hsl(var(--lcd-green-soft) / 0.5)'
                   }}
@@ -176,9 +178,10 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 <div 
                   className="uppercase tracking-wider"
                   style={{
-                    fontSize: 'clamp(0.5rem, 2vw, 0.75rem)',
+                    fontSize: 'clamp(0.4rem, 1.5vw, 0.6rem)',
                     color: 'hsl(var(--lcd-green-dim))',
-                    textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
+                    textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)',
+                    marginTop: '6px'
                   }}
                 >
                   ── ELAPSED TIME ──
@@ -186,11 +189,11 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
               </div>
 
               {/* Riga 2: Modalità */}
-              <div className="flex flex-col items-center justify-center text-center">
+              <div className="flex flex-col items-center justify-center text-center" style={{ marginBlock: '8px' }}>
                 <div 
                   className="leading-none mb-1"
                   style={{
-                    fontSize: 'clamp(0.9rem, 3vw, 1.2rem)',
+                    fontSize: 'clamp(1.8rem, 4.5vw, 2rem)', // 32px equivalente
                     color: 'hsl(var(--lcd-green-soft))',
                     textShadow: '0 0 4px hsl(var(--lcd-green-soft) / 0.5)'
                   }}
@@ -200,9 +203,10 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 <div 
                   className="uppercase tracking-wider"
                   style={{
-                    fontSize: 'clamp(0.4rem, 1.5vw, 0.6rem)',
+                    fontSize: 'clamp(0.35rem, 1.2vw, 0.5rem)',
                     color: 'hsl(var(--lcd-green-dim))',
-                    textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
+                    textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)',
+                    marginTop: '6px'
                   }}
                 >
                   MODE
@@ -211,9 +215,10 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
 
               {/* Riga 3: Indicatori Volume */}
               <div 
-                className="grid grid-cols-1 gap-2 text-center"
+                className="grid grid-cols-1 text-center"
                 style={{
-                  gap: 'clamp(4px, 2vw, 8px)'
+                  gap: 'clamp(6px, 2.5vw, 10px)',
+                  marginBlock: '8px'
                 }}
               >
                 {/* Volume Neurale */}
@@ -222,7 +227,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                     <div 
                       className="leading-none"
                       style={{
-                        fontSize: 'clamp(0.6rem, 2.5vw, 0.8rem)',
+                        fontSize: 'clamp(1.1rem, 2.8vw, 1.25rem)', // 20px equivalente
                         color: 'hsl(var(--lcd-green-soft))',
                         textShadow: '0 0 3px hsl(var(--lcd-green-soft) / 0.4)'
                       }}
@@ -236,7 +241,8 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                     style={{
                       maxWidth: '120px',
                       backgroundColor: 'hsl(var(--lcd-bg-center))',
-                      borderColor: 'hsl(var(--lcd-green-dim))'
+                      borderColor: 'hsl(var(--lcd-green-dim))',
+                      paddingTop: '2px'
                     }}
                   >
                     <div 
@@ -256,7 +262,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                     <div 
                       className="leading-none"
                       style={{
-                        fontSize: 'clamp(0.6rem, 2.5vw, 0.8rem)',
+                        fontSize: 'clamp(1.1rem, 2.8vw, 1.25rem)', // 20px equivalente
                         color: isAmbientEnabled() ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-dim))',
                         textShadow: isAmbientEnabled() ? '0 0 3px hsl(var(--lcd-green-soft) / 0.4)' : '0 0 2px hsl(var(--lcd-green-dim) / 0.3)'
                       }}
@@ -274,7 +280,8 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                       maxWidth: '120px',
                       backgroundColor: 'hsl(var(--lcd-bg-center))',
                       borderColor: 'hsl(var(--lcd-green-dim))',
-                      opacity: isAmbientEnabled() ? 1 : 0.3
+                      opacity: isAmbientEnabled() ? 1 : 0.3,
+                      paddingTop: '2px'
                     }}
                   >
                     <div 
@@ -289,67 +296,68 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 </div>
               </div>
 
-               {/* Riga 3: Status indicator con omino animato e ambiente */}
-               <div className="flex flex-col items-center justify-center space-y-1">
+               {/* Riga 4: Status indicator con omino animato e ambiente */}
+               <div className="flex flex-col items-center justify-center space-y-1" style={{ marginBlock: '8px' }}>
                  
                  {/* Prima riga: Stato sessione con omino */}
-                  <div className="flex items-center justify-center space-x-2">
-                    <div 
-                      className="uppercase tracking-wider"
-                      style={{
-                        fontSize: 'clamp(0.6rem, 2.5vw, 0.8rem)',
-                        color: 'hsl(var(--lcd-green-soft))',
-                        textShadow: '0 0 3px hsl(var(--lcd-green-soft) / 0.4)'
-                      }}
-                    >
-                      {state.isPlaying && !state.isPaused ? 'RUNNING' : 
-                       state.isPaused ? 'PAUSED' : 'READY'}
-                    </div>
-                    
-                    {/* Omino LCD animato - Stile minimale anni '90 */}
-                    <div 
-                      className="relative flex items-center justify-center"
-                      style={{
-                        width: 'clamp(16px, 4vw, 20px)',
-                        height: 'clamp(12px, 3vw, 16px)'
-                      }}
-                    >
-                      <div 
-                        className="leading-none select-none"
-                        style={{
-                          fontSize: 'clamp(8px, 2vw, 10px)',
-                          color: 'hsl(var(--lcd-green-dim))',
-                          textShadow: '0 0 2px hsl(var(--lcd-green-dim) / 0.3)',
-                          animation: state.isPlaying && !state.isPaused ? 'pulse 1.5s ease-in-out infinite' : 'none'
-                        }}
-                      >
-                        {state.isPlaying && !state.isPaused ? '►' : '■'}
-                      </div>
-                    </div>
-                  </div>
+                 <div className="flex items-center justify-center space-x-2">
+                   <div 
+                     className="uppercase tracking-wider"
+                     style={{
+                       fontSize: 'clamp(1rem, 2.8vw, 1.125rem)', // 18px equivalente
+                       color: 'hsl(var(--lcd-green-soft))',
+                       textShadow: '0 0 3px hsl(var(--lcd-green-soft) / 0.4)'
+                     }}
+                   >
+                     {state.isPlaying && !state.isPaused ? 'RUNNING' : 
+                      state.isPaused ? 'PAUSED' : 'READY'}
+                   </div>
+                   
+                   {/* Omino LCD animato - Stile minimale anni '90 */}
+                   <div 
+                     className="relative flex items-center justify-center"
+                     style={{
+                       width: 'clamp(16px, 4vw, 20px)',
+                       height: 'clamp(12px, 3vw, 16px)'
+                     }}
+                   >
+                     <div 
+                       className="leading-none select-none"
+                       style={{
+                         fontSize: 'clamp(8px, 2vw, 10px)',
+                         color: 'hsl(var(--lcd-green-dim))',
+                         textShadow: '0 0 2px hsl(var(--lcd-green-dim) / 0.3)',
+                         animation: state.isPlaying && !state.isPaused ? 'pulse 1.5s ease-in-out infinite' : 'none'
+                       }}
+                     >
+                       {state.isPlaying && !state.isPaused ? '►' : '■'}
+                     </div>
+                   </div>
+                 </div>
                  
-                  {/* Seconda riga: Ambiente attivo */}
-                  <div 
-                    className="uppercase tracking-wider"
-                    style={{
-                      fontSize: 'clamp(0.45rem, 1.8vw, 0.6rem)',
-                      color: 'hsl(var(--lcd-green-dim))',
-                      textShadow: '0 0 2px hsl(var(--lcd-green-dim) / 0.3)'
-                    }}
-                  >
-                    Ambient: {getActiveAmbient()}
-                  </div>
-                  
-                </div>
+                 {/* Seconda riga: Ambiente attivo */}
+                 <div 
+                   className="uppercase tracking-wider"
+                   style={{
+                     fontSize: 'clamp(1rem, 2.8vw, 1.125rem)', // 18px equivalente
+                     color: 'hsl(var(--lcd-green-dim))',
+                     textShadow: '0 0 2px hsl(var(--lcd-green-dim) / 0.3)'
+                   }}
+                 >
+                   Ambient: {getActiveAmbient()}
+                 </div>
+                 
+               </div>
 
-                {/* Riga 4: Audio Psyco v.1 */}
-                <div className="flex items-center justify-center">
+                {/* Riga 5: Audio Psyco v.1 */}
+                <div className="flex items-center justify-center" style={{ marginBlock: '8px' }}>
                   <div 
                     className="uppercase tracking-wider"
                     style={{
-                      fontSize: 'clamp(0.3rem, 1.2vw, 0.45rem)',
+                      fontSize: 'clamp(0.65rem, 1.5vw, 0.75rem)', // 12px equivalente
                       color: 'hsl(var(--lcd-green-dim))',
-                      textShadow: '0 0 2px hsl(var(--lcd-green-dim) / 0.3)'
+                      textShadow: '0 0 2px hsl(var(--lcd-green-dim) / 0.3)',
+                      marginTop: '6px'
                     }}
                   >
                     Audio Psyco v.1
