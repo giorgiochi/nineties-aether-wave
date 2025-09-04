@@ -25,7 +25,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
           {[
             { key: 'CONCENTRAZIONE', label: 'FOCUS', icon: <Brain size={18} />, variant: 'success' },
             { key: 'STRESS', label: 'RELAX', icon: <Shield size={18} />, variant: 'primary' },
-            { key: 'ADHD', label: 'BLOCK', icon: <Zap size={18} />, variant: 'warning' },
+            { key: 'ADHD', label: 'NO THOUGHTS', icon: <Zap size={18} />, variant: 'warning' },
             { key: 'INTRUSIVE_OFF', label: 'QUIET', icon: <Moon size={18} />, variant: 'danger' }
           ].map(({ key, label, icon, variant }) => (
             <DeviceButton
