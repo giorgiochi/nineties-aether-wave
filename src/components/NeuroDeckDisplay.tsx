@@ -133,7 +133,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
               className="h-full w-full text-tft text-tft-dim"
               style={{
                 display: 'grid',
-                gridTemplateRows: '1fr auto 1fr auto',
+                gridTemplateRows: '1fr auto 1fr',
                 gridTemplateColumns: '1fr',
                 gap: '8px',
                 padding: '8px'
@@ -214,41 +214,6 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
 
               {/* Riga 3: Spazio vuoto */}
               <div></div>
-
-              {/* Riga 4: VU Meter centrato in basso */}
-              <div className="flex flex-col items-center justify-end">
-                <div 
-                  className="text-xs uppercase tracking-wider text-center mb-2"
-                  style={{
-                    color: 'hsl(var(--lcd-green-dim))',
-                    textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
-                  }}
-                >
-                  VU METER
-                </div>
-                <div 
-                  className="h-2 rounded-sm overflow-hidden relative border w-full max-w-[200px]"
-                  style={{ 
-                    backgroundColor: 'hsl(var(--lcd-bg))',
-                    borderColor: 'hsl(var(--lcd-green-off))'
-                  }}
-                >
-                  {Array.from({ length: 20 }, (_, i) => (
-                    <div
-                      key={i}
-                      className="absolute top-0 h-full border-r"
-                      style={{
-                        left: `${i * (100/20)}%`,
-                        width: `${100/20 - 0.5}%`,
-                        backgroundColor: i * (100/20) <= vuLevel ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-off))',
-                        borderRightColor: 'hsl(var(--lcd-green-off))',
-                        boxShadow: i * (100/20) <= vuLevel ? '0 0 4px hsl(var(--lcd-green-soft) / 0.5)' : 'none',
-                        transition: 'all 0.1s ease'
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
 
             </div>
           </div>
