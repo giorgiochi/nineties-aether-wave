@@ -112,6 +112,25 @@
       inset 0 2px 6px rgba(0,0,0,0.3),
       inset 0 0 0 1px rgba(0,0,0,0.2);
     
+    /* Nuovi shadow per DeviceButton */
+    --shadow-device-button:
+      inset 0 1px 0 rgba(255,255,255,0.15),
+      inset 0 -1px 0 rgba(0,0,0,0.4),
+      0 2px 4px rgba(0,0,0,0.3),
+      0 4px 8px rgba(0,0,0,0.2);
+    
+    --shadow-device-button-hover:
+      inset 0 1px 0 rgba(255,255,255,0.2),
+      inset 0 -1px 0 rgba(0,0,0,0.4),
+      0 3px 6px rgba(0,0,0,0.3),
+      0 6px 12px rgba(0,0,0,0.2);
+    
+    --shadow-device-button-active:
+      inset 0 2px 4px rgba(0,0,0,0.4),
+      inset 0 4px 8px rgba(0,0,0,0.3),
+      inset 0 0 0 1px rgba(0,0,0,0.3),
+      0 1px 2px rgba(0,0,0,0.2);
+    
     --shadow-knob: 
       inset 0 0 0 1px rgba(255,255,255,0.1),
       inset 0 2px 4px rgba(0,0,0,0.6),
@@ -381,6 +400,21 @@
     box-shadow: 
       inset 0 1px 3px rgba(0,0,0,0.4),
       inset 0 0 0 1px rgba(0,0,0,0.2);
+  }
+}
+
+@layer components {
+  /* DeviceButton shadow classes */
+  .shadow-device-button {
+    box-shadow: var(--shadow-device-button);
+  }
+  
+  .shadow-device-button-hover {
+    box-shadow: var(--shadow-device-button-hover);
+  }
+  
+  .shadow-device-button-active {
+    box-shadow: var(--shadow-device-button-active);
   }
 }
 

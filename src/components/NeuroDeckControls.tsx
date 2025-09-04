@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNeuroDeck } from '@/hooks/useNeuroDeck';
+import { DeviceButton } from '@/components/ui/device-button';
+import { Brain, Shield, Zap, Moon, Play, Pause, Square, Waves, Cloud, TreePine, Plane } from 'lucide-react';
 
 interface NeuroDeckControlsProps {
   neuroDeck: ReturnType<typeof useNeuroDeck>;
@@ -21,31 +23,20 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
         <h3 className="label-serigraph text-center mb-4">MODALITÀ FOCUS</h3>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { key: 'CONCENTRAZIONE', label: 'CONCENTRAZIONE' },
-            { key: 'STRESS', label: 'RIDUCI STRESS' },
-            { key: 'ADHD', label: 'BLOCCA DISTRAZIONI' },
-            { key: 'INTRUSIVE_OFF', label: 'PENSIERI OFF' }
-          ].map(({ key, label }) => (
-            <button
+            { key: 'CONCENTRAZIONE', label: 'CONCENTRAZIONE', icon: <Brain size={16} /> },
+            { key: 'STRESS', label: 'RIDUCI STRESS', icon: <Shield size={16} /> },
+            { key: 'ADHD', label: 'BLOCCA DISTRAZIONI', icon: <Zap size={16} /> },
+            { key: 'INTRUSIVE_OFF', label: 'PENSIERI OFF', icon: <Moon size={16} /> }
+          ].map(({ key, label, icon }) => (
+            <DeviceButton
               key={key}
+              variant={state.activeMode === key ? 'warning' : 'primary'}
+              state={state.activeMode === key ? 'active' : 'default'}
               onClick={() => applyPreset(key as any)}
-              className={`px-4 py-4 rounded-xl font-bold text-xs transition-all duration-150 relative overflow-hidden ${
-                state.activeMode === key
-                  ? 'bg-screen-yellow text-screen-text shadow-inner border-2 border-screen-text transform translate-y-0.5'
-                  : 'btn-embossed text-device-text'
-              }`}
+              icon={icon}
             >
-              {/* Button label with serigraph effect */}
-              <span className="relative z-10 tracking-wider">{label}</span>
-              {state.activeMode === key && (
-                <div 
-                  className="absolute inset-0 bg-screen-yellow opacity-20"
-                  style={{
-                    background: 'radial-gradient(circle at center, hsl(var(--screen-glow)) 0%, transparent 70%)'
-                  }}
-                />
-              )}
-            </button>
+              {label}
+            </DeviceButton>
           ))}
         </div>
       </div>
@@ -137,25 +128,20 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
         <h3 className="label-serigraph text-center mb-4">CONTROLLI TRASPORTO</h3>
         <div className="flex justify-center space-x-4">
           {[
-            { action: start, disabled: state.isPlaying, active: state.isPlaying, label: 'START', led: 'green' },
-            { action: pause, disabled: !state.isPlaying || state.isPaused, active: state.isPaused, label: 'PAUSA', led: 'orange' },
-            { action: stop, disabled: !state.isPlaying && !state.isPaused, active: !state.isPlaying && !state.isPaused, label: 'STOP', led: 'orange' }
-          ].map(({ action, disabled, active, label, led }, index) => (
-            <button
-              key={index}
+            { action: start, disabled: state.isPlaying, active: state.isPlaying, label: 'START', variant: 'success', icon: <Play size={16} /> },
+            { action: pause, disabled: !state.isPlaying || state.isPaused, active: state.isPaused, label: 'PAUSA', variant: 'warning', icon: <Pause size={16} /> },
+            { action: stop, disabled: !state.isPlaying && !state.isPaused, active: !state.isPlaying && !state.isPaused, label: 'STOP', variant: 'danger', icon: <Square size={16} /> }
+          ].map(({ action, disabled, active, label, variant, icon }) => (
+            <DeviceButton
+              key={label}
+              variant={variant as any}
+              state={active && !disabled ? 'active' : disabled ? 'disabled' : 'default'}
               onClick={action}
               disabled={disabled}
-              className={`flex flex-col items-center gap-2 px-5 py-4 rounded-xl font-bold transition-all duration-100 relative ${
-                active && !disabled
-                  ? 'bg-device-ok text-graphite-0 border-2 border-device-ok transform translate-y-0.5'
-                  : disabled
-                  ? 'btn-embossed text-device-muted opacity-40 cursor-not-allowed'
-                  : 'btn-embossed text-device-text'
-              }`}
+              icon={icon}
             >
-              <span className={`device-led ${active && !disabled ? `active ${led}` : ''}`} />
-              <span className="text-xs tracking-wider">{label}</span>
-            </button>
+              {label}
+            </DeviceButton>
           ))}
         </div>
       </div>
@@ -171,30 +157,20 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
         <h3 className="label-serigraph text-center mb-4">AMBIENTI AUDIO</h3>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { key: 'ocean', label: 'OCEANO', volume: state.oceanVolume, defaultVol: 0.15 },
-            { key: 'rain', label: 'PIOGGIA', volume: state.rainVolume, defaultVol: 0.12 },
-            { key: 'pink', label: 'FORESTA', volume: state.pinkVolume, defaultVol: 0.08 },
-            { key: 'brown', label: 'AEROPORTO', volume: state.brownVolume, defaultVol: 0.06 }
-          ].map(({ key, label, volume, defaultVol }) => (
-            <button
+            { key: 'ocean', label: 'OCEANO', volume: state.oceanVolume, defaultVol: 0.15, icon: <Waves size={16} /> },
+            { key: 'rain', label: 'PIOGGIA', volume: state.rainVolume, defaultVol: 0.12, icon: <Cloud size={16} /> },
+            { key: 'pink', label: 'FORESTA', volume: state.pinkVolume, defaultVol: 0.08, icon: <TreePine size={16} /> },
+            { key: 'brown', label: 'AEROPORTO', volume: state.brownVolume, defaultVol: 0.06, icon: <Plane size={16} /> }
+          ].map(({ key, label, volume, defaultVol, icon }) => (
+            <DeviceButton
               key={key}
+              variant={volume > 0 ? 'success' : 'secondary'}
+              state={volume > 0 ? 'active' : 'default'}
               onClick={() => updateAmbientVolume(key as any, volume > 0 ? 0 : defaultVol)}
-              className={`px-4 py-3 rounded-xl font-bold text-xs transition-all duration-150 relative overflow-hidden ${
-                volume > 0
-                  ? 'bg-device-accent text-graphite-0 border-2 border-device-accent transform translate-y-0.5'
-                  : 'btn-embossed text-device-text'
-              }`}
+              icon={icon}
             >
-              <span className="relative z-10 tracking-wider">{label}</span>
-              {volume > 0 && (
-                <div 
-                  className="absolute inset-0 opacity-20"
-                  style={{
-                    background: 'radial-gradient(circle at center, hsl(var(--device-accent)) 0%, transparent 70%)'
-                  }}
-                />
-              )}
-            </button>
+              {label}
+            </DeviceButton>
           ))}
         </div>
         

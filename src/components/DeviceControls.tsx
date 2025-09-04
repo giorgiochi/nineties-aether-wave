@@ -1,5 +1,7 @@
 import React from 'react';
 import { useAudio } from '@/hooks/useAudio';
+import { DeviceButton } from '@/components/ui/device-button';
+import { Play, Pause, Square, Volume2, RotateCcw, Save, Download, Clock } from 'lucide-react';
 
 interface DeviceControlsProps {
   audio: ReturnType<typeof useAudio>;
@@ -93,30 +95,33 @@ export const DeviceControls: React.FC<DeviceControlsProps> = ({ audio }) => {
 
           {/* Transport Controls */}
           <div className="flex gap-3 mt-4">
-            <button
+            <DeviceButton
+              variant="success"
+              state={state.isPlaying ? 'active' : 'default'}
               onClick={start}
-              className="device-button flex items-center gap-2 px-4 py-2 rounded-lg text-device-text text-sm font-medium transition-colors"
+              icon={<Play size={14} />}
               aria-label="Start"
             >
-              <span className={`device-led ${state.isPlaying ? 'active green' : ''}`} />
               START
-            </button>
-            <button
+            </DeviceButton>
+            <DeviceButton
+              variant="warning"
+              state={state.isPaused ? 'active' : 'default'}
               onClick={pause}
-              className="device-button flex items-center gap-2 px-4 py-2 rounded-lg text-device-text text-sm font-medium"
+              icon={<Pause size={14} />}
               aria-label="Pausa"
             >
-              <span className={`device-led ${state.isPaused ? 'active orange' : ''}`} />
               PAUSA
-            </button>
-            <button
+            </DeviceButton>
+            <DeviceButton
+              variant="danger"
+              state={!state.isPlaying && !state.isPaused ? 'active' : 'default'}
               onClick={stop}
-              className="device-button flex items-center gap-2 px-4 py-2 rounded-lg text-device-text text-sm font-medium"
+              icon={<Square size={14} />}
               aria-label="Stop"
             >
-              <span className={`device-led ${!state.isPlaying && !state.isPaused ? 'active orange' : ''}`} />
               STOP
-            </button>
+            </DeviceButton>
           </div>
         </div>
       </div>
@@ -185,18 +190,20 @@ export const DeviceControls: React.FC<DeviceControlsProps> = ({ audio }) => {
           </div>
 
           <div className="flex gap-3 mt-4">
-            <button
+            <DeviceButton
+              variant="secondary"
               onClick={muteAmbient}
-              className="device-button px-3 py-2 rounded-lg text-device-text text-xs font-medium"
+              icon={<Volume2 size={14} />}
             >
               MUTE AMBIENT
-            </button>
-            <button
+            </DeviceButton>
+            <DeviceButton
+              variant="primary"
               onClick={resetAmbient}
-              className="device-button px-3 py-2 rounded-lg text-device-text text-xs font-medium"
+              icon={<RotateCcw size={14} />}
             >
               RESET
-            </button>
+            </DeviceButton>
           </div>
         </div>
       </div>
@@ -244,24 +251,27 @@ export const DeviceControls: React.FC<DeviceControlsProps> = ({ audio }) => {
           </div>
 
           <div className="flex gap-2">
-            <button
+            <DeviceButton
+              variant="warning"
               onClick={handleFocus50_10}
-              className="device-button px-3 py-2 rounded-lg text-device-text text-xs font-medium"
+              icon={<Clock size={14} />}
             >
               FOCUS 50-10
-            </button>
-            <button
+            </DeviceButton>
+            <DeviceButton
+              variant="primary"
               onClick={savePreset}
-              className="device-button px-3 py-2 rounded-lg text-device-text text-xs font-medium"
+              icon={<Save size={14} />}
             >
               SALVA
-            </button>
-            <button
+            </DeviceButton>
+            <DeviceButton
+              variant="primary"
               onClick={loadPreset}
-              className="device-button px-3 py-2 rounded-lg text-device-text text-xs font-medium"
+              icon={<Download size={14} />}
             >
               CARICA
-            </button>
+            </DeviceButton>
           </div>
         </div>
       </div>
