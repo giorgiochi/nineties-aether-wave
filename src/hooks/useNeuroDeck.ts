@@ -96,7 +96,7 @@ export function useNeuroDeck() {
       binauralGainRef.current.connect(limiterRef.current);
       limiterRef.current.connect(contextRef.current.destination);
       
-      createAmbient();
+      // Niente creazione suoni qui: si preparano al primo Start
     }
   }, [state.masterVolume, state.ambientMasterVolume]);
 
@@ -276,6 +276,13 @@ export function useNeuroDeck() {
     
     contextRef.current.resume();
     
+    // Prepara e avvia gli ambientali solo al primo Start
+    const needsAmbient = !ambientRef.current.brown || !ambientRef.current.pink || !ambientRef.current.rain || !ambientRef.current.ocean;
+    if (needsAmbient) {
+      // Non attendiamo: i loop partiranno appena pronti con i volumi correnti
+      createAmbient();
+    }
+    
     if (!binauralRef.current.left) {
       const preset = presets[state.activeMode]();
       startBinaural(preset.beat, preset.carrier);
@@ -297,7 +304,7 @@ export function useNeuroDeck() {
         }
       }
     }, 200);
-  }, [ensureContext, startBinaural, updateAmbientVolumes, state.activeMode, state.duration]);
+  }, [ensureContext, createAmbient, startBinaural, updateAmbientVolumes, state.activeMode, state.duration]);
 
   const pause = useCallback(() => {
     if (contextRef.current) {
