@@ -11,17 +11,17 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
   const { state, start, pause, stop, applyPreset, updateMasterVolume, updateAmbientVolume } = neuroDeck;
 
   return (
-    <div className="space-y-5">
-      {/* Mode Selection Buttons */}
+    <div className="w-full max-w-lg mx-auto space-y-4 sm:space-y-5 px-2 sm:px-0">
+      {/* Mode Selection Buttons - Responsive 2x2 Grid */}
       <div 
-        className="p-5 rounded-2xl border-2 border-graphite-edge device-texture"
+        className="p-3 sm:p-5 rounded-2xl border-2 border-graphite-edge device-texture"
         style={{ 
           background: 'var(--gradient-panel)',
           boxShadow: 'var(--shadow-inset)'
         }}
       >
-        <h3 className="label-serigraph text-center mb-4">MODALITÀ FOCUS</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <h3 className="label-serigraph text-center mb-3 sm:mb-4">MODALITÀ FOCUS</h3>
+        <div className="grid grid-cols-2 gap-2 sm:gap-4">
           {[
             { key: 'CONCENTRAZIONE', label: 'FOCUS', icon: <Brain size={18} />, variant: 'success' },
             { key: 'STRESS', label: 'RELAX', icon: <Shield size={18} />, variant: 'primary' },
@@ -34,8 +34,8 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
               state={state.activeMode === key ? 'active' : 'default'}
               onClick={() => applyPreset(key as any)}
               icon={icon}
-              size="lg"
-              className="h-16 min-w-0 whitespace-nowrap"
+              size="md"
+              className="h-12 sm:h-16 min-w-0 whitespace-nowrap text-xs sm:text-sm"
             >
               {label}
             </DeviceButton>
@@ -43,19 +43,19 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
         </div>
       </div>
 
-      {/* Ultra-Realistic Volume Knob */}
+      {/* Ultra-Realistic Volume Knob - Responsive */}
       <div 
-        className="p-5 rounded-2xl border-2 border-graphite-edge device-texture"
+        className="p-3 sm:p-5 rounded-2xl border-2 border-graphite-edge device-texture"
         style={{ 
           background: 'var(--gradient-panel)',
           boxShadow: 'var(--shadow-inset)'
         }}
       >
-        <h3 className="label-serigraph text-center mb-4">VOLUME MASTER</h3>
+        <h3 className="label-serigraph text-center mb-3 sm:mb-4">VOLUME MASTER</h3>
         <div className="flex flex-col items-center space-y-4">
           
-          {/* Manopola realistica anni '90 hi-fi */}
-          <div className="relative w-36 h-36">
+          {/* Manopola realistica anni '90 hi-fi - Responsive */}
+          <div className="relative" style={{ width: 'clamp(120px, 30vw, 144px)', height: 'clamp(120px, 30vw, 144px)' }}>
             
             {/* Incasso nella scocca */}
             <div 
@@ -75,33 +75,35 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
               }}
             />
             
-            {/* Scala numerica esterna (0-10) */}
+            {/* Scala numerica esterna (0-10) - Responsive */}
             <div className="absolute inset-0">
               {Array.from({ length: 11 }, (_, i) => {
-                const angle = (i * 27) - 135; // Da -135° a +135° (270° totali)
+                const angle = (i * 27) - 135;
                 const number = i;
+                const radius = 'clamp(60px, 15vw, 72px)';
                 return (
                   <div key={i}>
                     {/* Tacche spesse */}
                     <div
                       className="absolute bg-device-text opacity-90"
                       style={{
-                        width: '3px',
-                        height: '12px',
-                        top: '8px',
+                        width: 'clamp(2px, 0.8vw, 3px)',
+                        height: 'clamp(8px, 2.5vw, 12px)',
+                        top: 'clamp(6px, 1.5vw, 8px)',
                         left: '50%',
-                        transformOrigin: '50% 64px',
+                        transformOrigin: `50% ${radius}`,
                         transform: `translateX(-50%) rotate(${angle}deg)`,
                         borderRadius: '1px'
                       }}
                     />
                     {/* Numeri ben spaziati */}
                     <div
-                      className="absolute text-sm font-bold text-device-text"
+                      className="absolute font-bold text-device-text"
                       style={{
-                        top: '22px',
+                        fontSize: 'clamp(10px, 2.5vw, 14px)',
+                        top: 'clamp(18px, 4vw, 22px)',
                         left: '50%',
-                        transformOrigin: '50% 50px',
+                        transformOrigin: `50% calc(${radius} - 12px)`,
                         transform: `translateX(-50%) rotate(${angle}deg)`,
                         opacity: 0.9
                       }}
@@ -115,8 +117,9 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
             
             {/* Manopola principale con bordo metallico */}
             <div 
-              className="absolute inset-4 rounded-full cursor-pointer"
+              className="absolute cursor-pointer rounded-full"
               style={{
+                inset: 'clamp(12px, 3vw, 16px)',
                 background: `
                   conic-gradient(from 45deg,
                     hsl(var(--graphite-highlight)) 0deg,
@@ -160,8 +163,9 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
               
               {/* Texture metallica satinata */}
               <div 
-                className="absolute inset-2 rounded-full opacity-20 pointer-events-none"
+                className="absolute rounded-full opacity-20 pointer-events-none"
                 style={{
+                  inset: 'clamp(6px, 1.5vw, 8px)',
                   background: `
                     repeating-conic-gradient(
                       from 0deg,
@@ -183,8 +187,10 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
                 className="absolute inset-0 flex items-center justify-center pointer-events-none"
               >
                 <div 
-                  className="px-4 py-2 rounded font-mono text-lg font-bold"
+                  className="rounded font-mono font-bold"
                   style={{
+                    padding: 'clamp(4px, 2vw, 16px) clamp(8px, 3vw, 16px)',
+                    fontSize: 'clamp(14px, 4vw, 18px)',
                     background: `
                       radial-gradient(ellipse 80% 60% at 50% 50%, 
                         hsl(120 80% 8%) 0%, 
@@ -214,16 +220,24 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
               
               {/* Riflesso principale per effetto lucido */}
               <div 
-                className="absolute top-3 left-3 w-8 h-8 rounded-full opacity-15 pointer-events-none"
+                className="absolute rounded-full opacity-15 pointer-events-none"
                 style={{
+                  top: 'clamp(8px, 2vw, 12px)',
+                  left: 'clamp(8px, 2vw, 12px)',
+                  width: 'clamp(20px, 6vw, 32px)',
+                  height: 'clamp(20px, 6vw, 32px)',
                   background: 'radial-gradient(ellipse 60% 60% at 30% 30%, rgba(255,255,255,0.9), transparent 70%)'
                 }}
               />
               
               {/* Riflessi secondari per realismo */}
               <div 
-                className="absolute top-6 right-4 w-3 h-3 rounded-full opacity-10 pointer-events-none"
+                className="absolute rounded-full opacity-10 pointer-events-none"
                 style={{
+                  top: 'clamp(20px, 5vw, 24px)',
+                  right: 'clamp(12px, 3vw, 16px)',
+                  width: 'clamp(8px, 2vw, 12px)',
+                  height: 'clamp(8px, 2vw, 12px)',
                   background: 'radial-gradient(circle, rgba(255,255,255,0.8), transparent 60%)'
                 }}
               />
@@ -234,16 +248,16 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
         </div>
       </div>
 
-      {/* Transport Controls with Realistic Buttons */}
+      {/* Transport Controls with Realistic Buttons - Responsive */}
       <div 
-        className="p-5 rounded-2xl border-2 border-graphite-edge device-texture"
+        className="p-3 sm:p-5 rounded-2xl border-2 border-graphite-edge device-texture"
         style={{ 
           background: 'var(--gradient-panel)',
           boxShadow: 'var(--shadow-inset)'
         }}
       >
-        <h3 className="label-serigraph text-center mb-4">COMANDI RIPRODUZIONE</h3>
-        <div className="flex justify-center space-x-4">
+        <h3 className="label-serigraph text-center mb-3 sm:mb-4">COMANDI RIPRODUZIONE</h3>
+        <div className="flex justify-center space-x-2 sm:space-x-4">
           {[
             { action: start, disabled: state.isPlaying, active: state.isPlaying, label: 'START', variant: 'success', icon: <Play size={20} /> },
             { action: pause, disabled: !state.isPlaying || state.isPaused, active: state.isPaused, label: 'PAUSA', variant: 'warning', icon: <Pause size={20} /> },
@@ -256,8 +270,8 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
               onClick={action}
               disabled={disabled}
               icon={icon}
-              size="lg"
-              className="min-w-[100px] h-14"
+              size="md"
+              className="min-w-[80px] sm:min-w-[100px] h-12 sm:h-14 text-xs sm:text-sm"
             >
               {label}
             </DeviceButton>
@@ -265,16 +279,16 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
         </div>
       </div>
 
-      {/* Realistic Ambient Sound Toggle Buttons */}
+      {/* Realistic Ambient Sound Toggle Buttons - Responsive */}
       <div 
-        className="p-5 rounded-2xl border-2 border-graphite-edge device-texture"
+        className="p-3 sm:p-5 rounded-2xl border-2 border-graphite-edge device-texture"
         style={{ 
           background: 'var(--gradient-panel)',
           boxShadow: 'var(--shadow-inset)'
         }}
       >
-        <h3 className="label-serigraph text-center mb-4">AMBIENTI AUDIO</h3>
-        <div className="grid grid-cols-2 gap-3">
+        <h3 className="label-serigraph text-center mb-3 sm:mb-4">AMBIENTI AUDIO</h3>
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {[
             { key: 'ocean', label: 'OCEANO', volume: state.oceanVolume, defaultVol: 0.15, icon: <Waves size={16} /> },
             { key: 'rain', label: 'PIOGGIA', volume: state.rainVolume, defaultVol: 0.12, icon: <Cloud size={16} /> },
@@ -287,15 +301,17 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
               state={volume > 0 ? 'active' : 'default'}
               onClick={() => updateAmbientVolume(key as any, volume > 0 ? 0 : defaultVol)}
               icon={icon}
+              size="md"
+              className="h-10 sm:h-12 min-w-0 whitespace-nowrap text-xs sm:text-sm"
             >
               {label}
             </DeviceButton>
           ))}
         </div>
         
-        {/* Ambient levels indicator */}
+        {/* Ambient levels indicator - Responsive */}
         <div className="mt-3 text-center">
-          <div className="text-xs text-device-muted font-mono">
+          <div className="font-mono" style={{ fontSize: 'clamp(10px, 2.5vw, 12px)', color: 'hsl(var(--device-muted))' }}>
             {Object.entries({
               OCN: state.oceanVolume,
               PGG: state.rainVolume,

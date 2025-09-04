@@ -38,9 +38,9 @@ const colorSchemes = {
 };
 
 const sizeClasses = {
-  sm: 'px-3 py-2 text-xs gap-2',
-  md: 'px-4 py-3 text-sm gap-3',
-  lg: 'px-6 py-4 text-base gap-4'
+  sm: 'px-2 py-1.5 text-xs gap-1.5',
+  md: 'px-3 py-2 text-sm gap-2',
+  lg: 'px-4 py-3 text-base gap-3'
 };
 
 export const DeviceButton = React.forwardRef<HTMLButtonElement, DeviceButtonProps>(
@@ -115,12 +115,14 @@ export const DeviceButton = React.forwardRef<HTMLButtonElement, DeviceButtonProp
             <div className="absolute top-0 left-0 w-1 h-1 rounded-full bg-white/30" />
           </div>
           
-          {/* Testo adattato */}
+          {/* Testo adattato responsivo */}
           <span 
             className="flex-1 text-center leading-tight"
             style={{
               color: colors.symbol,
-              fontSize: size === 'sm' ? '0.65rem' : size === 'lg' ? '0.9rem' : '0.75rem',
+              fontSize: size === 'sm' ? 'clamp(8px, 2vw, 10px)' : 
+                       size === 'lg' ? 'clamp(11px, 2.8vw, 14px)' : 
+                       'clamp(9px, 2.4vw, 12px)',
               wordWrap: 'break-word',
               hyphens: 'auto'
             }}

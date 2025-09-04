@@ -53,7 +53,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
 
   return (
     <div 
-      className="p-4 rounded-2xl border-2 border-graphite-edge device-texture"
+      className="w-full max-w-sm mx-auto p-3 sm:p-4 rounded-2xl border-2 border-graphite-edge device-texture"
       style={{ 
         background: `
           radial-gradient(ellipse at center, hsl(var(--graphite-2)), hsl(var(--graphite-0))),
@@ -62,9 +62,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
         boxShadow: 'var(--shadow-inset)'
       }}
     >
-      {/* Cornice LCD esterna - Più grande del vetro */}
+      {/* Cornice LCD esterna - Centrata perfettamente */}
       <div 
-        className="relative p-4 rounded-lg"
+        className="relative flex items-center justify-center p-3 sm:p-4 rounded-lg mx-auto"
         style={{ 
           background: `
             linear-gradient(145deg, 
@@ -79,9 +79,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
           `
         }}
       >
-        {/* Incasso per il vetro LCD */}
+        {/* Incasso per il vetro LCD - Centrato */}
         <div 
-          className="relative p-3 rounded-md"
+          className="relative flex items-center justify-center p-2 sm:p-3 rounded-md"
           style={{ 
             background: `
               linear-gradient(145deg, 
@@ -97,12 +97,11 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
             `
           }}
         >
-          {/* Vetro LCD - Più piccolo e incassato */}
+          {/* Vetro LCD - Responsive e perfettamente centrato */}
           <div 
-            className="relative p-3 rounded-sm overflow-visible"
+            className="relative p-2 sm:p-3 rounded-sm overflow-visible w-full max-w-[280px] sm:max-w-[320px]"
             style={{ 
-              height: '120px',
-              width: '300px',
+              height: 'clamp(100px, 20vw, 140px)',
               background: `
                 repeating-linear-gradient(
                   0deg,
@@ -128,23 +127,24 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
             }}
             aria-live="polite"
           >
-            {/* Layout modulare con griglia perfettamente centrata */}
+            {/* Layout modulare con griglia perfettamente centrata e responsive */}
             <div 
               className="h-full w-full text-tft text-tft-dim"
               style={{
                 display: 'grid',
                 gridTemplateRows: '1fr auto 1fr',
                 gridTemplateColumns: '1fr',
-                gap: '8px',
-                padding: '8px'
+                gap: 'clamp(4px, 2vw, 8px)',
+                padding: 'clamp(4px, 2vw, 8px)'
               }}
             >
               
               {/* Riga 1: Timer principale centrato */}
               <div className="flex flex-col items-center justify-center text-center">
                 <div 
-                  className="text-2xl font-mono font-bold leading-none mb-1"
+                  className="font-mono font-bold leading-none mb-1"
                   style={{
+                    fontSize: 'clamp(1.2rem, 4vw, 1.8rem)',
                     color: 'hsl(var(--lcd-green-soft))',
                     textShadow: '0 0 6px hsl(var(--lcd-green-soft) / 0.5)',
                     fontFamily: 'monospace'
@@ -153,8 +153,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                   {state.timeLeft > 0 ? formatTime(state.timeLeft) : formatTime(state.duration * 3600)}
                 </div>
                 <div 
-                  className="text-xs uppercase tracking-wider"
+                  className="uppercase tracking-wider"
                   style={{
+                    fontSize: 'clamp(0.5rem, 2vw, 0.75rem)',
                     color: 'hsl(var(--lcd-green-dim))',
                     textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
                   }}
@@ -167,13 +168,14 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
               <div 
                 className="grid grid-cols-2 items-center text-center"
                 style={{
-                  gap: '16px'
+                  gap: 'clamp(8px, 3vw, 16px)'
                 }}
               >
                 <div className="flex flex-col items-center justify-center">
                   <div 
-                    className="text-lg font-mono font-bold leading-none mb-1"
+                    className="font-mono font-bold leading-none mb-1"
                     style={{
+                      fontSize: 'clamp(0.9rem, 3vw, 1.2rem)',
                       color: 'hsl(var(--lcd-green-soft))',
                       textShadow: '0 0 4px hsl(var(--lcd-green-soft) / 0.5)'
                     }}
@@ -181,8 +183,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                     {getModeName(state.activeMode)}
                   </div>
                   <div 
-                    className="text-xs uppercase tracking-wider"
+                    className="uppercase tracking-wider"
                     style={{
+                      fontSize: 'clamp(0.4rem, 1.5vw, 0.6rem)',
                       color: 'hsl(var(--lcd-green-dim))',
                       textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
                     }}
@@ -192,8 +195,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 </div>
                 <div className="flex flex-col items-center justify-center">
                   <div 
-                    className="text-lg font-mono font-bold leading-none mb-1"
+                    className="font-mono font-bold leading-none mb-1"
                     style={{
+                      fontSize: 'clamp(0.9rem, 3vw, 1.2rem)',
                       color: 'hsl(var(--lcd-green-soft))',
                       textShadow: '0 0 4px hsl(var(--lcd-green-soft) / 0.5)'
                     }}
@@ -201,8 +205,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                     {Math.round(state.masterVolume * 100).toString().padStart(3, '0')}%
                   </div>
                   <div 
-                    className="text-xs uppercase tracking-wider"
+                    className="uppercase tracking-wider"
                     style={{
+                      fontSize: 'clamp(0.4rem, 1.5vw, 0.6rem)',
                       color: 'hsl(var(--lcd-green-dim))',
                       textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
                     }}
