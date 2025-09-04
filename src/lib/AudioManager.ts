@@ -596,17 +596,15 @@ class AudioManagerSingleton {
 
     this.setState({
       activeMode: mode,
-      neuralVolume: config.neuralVolume,
-      ambientVolume: config.ambientVolume
+      neuralVolume: config.neuralVolume
+      // Removed ambientVolume - focus modes don't affect ambient settings
     });
 
-    // Update gain nodes with proper volume mapping
+    // Update only neural gain nodes - ambient chain remains untouched
     if (this.neuralChain) {
       this.smoothGain(this.neuralChain.gain, this.mapNeuralVolume(config.neuralVolume), 0.2);
     }
-    if (this.ambientChain) {
-      this.smoothGain(this.ambientChain.gain, this.mapAmbientVolume(config.ambientVolume), 0.2);
-    }
+    // Removed ambient chain update - ambient settings preserved
 
     // Start timer if session is playing and neural mode becomes active
     if (this.state.isPlaying && this.audioCtx?.state === 'running') {
