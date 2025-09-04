@@ -178,32 +178,6 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
                 }}
               />
               
-              {/* Lancetta verde incisa sulla superficie */}
-              <div 
-                className="absolute w-1 h-10 top-2 left-1/2 z-10"
-                style={{
-                  background: `
-                    linear-gradient(180deg, 
-                      hsl(140, 90%, 80%) 0%, 
-                      hsl(140, 80%, 60%) 30%,
-                      hsl(140, 70%, 45%) 70%,
-                      hsl(140, 60%, 35%) 100%
-                    )
-                  `,
-                  transform: `translateX(-50%) rotate(${(state.masterVolume - 0.5) * 270}deg)`,
-                  transformOrigin: '50% 400%',
-                  boxShadow: `
-                    0 0 8px hsl(140, 80%, 60%),
-                    0 0 4px hsl(140, 80%, 60%),
-                    0 0 2px hsl(140, 80%, 60%),
-                    inset 0 1px 1px rgba(255,255,255,0.4),
-                    inset 0 -1px 1px rgba(0,0,0,0.3)
-                  `,
-                  border: '0.5px solid rgba(0,0,0,0.2)',
-                  borderRadius: '0.5px'
-                }}
-              />
-              
               {/* Display digitale integrato al centro */}
               <div 
                 className="absolute inset-0 flex items-center justify-center pointer-events-none"
