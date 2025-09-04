@@ -232,12 +232,12 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
           boxShadow: 'var(--shadow-inset)'
         }}
       >
-        <h3 className="label-serigraph text-center mb-4">CONTROLLI TRASPORTO</h3>
+        <h3 className="label-serigraph text-center mb-4">COMANDI RIPRODUZIONE</h3>
         <div className="flex justify-center space-x-4">
           {[
-            { action: start, disabled: state.isPlaying, active: state.isPlaying, label: 'START', variant: 'success', icon: <Play size={16} /> },
-            { action: pause, disabled: !state.isPlaying || state.isPaused, active: state.isPaused, label: 'PAUSA', variant: 'warning', icon: <Pause size={16} /> },
-            { action: stop, disabled: !state.isPlaying && !state.isPaused, active: !state.isPlaying && !state.isPaused, label: 'STOP', variant: 'danger', icon: <Square size={16} /> }
+            { action: start, disabled: state.isPlaying, active: state.isPlaying, label: 'START', variant: 'success', icon: <Play size={20} /> },
+            { action: pause, disabled: !state.isPlaying || state.isPaused, active: state.isPaused, label: 'PAUSA', variant: 'warning', icon: <Pause size={20} /> },
+            { action: stop, disabled: !state.isPlaying && !state.isPaused, active: !state.isPlaying && !state.isPaused, label: 'STOP', variant: 'danger', icon: <Square size={20} /> }
           ].map(({ action, disabled, active, label, variant, icon }) => (
             <DeviceButton
               key={label}
@@ -246,6 +246,8 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
               onClick={action}
               disabled={disabled}
               icon={icon}
+              size="lg"
+              className="min-w-[100px] h-14"
             >
               {label}
             </DeviceButton>
