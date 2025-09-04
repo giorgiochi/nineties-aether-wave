@@ -62,6 +62,17 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
     return `${activeAmbients.length} Mix`;
   };
 
+  const isAmbientEnabled = (): boolean => {
+    return state.oceanVolume > 0 || state.rainVolume > 0 || state.pinkVolume > 0 || state.brownVolume > 0;
+  };
+
+  const getAmbientVolume = (): number => {
+    const volumes = [state.oceanVolume, state.rainVolume, state.pinkVolume, state.brownVolume];
+    const activeVolumes = volumes.filter(v => v > 0);
+    if (activeVolumes.length === 0) return 0;
+    return Math.max(...activeVolumes);
+  };
+
   const vuLevel = Math.min(100, Math.round(state.masterVolume * 100));
 
   return (
@@ -145,7 +156,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
               className="h-full w-full text-tft text-tft-dim"
               style={{
                 display: 'grid',
-                gridTemplateRows: '1fr auto 1fr',
+                gridTemplateRows: '1fr auto auto 1fr',
                 gridTemplateColumns: '1fr',
                 gap: 'clamp(4px, 2vw, 8px)',
                 padding: 'clamp(4px, 2vw, 8px)'
@@ -177,55 +188,106 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 </div>
               </div>
 
-              {/* Riga 2: Modalità e Volume bilanciati */}
+              {/* Riga 2: Modalità */}
+              <div className="flex flex-col items-center justify-center text-center">
+                <div 
+                  className="font-mono font-bold leading-none mb-1"
+                  style={{
+                    fontSize: 'clamp(0.9rem, 3vw, 1.2rem)',
+                    color: 'hsl(var(--lcd-green-soft))',
+                    textShadow: '0 0 4px hsl(var(--lcd-green-soft) / 0.5)'
+                  }}
+                >
+                  {getModeName(state.activeMode)}
+                </div>
+                <div 
+                  className="uppercase tracking-wider"
+                  style={{
+                    fontSize: 'clamp(0.4rem, 1.5vw, 0.6rem)',
+                    color: 'hsl(var(--lcd-green-dim))',
+                    textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
+                  }}
+                >
+                  MODALITÀ
+                </div>
+              </div>
+
+              {/* Riga 3: Indicatori Volume */}
               <div 
-                className="grid grid-cols-2 items-center text-center"
+                className="grid grid-cols-1 gap-2 text-center"
                 style={{
-                  gap: 'clamp(8px, 3vw, 16px)'
+                  gap: 'clamp(4px, 2vw, 8px)'
                 }}
               >
-                <div className="flex flex-col items-center justify-center">
-                  <div 
-                    className="font-mono font-bold leading-none mb-1"
-                    style={{
-                      fontSize: 'clamp(0.9rem, 3vw, 1.2rem)',
-                      color: 'hsl(var(--lcd-green-soft))',
-                      textShadow: '0 0 4px hsl(var(--lcd-green-soft) / 0.5)'
-                    }}
-                  >
-                    {getModeName(state.activeMode)}
+                {/* Volume Neurale */}
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <div 
+                      className="font-mono font-bold leading-none"
+                      style={{
+                        fontSize: 'clamp(0.6rem, 2.5vw, 0.8rem)',
+                        color: 'hsl(var(--lcd-green-soft))',
+                        textShadow: '0 0 3px hsl(var(--lcd-green-soft) / 0.4)'
+                      }}
+                    >
+                      VOLUME NEURALE: {Math.round(state.neuralVolume * 100)}%
+                    </div>
                   </div>
+                  {/* Mini progress bar neurale */}
                   <div 
-                    className="uppercase tracking-wider"
+                    className="w-full h-1 rounded-full border border-opacity-30"
                     style={{
-                      fontSize: 'clamp(0.4rem, 1.5vw, 0.6rem)',
-                      color: 'hsl(var(--lcd-green-dim))',
-                      textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
+                      maxWidth: '120px',
+                      backgroundColor: 'hsl(var(--lcd-bg-center))',
+                      borderColor: 'hsl(var(--lcd-green-dim))'
                     }}
                   >
-                    MODALITÀ
+                    <div 
+                      className="h-full rounded-full transition-all duration-200"
+                      style={{
+                        width: `${Math.round(state.neuralVolume * 100)}%`,
+                        backgroundColor: 'hsl(var(--lcd-green-soft))',
+                        boxShadow: '0 0 2px hsl(var(--lcd-green-soft) / 0.6)'
+                      }}
+                    />
                   </div>
                 </div>
-                <div className="flex flex-col items-center justify-center">
-                  <div 
-                    className="font-mono font-bold leading-none mb-1"
-                    style={{
-                      fontSize: 'clamp(0.9rem, 3vw, 1.2rem)',
-                      color: 'hsl(var(--lcd-green-soft))',
-                      textShadow: '0 0 4px hsl(var(--lcd-green-soft) / 0.5)'
-                    }}
-                  >
-                    {Math.round(state.neuralVolume * 100).toString().padStart(3, '0')}%
+
+                {/* Volume Ambienti */}
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <div 
+                      className="font-mono font-bold leading-none"
+                      style={{
+                        fontSize: 'clamp(0.6rem, 2.5vw, 0.8rem)',
+                        color: isAmbientEnabled() ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-dim))',
+                        textShadow: isAmbientEnabled() ? '0 0 3px hsl(var(--lcd-green-soft) / 0.4)' : '0 0 2px hsl(var(--lcd-green-dim) / 0.3)'
+                      }}
+                    >
+                      {isAmbientEnabled() ? 
+                        `VOLUME AMBIENTI: ${Math.round(getAmbientVolume() * 100)}%` : 
+                        'AMBIENTI: OFF'
+                      }
+                    </div>
                   </div>
+                  {/* Mini progress bar ambienti */}
                   <div 
-                    className="uppercase tracking-wider"
+                    className="w-full h-1 rounded-full border border-opacity-30"
                     style={{
-                      fontSize: 'clamp(0.4rem, 1.5vw, 0.6rem)',
-                      color: 'hsl(var(--lcd-green-dim))',
-                      textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
+                      maxWidth: '120px',
+                      backgroundColor: 'hsl(var(--lcd-bg-center))',
+                      borderColor: 'hsl(var(--lcd-green-dim))',
+                      opacity: isAmbientEnabled() ? 1 : 0.3
                     }}
                   >
-                    NEURALI
+                    <div 
+                      className="h-full rounded-full transition-all duration-200"
+                      style={{
+                        width: isAmbientEnabled() ? `${Math.round(getAmbientVolume() * 100)}%` : '0%',
+                        backgroundColor: 'hsl(var(--lcd-green-soft))',
+                        boxShadow: isAmbientEnabled() ? '0 0 2px hsl(var(--lcd-green-soft) / 0.6)' : 'none'
+                      }}
+                    />
                   </div>
                 </div>
               </div>
