@@ -10,7 +10,7 @@ interface AudioState {
   rainVolume: number;
   oceanVolume: number;
   duration: number;
-  timeLeft: number;
+  elapsedTime: number; // Changed from timeLeft to elapsedTime
   userUnlockedAudio: boolean;
   lastActiveTime: number;
 }
@@ -56,7 +56,7 @@ class AudioManagerSingleton {
   
   // Timer and State
   private timer: NodeJS.Timeout | null = null;
-  private endTime: number | null = null;
+  private sessionStartTime: number | null = null;
   private listeners: ((state: AudioState) => void)[] = [];
   
   private state: AudioState = {
@@ -71,7 +71,7 @@ class AudioManagerSingleton {
     rainVolume: 0.00,
     oceanVolume: 0.00,
     duration: 3,
-    timeLeft: 0,
+    elapsedTime: 0, // Changed from timeLeft to elapsedTime
     userUnlockedAudio: false,
     lastActiveTime: 0
   };
@@ -352,18 +352,24 @@ class AudioManagerSingleton {
   private startTimer() {
     if (this.timer) clearInterval(this.timer);
     
-    this.endTime = Date.now() + this.state.duration * 3600 * 1000;
+    // Record session start time for elapsed time calculation
+    this.sessionStartTime = Date.now();
     
     this.timer = setInterval(() => {
-      if (this.endTime) {
-        const left = Math.max(0, Math.floor((this.endTime - Date.now()) / 1000));
-        this.setState({ timeLeft: left });
-        
-        if (left === 0) {
-          this.stop();
-        }
+      if (this.sessionStartTime && this.state.isPlaying) {
+        const elapsed = Math.floor((Date.now() - this.sessionStartTime) / 1000);
+        this.setState({ elapsedTime: elapsed });
       }
     }, 200);
+  }
+
+  private stopTimer() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+    this.sessionStartTime = null;
+    this.setState({ elapsedTime: 0 }); // Reset elapsed time
   }
 
   // PUBLIC API
@@ -449,11 +455,7 @@ class AudioManagerSingleton {
     console.log('[AudioManager] Stopping session...');
     
     this.stopBinaural();
-    
-    if (this.timer) {
-      clearInterval(this.timer);
-      this.timer = null;
-    }
+    this.stopTimer(); // Use the new stopTimer method
     
     // Stop and reset ambient elements
     Object.values(this.ambientSources).forEach(ambientSource => {
@@ -466,8 +468,7 @@ class AudioManagerSingleton {
     
     this.setState({ 
       isPlaying: false, 
-      isPaused: false, 
-      timeLeft: 0 
+      isPaused: false
     });
   }
 
@@ -566,6 +567,7 @@ class AudioManagerSingleton {
   deactivateNeuralMode() {
     console.log('[AudioManager] Deactivating neural mode...');
     this.stopBinaural();
+    this.stopTimer(); // Reset timer when neural mode is deactivated
     this.setState({ 
       activeMode: '', // Clear active mode
       neuralVolume: 0 // Set neural volume to 0
@@ -606,9 +608,10 @@ class AudioManagerSingleton {
       this.smoothGain(this.ambientChain.gain, this.mapAmbientVolume(config.ambientVolume), 0.2);
     }
 
-    // Update binaural beats if active
+    // Start timer if session is playing and neural mode becomes active
     if (this.state.isPlaying && this.audioCtx?.state === 'running') {
       this.startBinaural(config.beat, config.carrier);
+      this.startTimer(); // Start timer when neural mode activates during active session
     }
   }
 

@@ -20,7 +20,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
       'CONCENTRAZIONE': 'FOCUS',
       'ADHD': 'ADHD',
       'STRESS': 'RELAX',
-      'INTRUSIVE_OFF': 'QUIET'
+      'NO THOUGHTS': 'NO THOUGHTS'
     };
     return modeMap[mode] || mode;
   };
@@ -30,7 +30,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
       'CONCENTRAZIONE': 16.0,
       'ADHD': 13.0,
       'STRESS': 10.0,
-      'INTRUSIVE_OFF': 8.0
+      'NO THOUGHTS': 8.0
     };
     return beatMap[mode] || 16.0;
   };
@@ -170,9 +170,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                     textShadow: '0 0 6px hsl(var(--lcd-green-soft) / 0.5)',
                     fontFamily: 'monospace'
                   }}
-                >
-                  {state.timeLeft > 0 ? formatTime(state.timeLeft) : formatTime(state.duration * 3600)}
-                </div>
+                 >
+                   {formatTime(state.elapsedTime)}
+                 </div>
                 <div 
                   className="uppercase tracking-wider"
                   style={{
@@ -181,7 +181,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                     textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
                   }}
                 >
-                  ── SESSION TIME ──
+                  ── ELAPSED TIME ──
                 </div>
               </div>
 
