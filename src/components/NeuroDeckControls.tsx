@@ -43,7 +43,7 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
         </div>
       </div>
 
-      {/* Volume Slider - Vintage LED Style */}
+      {/* Volume Slider - Vintage LCD Segments */}
       <div 
         className="p-3 sm:p-5 rounded-2xl border-2 border-graphite-edge device-texture"
         style={{ 
@@ -51,142 +51,137 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
           boxShadow: 'var(--shadow-inset)'
         }}
       >
-        <h3 className="label-serigraph text-center mb-3 sm:mb-4">VOLUME MASTER</h3>
         <div className="flex flex-col items-center space-y-4">
           
-          {/* Vintage LED Slider */}
+          {/* Vintage LCD Segment Slider */}
           <div className="w-full max-w-xs relative">
             
-            {/* Slider Track Container */}
+            {/* Label e Percentuale integrata */}
+            <div className="flex justify-between items-center mb-2">
+              <span className="label-serigraph text-xs">VOLUME MASTER</span>
+              <span 
+                className="font-mono font-bold"
+                style={{
+                  fontSize: 'clamp(12px, 3vw, 14px)',
+                  color: 'hsl(var(--lcd-green-dim))',
+                  textShadow: '0 0 2px hsl(var(--lcd-green-dim) / 0.3)'
+                }}
+              >
+                {Math.round(state.masterVolume * 100).toString().padStart(3, '0')}%
+              </span>
+            </div>
+            
+            {/* Slider Track Container - Incassato */}
             <div 
-              className="relative w-full h-6 rounded-full"
+              className="relative w-full h-8 rounded-sm"
               style={{
                 background: `
                   linear-gradient(180deg,
                     hsl(var(--graphite-edge)) 0%,
-                    hsl(var(--graphite-0)) 20%,
-                    hsl(var(--graphite-1)) 80%,
+                    hsl(var(--graphite-0)) 30%,
+                    hsl(var(--graphite-1)) 70%,
                     hsl(var(--graphite-edge)) 100%
                   )
                 `,
-                border: '2px solid hsl(var(--graphite-edge))',
+                border: '1px solid hsl(var(--graphite-edge))',
                 boxShadow: `
                   inset 0 3px 6px rgba(0,0,0,0.8),
                   inset 0 6px 12px rgba(0,0,0,0.6),
-                  inset 0 -1px 2px rgba(255,255,255,0.05)
+                  inset 0 -1px 2px rgba(255,255,255,0.03)
                 `
               }}
             >
               
-              {/* LED Track Fill */}
-              <div 
-                className="absolute top-1 left-1 h-4 rounded-full transition-all duration-200"
-                style={{
-                  width: `calc(${state.masterVolume * 100}% - 8px)`,
-                  background: `
-                    linear-gradient(90deg,
-                      hsl(140, 90%, 40%) 0%,
-                      hsl(140, 90%, 60%) 50%,
-                      hsl(140, 90%, 70%) 100%
-                    )
-                  `,
-                  boxShadow: `
-                    0 0 6px hsl(140, 90%, 70%),
-                    0 0 3px hsl(140, 90%, 70%),
-                    inset 0 1px 2px rgba(255,255,255,0.3),
-                    inset 0 -1px 1px rgba(0,0,0,0.2)
-                  `,
-                  filter: 'brightness(1.1)'
-                }}
-              />
+              {/* Segmenti LED progressivi */}
+              <div className="absolute inset-2 flex items-center">
+                {Array.from({ length: 20 }, (_, i) => {
+                  const segmentValue = (i + 1) / 20;
+                  const isActive = state.masterVolume >= segmentValue;
+                  return (
+                    <div 
+                      key={i}
+                      className="flex-1 mx-[1px] h-full rounded-[1px]"
+                      style={{
+                        background: isActive 
+                          ? `linear-gradient(180deg,
+                              hsl(var(--lcd-green-dim)) 0%,
+                              hsl(var(--lcd-green-soft)) 50%,
+                              hsl(var(--lcd-green-dim)) 100%
+                            )`
+                          : `linear-gradient(180deg,
+                              hsl(var(--graphite-2)) 0%,
+                              hsl(var(--graphite-1)) 100%
+                            )`,
+                        boxShadow: isActive 
+                          ? `
+                              inset 0 1px 1px rgba(255,255,255,0.2),
+                              0 0 2px hsl(var(--lcd-green-dim) / 0.3)
+                            `
+                          : `inset 0 1px 1px rgba(0,0,0,0.3)`,
+                        opacity: isActive ? 1 : 0.3,
+                        transition: 'all 0.15s ease-out'
+                      }}
+                    />
+                  );
+                })}
+              </div>
               
-              {/* Slider Input */}
+              {/* Slider Input invisibile */}
               <input
                 type="range"
                 min="0"
                 max="1"
-                step="0.001"
+                step="0.05"
                 value={state.masterVolume}
                 onChange={(e) => updateMasterVolume(parseFloat(e.target.value))}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                 aria-label="Volume Master"
               />
               
-              {/* LED Thumb */}
+              {/* Cursore fisico in grafite */}
               <div 
-                className="absolute top-0 h-6 w-6 rounded-full transition-all duration-200 pointer-events-none"
+                className="absolute top-0 h-8 w-4 transition-all duration-150 pointer-events-none"
                 style={{
-                  left: `calc(${state.masterVolume * 100}% - 12px)`,
+                  left: `calc(${state.masterVolume * 100}% - 8px)`,
                   background: `
-                    radial-gradient(circle,
-                      hsl(140, 90%, 80%) 0%,
-                      hsl(140, 90%, 70%) 40%,
-                      hsl(140, 90%, 50%) 80%,
-                      hsl(140, 70%, 30%) 100%
+                    linear-gradient(135deg,
+                      hsl(var(--graphite-highlight)) 0%,
+                      hsl(var(--graphite-3)) 30%,
+                      hsl(var(--graphite-2)) 70%,
+                      hsl(var(--graphite-edge)) 100%
                     )
                   `,
-                  border: '2px solid hsl(140, 60%, 25%)',
+                  border: '1px solid hsl(var(--graphite-edge))',
+                  borderRadius: '2px',
                   boxShadow: `
-                    0 0 12px hsl(140, 90%, 70%),
-                    0 0 6px hsl(140, 90%, 70%),
                     0 2px 4px rgba(0,0,0,0.4),
-                    inset 0 1px 2px rgba(255,255,255,0.4),
-                    inset 0 -1px 2px rgba(0,0,0,0.3)
+                    inset 0 1px 1px rgba(255,255,255,0.1),
+                    inset 0 -1px 1px rgba(0,0,0,0.2)
                   `
                 }}
               >
-                {/* LED Center Glow */}
+                {/* Texture del cursore */}
                 <div 
-                  className="absolute inset-1 rounded-full"
+                  className="w-full h-full rounded-[1px] opacity-30"
                   style={{
                     background: `
-                      radial-gradient(circle,
-                        hsl(140, 90%, 90%) 0%,
-                        hsl(140, 90%, 75%) 60%,
-                        transparent 100%
+                      repeating-linear-gradient(
+                        90deg,
+                        rgba(255,255,255,0.1) 0px,
+                        rgba(255,255,255,0.1) 1px,
+                        transparent 1px,
+                        transparent 2px
                       )
                     `
                   }}
                 />
               </div>
             </div>
-            
-            {/* Digital Percentage Display */}
-            <div className="flex justify-center mt-3">
-              <div 
-                className="px-3 py-1 rounded font-mono font-bold"
-                style={{
-                  fontSize: 'clamp(14px, 3.5vw, 18px)',
-                  background: `
-                    radial-gradient(ellipse 80% 60% at 50% 50%, 
-                      hsl(120 80% 8%) 0%, 
-                      hsl(120 60% 6%) 40%, 
-                      hsl(120 40% 4%) 80%,
-                      hsl(120 20% 2%) 100%
-                    )
-                  `,
-                  color: 'hsl(140, 90%, 70%)',
-                  textShadow: `
-                    0 0 6px hsl(140, 90%, 70%),
-                    0 0 3px hsl(140, 90%, 70%),
-                    0 0 1px hsl(140, 90%, 70%)
-                  `,
-                  border: '1px solid hsl(120, 40%, 10%)',
-                  boxShadow: `
-                    inset 0 2px 4px rgba(0,0,0,0.8),
-                    inset 0 -1px 2px rgba(255,255,255,0.02),
-                    0 0 12px hsl(140, 90%, 70%)22
-                  `
-                }}
-              >
-                {Math.round(state.masterVolume * 100)}%
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Transport Controls with Realistic Buttons - Responsive */}
+      {/* Single Start/Stop Control */}
       <div 
         className="p-3 sm:p-5 rounded-2xl border-2 border-graphite-edge device-texture"
         style={{ 
@@ -194,26 +189,18 @@ export const NeuroDeckControls: React.FC<NeuroDeckControlsProps> = ({ neuroDeck 
           boxShadow: 'var(--shadow-inset)'
         }}
       >
-        <h3 className="label-serigraph text-center mb-3 sm:mb-4">COMANDI RIPRODUZIONE</h3>
-        <div className="flex justify-center space-x-2 sm:space-x-4">
-          {[
-            { action: start, disabled: state.isPlaying, active: state.isPlaying, label: 'START', variant: 'success', icon: <Play size={20} /> },
-            { action: pause, disabled: !state.isPlaying || state.isPaused, active: state.isPaused, label: 'PAUSA', variant: 'warning', icon: <Pause size={20} /> },
-            { action: stop, disabled: !state.isPlaying && !state.isPaused, active: !state.isPlaying && !state.isPaused, label: 'STOP', variant: 'danger', icon: <Square size={20} /> }
-          ].map(({ action, disabled, active, label, variant, icon }) => (
-            <DeviceButton
-              key={label}
-              variant={variant as any}
-              state={active && !disabled ? 'active' : disabled ? 'disabled' : 'default'}
-              onClick={action}
-              disabled={disabled}
-              icon={icon}
-              size="md"
-              className="min-w-[80px] sm:min-w-[100px] h-12 sm:h-14 text-xs sm:text-sm"
-            >
-              {label}
-            </DeviceButton>
-          ))}
+        <h3 className="label-serigraph text-center mb-3 sm:mb-4">CONTROLLO SESSIONE</h3>
+        <div className="flex justify-center">
+          <DeviceButton
+            variant={state.isPlaying || state.isPaused ? 'danger' : 'success'}
+            state="default"
+            onClick={state.isPlaying || state.isPaused ? stop : start}
+            icon={state.isPlaying || state.isPaused ? <Square size={20} /> : <Play size={20} />}
+            size="lg"
+            className="min-w-[120px] sm:min-w-[140px] h-14 sm:h-16 text-sm sm:text-base"
+          >
+            {state.isPlaying || state.isPaused ? 'STOP' : 'START'}
+          </DeviceButton>
         </div>
       </div>
 
