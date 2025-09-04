@@ -375,6 +375,9 @@ class AudioManagerSingleton {
       isPaused: false, 
       lastActiveTime: Date.now() 
     });
+
+    // Ensure ambient elements with volume > 0 actually play
+    this.resumeAll();
     
     return true;
   }

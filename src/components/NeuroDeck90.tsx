@@ -7,6 +7,7 @@ import { AudioUnlockPrompt } from './AudioUnlockPrompt';
 export const NeuroDeck90: React.FC = () => {
   const neuroDeck = useAudioManager();
   const [showUnlockPrompt, setShowUnlockPrompt] = useState(false);
+  const [pendingStart, setPendingStart] = useState(false);
 
   // Check if unlock prompt needs to be shown
   useEffect(() => {
@@ -25,9 +26,9 @@ export const NeuroDeck90: React.FC = () => {
     const success = await neuroDeck.unlockAudio();
     if (success) {
       setShowUnlockPrompt(false);
-      // If it had tried to start, retry now
-      if (neuroDeck.state.isPlaying) {
-        neuroDeck.start();
+      if (pendingStart) {
+        await neuroDeck.start();
+        setPendingStart(false);
       }
     }
     return success;
@@ -36,6 +37,7 @@ export const NeuroDeck90: React.FC = () => {
   const handleStart = async (): Promise<boolean> => {
     if (neuroDeck.needsUserInteraction()) {
       console.log('[NeuroDeck90] Need user interaction, showing unlock prompt');
+      setPendingStart(true);
       setShowUnlockPrompt(true);
       return false;
     }
