@@ -217,8 +217,42 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 </div>
               </div>
 
-              {/* Riga 3: Spazio vuoto */}
-              <div></div>
+              {/* Riga 3: Status indicator con omino animato */}
+              <div className="flex items-center justify-center space-x-2">
+                <div 
+                  className="uppercase tracking-wider font-mono font-bold"
+                  style={{
+                    fontSize: 'clamp(0.6rem, 2.5vw, 0.8rem)',
+                    color: 'hsl(var(--lcd-green-soft))',
+                    textShadow: '0 0 3px hsl(var(--lcd-green-soft) / 0.4)'
+                  }}
+                >
+                  {state.isPlaying && !state.isPaused ? 'RUNNING' : 
+                   state.isPaused ? 'PAUSED' : 'READY'}
+                </div>
+                
+                {/* Omino LCD animato - Stile minimale anni '90 */}
+                <div 
+                  className="relative flex items-center justify-center"
+                  style={{
+                    width: 'clamp(16px, 4vw, 20px)',
+                    height: 'clamp(12px, 3vw, 16px)'
+                  }}
+                >
+                  <div 
+                    className="font-mono font-bold leading-none select-none"
+                    style={{
+                      fontSize: 'clamp(8px, 2vw, 10px)',
+                      color: 'hsl(var(--lcd-green-dim))',
+                      textShadow: '0 0 2px hsl(var(--lcd-green-dim) / 0.3)',
+                      fontFamily: 'monospace',
+                      animation: state.isPlaying && !state.isPaused ? 'pulse 1.5s ease-in-out infinite' : 'none'
+                    }}
+                  >
+                    {state.isPlaying && !state.isPaused ? '►' : '■'}
+                  </div>
+                </div>
+              </div>
 
             </div>
           </div>
