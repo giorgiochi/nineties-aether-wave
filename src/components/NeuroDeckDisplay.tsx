@@ -81,9 +81,9 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
       >
         {/* LCD Screen - Esatta come nella reference */}
         <div 
-          className="relative p-6 rounded-md overflow-visible lcd-realistic"
+          className="relative p-5 rounded-md overflow-visible lcd-realistic"
           style={{ 
-            height: '300px',
+            height: '240px',
             background: `radial-gradient(120% 100% at 50% 45%, hsl(var(--lcd-bg-center)), hsl(var(--lcd-bg)))`,
             border: '2px solid hsl(var(--graphite-2))',
             boxShadow: 'inset 0 0 0 1px hsl(var(--graphite-3))'
@@ -91,12 +91,12 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
           aria-live="polite"
         >
           {/* Layout esatto della reference */}
-          <div className="text-tft text-tft-dim h-full flex flex-col justify-center items-center space-y-5 py-2">
+          <div className="text-tft text-tft-dim h-full flex flex-col justify-center items-center space-y-4 py-1">
             
             {/* Timer principale - Grande e centrato */}
             <div className="text-center">
               <div 
-                className="text-6xl font-mono font-bold mb-2 leading-none"
+                className="text-5xl font-mono font-bold mb-1 leading-none"
                 style={{
                   color: 'hsl(var(--lcd-green-soft))',
                   textShadow: '0 0 6px hsl(var(--lcd-green-soft) / 0.5)',
@@ -117,7 +117,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
             </div>
 
             {/* Griglia modalità e volume - Come nella reference */}
-            <div className="grid grid-cols-2 gap-12 text-center px-8">
+            <div className="grid grid-cols-2 gap-8 text-center px-6">
               <div>
                 <div 
                   className="text-2xl font-mono font-bold mb-1"
@@ -204,12 +204,12 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
             </div>
 
             {/* VU Meter - Come nella reference */}
-            <div className="px-8">
+            <div className="px-6">
               <div 
                 className="text-sm uppercase tracking-wider text-center mb-3 opacity-80"
                 style={{
-                  color: '#00aa2b',
-                  textShadow: '0 0 5px #00aa2b'
+                  color: 'hsl(var(--lcd-green-dim))',
+                  textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
                 }}
               >
                 VU METER
