@@ -79,25 +79,41 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
           `
         }}
       >
-        {/* LCD Screen - Esatta come nella reference */}
+        {/* LCD Screen con griglia pixel visibile */}
         <div 
-          className="relative p-4 rounded-md overflow-visible lcd-realistic"
+          className="relative p-4 rounded-md overflow-visible"
           style={{ 
             height: '180px',
             width: '420px',
-            background: `radial-gradient(120% 100% at 50% 45%, hsl(var(--lcd-bg-center)), hsl(var(--lcd-bg)))`,
+            background: `
+              repeating-linear-gradient(
+                0deg,
+                hsl(var(--lcd-bg)) 0px,
+                hsl(var(--lcd-bg)) 1px,
+                hsl(var(--lcd-bg-center)) 1px,
+                hsl(var(--lcd-bg-center)) 2px
+              ),
+              repeating-linear-gradient(
+                90deg,
+                hsl(var(--lcd-bg)) 0px,
+                hsl(var(--lcd-bg)) 1px,
+                hsl(var(--lcd-bg-center)) 1px,
+                hsl(var(--lcd-bg-center)) 2px
+              ),
+              radial-gradient(120% 100% at 50% 45%, hsl(var(--lcd-bg-center)), hsl(var(--lcd-bg)))
+            `,
             border: '2px solid hsl(var(--graphite-2))',
             boxShadow: 'inset 0 0 0 1px hsl(var(--graphite-3))'
           }}
           aria-live="polite"
         >
           {/* Layout esatto della reference */}
-          <div className="text-tft text-tft-dim h-full flex flex-col justify-center items-center space-y-3 py-1">
+          <div className="text-tft text-tft-dim h-full flex flex-col justify-between py-3">
             
-            {/* Timer principale - Grande e centrato */}
+            {/* Timer principale - In alto */}
             <div className="text-center">
               <div 
-                className="text-4xl font-mono font-bold mb-1 leading-none"
+                className="text-3xl font-mono font-bold mb-1 leading-none"
                 style={{
                   color: 'hsl(var(--lcd-green-soft))',
                   textShadow: '0 0 6px hsl(var(--lcd-green-soft) / 0.5)',
@@ -107,7 +123,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 {state.timeLeft > 0 ? formatTime(state.timeLeft) : formatTime(state.duration * 3600)}
               </div>
               <div 
-                className="text-sm uppercase tracking-wider"
+                className="text-xs uppercase tracking-wider"
                 style={{
                   color: 'hsl(var(--lcd-green-dim))',
                   textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
@@ -117,11 +133,11 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
               </div>
             </div>
 
-            {/* Griglia modalità e volume - Come nella reference */}
-            <div className="grid grid-cols-2 gap-6 text-center px-4">
+            {/* Modalità e Volume - Centro */}
+            <div className="grid grid-cols-2 gap-8 text-center px-4">
               <div>
                 <div 
-                  className="text-2xl font-mono font-bold mb-1"
+                  className="text-xl font-mono font-bold mb-1"
                   style={{
                     color: 'hsl(var(--lcd-green-soft))',
                     textShadow: '0 0 4px hsl(var(--lcd-green-soft) / 0.5)'
@@ -130,7 +146,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                   {getModeName(state.activeMode)}
                 </div>
                 <div 
-                  className="text-sm uppercase tracking-wider opacity-80"
+                  className="text-xs uppercase tracking-wider opacity-80"
                   style={{
                     color: 'hsl(var(--lcd-green-dim))',
                     textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
@@ -141,7 +157,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
               </div>
               <div>
                 <div 
-                  className="text-2xl font-mono font-bold mb-1"
+                  className="text-xl font-mono font-bold mb-1"
                   style={{
                     color: 'hsl(var(--lcd-green-soft))',
                     textShadow: '0 0 4px hsl(var(--lcd-green-soft) / 0.5)'
@@ -150,7 +166,7 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                   {Math.round(state.masterVolume * 100).toString().padStart(3, '0')}%
                 </div>
                 <div 
-                  className="text-sm uppercase tracking-wider opacity-80"
+                  className="text-xs uppercase tracking-wider opacity-80"
                   style={{
                     color: 'hsl(var(--lcd-green-dim))',
                     textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
@@ -161,53 +177,10 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
               </div>
             </div>
 
-            {/* Indicatori di stato - Come nella reference */}
-            <div className="flex justify-center space-x-6 text-sm">
-              <span 
-                className={`flex items-center space-x-2`}
-                style={{
-                  color: state.isPlaying ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-off))',
-                  textShadow: state.isPlaying ? '0 0 4px hsl(var(--lcd-green-soft) / 0.5)' : 'none'
-                }}
-              >
-                <span className="w-2 h-2 rounded-full" style={{
-                  backgroundColor: state.isPlaying ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-off))',
-                  boxShadow: state.isPlaying ? '0 0 4px hsl(var(--lcd-green-soft) / 0.5)' : 'none'
-                }}></span>
-                <span>PLAY</span>
-              </span>
-              <span 
-                className={`flex items-center space-x-2`}
-                style={{
-                  color: state.isPaused ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-off))',
-                  textShadow: state.isPaused ? '0 0 4px hsl(var(--lcd-green-soft) / 0.5)' : 'none'
-                }}
-              >
-                <span className="w-2 h-2 rounded-full" style={{
-                  backgroundColor: state.isPaused ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-off))',
-                  boxShadow: state.isPaused ? '0 0 4px hsl(var(--lcd-green-soft) / 0.5)' : 'none'
-                }}></span>
-                <span>PAUSA</span>
-              </span>
-              <span 
-                className={`flex items-center space-x-2 ${state.masterVolume > 0.7 ? 'animate-pulse' : ''}`}
-                style={{
-                  color: state.masterVolume > 0.7 ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-off))',
-                  textShadow: state.masterVolume > 0.7 ? '0 0 4px hsl(var(--lcd-green-soft) / 0.5)' : 'none'
-                }}
-              >
-                <span className="w-2 h-2 rounded-full" style={{
-                  backgroundColor: state.masterVolume > 0.7 ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-off))',
-                  boxShadow: state.masterVolume > 0.7 ? '0 0 4px hsl(var(--lcd-green-soft) / 0.5)' : 'none'
-                }}></span>
-                <span>WARN</span>
-              </span>
-            </div>
-
-            {/* VU Meter - Come nella reference */}
+            {/* VU Meter - In basso */}
             <div className="px-4">
               <div 
-                className="text-sm uppercase tracking-wider text-center mb-3 opacity-80"
+                className="text-xs uppercase tracking-wider text-center mb-2 opacity-80"
                 style={{
                   color: 'hsl(var(--lcd-green-dim))',
                   textShadow: '0 0 3px hsl(var(--lcd-green-dim) / 0.4)'
@@ -216,22 +189,22 @@ export const NeuroDeckDisplay: React.FC<NeuroDeckDisplayProps> = ({ neuroDeck })
                 VU METER
               </div>
               <div 
-                className="h-3 rounded-sm overflow-hidden relative border"
+                className="h-2 rounded-sm overflow-hidden relative border"
                 style={{ 
                   backgroundColor: 'hsl(var(--lcd-bg))',
                   borderColor: 'hsl(var(--lcd-green-off))'
                 }}
               >
-                {Array.from({ length: 20 }, (_, i) => (
+                {Array.from({ length: 30 }, (_, i) => (
                   <div
                     key={i}
                     className="absolute top-0 h-full border-r"
                     style={{
-                      left: `${i * 5}%`,
-                      width: '4.5%',
-                      backgroundColor: i * 5 <= vuLevel ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-off))',
+                      left: `${i * (100/30)}%`,
+                      width: `${100/30 - 0.5}%`,
+                      backgroundColor: i * (100/30) <= vuLevel ? 'hsl(var(--lcd-green-soft))' : 'hsl(var(--lcd-green-off))',
                       borderRightColor: 'hsl(var(--lcd-green-off))',
-                      boxShadow: i * 5 <= vuLevel ? '0 0 4px hsl(var(--lcd-green-soft) / 0.5)' : 'none',
+                      boxShadow: i * (100/30) <= vuLevel ? '0 0 4px hsl(var(--lcd-green-soft) / 0.5)' : 'none',
                       transition: 'all 0.1s ease'
                     }}
                   />
