@@ -63,9 +63,9 @@ class AudioManagerSingleton {
     isPlaying: false,
     isPaused: false,
     activeMode: 'CONCENTRAZIONE',
-    ambientVolume: 0.85, // Master ambient volume
-    neuralVolume: 0.18,  // Master neural volume
-    binauralVolume: 0.18, // Deprecated - kept for compatibility
+    ambientVolume: 0.65, // Master ambient volume - increased for better audibility
+    neuralVolume: 0.35,  // Master neural volume - increased significantly
+    binauralVolume: 0.35, // Deprecated - kept for compatibility
     brownVolume: 0.00,
     pinkVolume: 0.00,
     rainVolume: 0.00,
@@ -77,10 +77,10 @@ class AudioManagerSingleton {
   };
 
   private presets: Record<string, () => AudioPreset> = {
-    CONCENTRAZIONE: () => ({ beat: 16.0, carrier: 220, neuralVolume: 0.18, ambientVolume: 0.70 }),
-    ADHD: () => ({ beat: 13.0, carrier: 210, neuralVolume: 0.20, ambientVolume: 0.68 }),
-    STRESS: () => ({ beat: 10.0, carrier: 200, neuralVolume: 0.16, ambientVolume: 0.66 }),
-    INTRUSIVE_OFF: () => ({ beat: 8.0, carrier: 190, neuralVolume: 0.16, ambientVolume: 0.64 })
+    CONCENTRAZIONE: () => ({ beat: 16.0, carrier: 220, neuralVolume: 0.35, ambientVolume: 0.65 }),
+    ADHD: () => ({ beat: 13.0, carrier: 210, neuralVolume: 0.38, ambientVolume: 0.63 }),
+    STRESS: () => ({ beat: 10.0, carrier: 190, neuralVolume: 0.32, ambientVolume: 0.61 }),
+    'NO THOUGHTS': () => ({ beat: 8.0, carrier: 190, neuralVolume: 0.30, ambientVolume: 0.59 })
   };
 
   constructor() {
@@ -210,10 +210,10 @@ class AudioManagerSingleton {
         this.masterGain.gain.value = 1.0;
         
         this.neuralChain = this.audioCtx.createGain();
-        this.neuralChain.gain.value = this.state.neuralVolume;
+        this.neuralChain.gain.value = this.mapVolume(this.state.neuralVolume);
         
         this.ambientChain = this.audioCtx.createGain(); 
-        this.ambientChain.gain.value = this.state.ambientVolume;
+        this.ambientChain.gain.value = this.mapVolume(this.state.ambientVolume);
         
         // Limiter to prevent clipping
         this.limiter = this.audioCtx.createDynamicsCompressor();
@@ -276,6 +276,13 @@ class AudioManagerSingleton {
     param.setTargetAtTime(target, now, Math.max(0.03, seconds / 5));
   }
 
+  // Non-linear volume mapping for better responsiveness at low levels
+  private mapVolume(sliderValue: number): number {
+    // Quadratic curve: ensures 10% slider gives ~1% actual volume (audible)
+    // and provides smooth scaling to 100%
+    return Math.pow(sliderValue, 1.8);
+  }
+
   private async startBinaural(beat: number, carrier: number) {
     if (!this.audioCtx || !this.neuralChain) return;
 
@@ -303,8 +310,8 @@ class AudioManagerSingleton {
     leftOsc.start();
     rightOsc.start();
 
-    // Use the current neural volume (not the deprecated binauralVolume)
-    this.smoothGain(gain.gain, this.state.neuralVolume, 2.5);
+    // Use the current neural volume with proper mapping
+    this.smoothGain(gain.gain, this.mapVolume(this.state.neuralVolume), 2.5);
 
     this.binauralNodes = { left: leftOsc, right: rightOsc, gain };
   }
@@ -492,18 +499,21 @@ class AudioManagerSingleton {
   setAmbientVolume(volume: number) {
     this.setState({ ambientVolume: volume });
     if (this.ambientChain) {
-      this.ambientChain.gain.value = volume;
+      const mappedVolume = this.mapVolume(volume);
+      this.smoothGain(this.ambientChain.gain, mappedVolume, 0.1);
     }
   }
 
   setNeuralVolume(volume: number) {
     this.setState({ neuralVolume: volume });
+    const mappedVolume = this.mapVolume(volume);
+    
     if (this.neuralChain) {
-      this.neuralChain.gain.value = volume;
+      this.smoothGain(this.neuralChain.gain, mappedVolume, 0.1);
     }
     // Update binaural gain if active
     if (this.binauralNodes.gain) {
-      this.binauralNodes.gain.gain.value = volume;
+      this.smoothGain(this.binauralNodes.gain.gain, mappedVolume, 0.1);
     }
   }
 
@@ -558,12 +568,12 @@ class AudioManagerSingleton {
       ambientVolume: config.ambientVolume
     });
 
-    // Update gain nodes
+    // Update gain nodes with proper volume mapping
     if (this.neuralChain) {
-      this.neuralChain.gain.value = config.neuralVolume;
+      this.smoothGain(this.neuralChain.gain, this.mapVolume(config.neuralVolume), 0.2);
     }
     if (this.ambientChain) {
-      this.ambientChain.gain.value = config.ambientVolume;
+      this.smoothGain(this.ambientChain.gain, this.mapVolume(config.ambientVolume), 0.2);
     }
 
     // Update binaural beats if active
