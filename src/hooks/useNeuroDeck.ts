@@ -131,66 +131,49 @@ export function useNeuroDeck() {
     return buf;
   }, []);
 
-  const createAmbient = useCallback(() => {
+  const createAmbient = useCallback(async () => {
     if (!contextRef.current || !masterGainRef.current) return;
+    const ctx = contextRef.current;
+    const master = masterGainRef.current;
 
-    // Brown noise
-    const brownBuffer = createNoiseBuffer('brown');
-    const brownSource = contextRef.current.createBufferSource();
-    brownSource.buffer = brownBuffer;
-    brownSource.loop = true;
-    const brownGain = contextRef.current.createGain();
-    brownGain.gain.value = state.brownVolume;
-    brownSource.connect(brownGain).connect(masterGainRef.current);
-    brownSource.start();
-    ambientRef.current.brown = { node: brownSource, gain: brownGain };
+    const loadBuffer = async (url: string) => {
+      const res = await fetch(url);
+      const arr = await res.arrayBuffer();
+      return await ctx.decodeAudioData(arr);
+    };
 
-    // Pink noise
-    const pinkBuffer = createNoiseBuffer('pink');
-    const pinkSource = contextRef.current.createBufferSource();
-    pinkSource.buffer = pinkBuffer;
-    pinkSource.loop = true;
-    const pinkGain = contextRef.current.createGain();
-    pinkGain.gain.value = state.pinkVolume;
-    pinkSource.connect(pinkGain).connect(masterGainRef.current);
-    pinkSource.start();
-    ambientRef.current.pink = { node: pinkSource, gain: pinkGain };
+    const createLoop = (buffer: AudioBuffer, volume: number) => {
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+      const gain = ctx.createGain();
+      gain.gain.value = volume;
+      source.connect(gain).connect(master);
+      try { source.start(); } catch {}
+      return { node: source, gain } as { node: AudioBufferSourceNode; gain: GainNode };
+    };
 
-    // Rain (filtered pink noise)
-    const rainBuffer = createNoiseBuffer('pink');
-    const rainSource = contextRef.current.createBufferSource();
-    rainSource.buffer = rainBuffer;
-    rainSource.loop = true;
-    const rainFilter = contextRef.current.createBiquadFilter();
-    rainFilter.type = 'highpass';
-    rainFilter.frequency.value = 1500;
-    const rainGain = contextRef.current.createGain();
-    rainGain.gain.value = state.rainVolume;
-    rainSource.connect(rainFilter).connect(rainGain).connect(masterGainRef.current);
-    rainSource.start();
-    ambientRef.current.rain = { node: rainSource, gain: rainGain };
+    try {
+      // Airport (mapped to previous 'brown')
+      const [aeroBuf, forestaBuf, pioggiaBuf, oceanoBuf] = await Promise.all([
+        loadBuffer('/AREOPORTO.mp3'),
+        loadBuffer('/FORESTA.mp3'),
+        loadBuffer('/PIOGGIA.mp3'),
+        loadBuffer('/OCEANO.mp3'),
+      ]);
 
-    // Ocean (low-pass filtered pink with LFO)
-    const oceanBuffer = createNoiseBuffer('pink');
-    const oceanSource = contextRef.current.createBufferSource();
-    oceanSource.buffer = oceanBuffer;
-    oceanSource.loop = true;
-    const oceanFilter = contextRef.current.createBiquadFilter();
-    oceanFilter.type = 'lowpass';
-    oceanFilter.frequency.value = 400;
-    const oceanLFO = contextRef.current.createOscillator();
-    const oceanLFOGain = contextRef.current.createGain();
-    oceanLFO.type = 'sine';
-    oceanLFO.frequency.value = 0.06;
-    oceanLFOGain.gain.value = 180;
-    oceanLFO.connect(oceanLFOGain).connect(oceanFilter.frequency);
-    oceanLFO.start();
-    const oceanGain = contextRef.current.createGain();
-    oceanGain.gain.value = state.oceanVolume;
-    oceanSource.connect(oceanFilter).connect(oceanGain).connect(masterGainRef.current);
-    oceanSource.start();
-    ambientRef.current.ocean = { node: oceanSource, gain: oceanGain };
-  }, [state.brownVolume, state.pinkVolume, state.rainVolume, state.oceanVolume, createNoiseBuffer]);
+      ambientRef.current.brown = createLoop(aeroBuf, state.brownVolume);
+      ambientRef.current.pink = createLoop(forestaBuf, state.pinkVolume);
+      ambientRef.current.rain = createLoop(pioggiaBuf, state.rainVolume);
+      ambientRef.current.ocean = createLoop(oceanoBuf, state.oceanVolume);
+    } catch (e) {
+      // Fallback: if files fail to load, keep silent ambient
+      ambientRef.current.brown = ambientRef.current.brown || { node: null, gain: null } as any;
+      ambientRef.current.pink = ambientRef.current.pink || { node: null, gain: null } as any;
+      ambientRef.current.rain = ambientRef.current.rain || { node: null, gain: null } as any;
+      ambientRef.current.ocean = ambientRef.current.ocean || { node: null, gain: null } as any;
+    }
+  }, [state.brownVolume, state.pinkVolume, state.rainVolume, state.oceanVolume]);
 
   const startBinaural = useCallback((beat: number, carrier: number) => {
     if (!contextRef.current || !masterGainRef.current) return;
