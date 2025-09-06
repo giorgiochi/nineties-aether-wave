@@ -10,29 +10,64 @@ export function useThreeBackground() {
     if (!bgRef.current) return;
     const canvas = bgRef.current;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
     camera.position.z = 9;
 
-    const N = 900, geo = new THREE.BufferGeometry(), pos = new Float32Array(N * 3);
-    for (let i = 0; i < N; i++) { pos[i*3]=(Math.random()-.5)*60; pos[i*3+1]=(Math.random()-.5)*36; pos[i*3+2]=(Math.random()-.5)*20; }
+    const N = 800;
+    const geo = new THREE.BufferGeometry();
+    const pos = new Float32Array(N * 3);
+    
+    for (let i = 0; i < N; i++) { 
+      pos[i*3] = (Math.random() - 0.5) * 50; 
+      pos[i*3+1] = (Math.random() - 0.5) * 30; 
+      pos[i*3+2] = (Math.random() - 0.5) * 15; 
+    }
+    
     geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-    const mat = new THREE.PointsMaterial({ color: 0xa28af7, size: 0.035, transparent: true, opacity: .75 });
+    const mat = new THREE.PointsMaterial({ 
+      color: 0xa28af7, 
+      size: 0.05, 
+      transparent: true, 
+      opacity: 0.8,
+      sizeAttenuation: true 
+    });
     const pts = new THREE.Points(geo, mat); scene.add(pts);
 
     let mx = 0, my = 0;
-    const onMouse = (e: MouseEvent) => { mx = (e.clientX / innerWidth - .5) * .25; my = (e.clientY / innerHeight - .5) * .25; };
-    const onResize = () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); };
-    addEventListener("mousemove", onMouse); addEventListener("resize", onResize);
+    const onMouse = (e: MouseEvent) => { 
+      mx = (e.clientX / window.innerWidth - 0.5) * 0.3; 
+      my = (e.clientY / window.innerHeight - 0.5) * 0.3; 
+    };
+    
+    const onResize = () => { 
+      camera.aspect = window.innerWidth / window.innerHeight; 
+      camera.updateProjectionMatrix(); 
+      renderer.setSize(window.innerWidth, window.innerHeight); 
+    };
+    
+    window.addEventListener("mousemove", onMouse); 
+    window.addEventListener("resize", onResize);
 
-    let raf = 0; const loop = () => { raf = requestAnimationFrame(loop);
-      pts.rotation.y += 0.0007 + mx * 0.0015; pts.rotation.x += 0.0002 - my * 0.001; renderer.render(scene, camera); };
+    let raf = 0; 
+    const loop = () => { 
+      raf = requestAnimationFrame(loop);
+      pts.rotation.y += 0.001 + mx * 0.002; 
+      pts.rotation.x += 0.0005 - my * 0.001; 
+      renderer.render(scene, camera); 
+    };
     loop();
 
-    return () => { removeEventListener("mousemove", onMouse); removeEventListener("resize", onResize);
-      cancelAnimationFrame(raf); renderer.dispose(); geo.dispose(); mat.dispose(); };
+    return () => { 
+      window.removeEventListener("mousemove", onMouse); 
+      window.removeEventListener("resize", onResize);
+      cancelAnimationFrame(raf); 
+      renderer.dispose(); 
+      geo.dispose(); 
+      mat.dispose(); 
+    };
   }, []);
 
   // Waves overlay
@@ -40,8 +75,8 @@ export function useThreeBackground() {
     if (!fxRef.current) return;
     const canvas = fxRef.current;
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -59,11 +94,16 @@ export function useThreeBackground() {
       (quad.material as THREE.ShaderMaterial).uniforms.uTime.value = t * 0.001; renderer.render(scene, camera); };
     loop(0);
 
-    const onResize = () => renderer.setSize(innerWidth, innerHeight);
-    addEventListener("resize", onResize);
+    const onResize = () => renderer.setSize(window.innerWidth, window.innerHeight);
+    window.addEventListener("resize", onResize);
 
-    return () => { removeEventListener("resize", onResize); cancelAnimationFrame(raf);
-      (quad.material as THREE.ShaderMaterial).dispose(); quad.geometry.dispose(); renderer.dispose(); };
+    return () => { 
+      window.removeEventListener("resize", onResize); 
+      cancelAnimationFrame(raf);
+      (quad.material as THREE.ShaderMaterial).dispose(); 
+      quad.geometry.dispose(); 
+      renderer.dispose(); 
+    };
   }, []);
 
   return { bgRef, fxRef };
