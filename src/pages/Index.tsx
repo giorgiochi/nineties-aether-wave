@@ -1,7 +1,7 @@
-import Landing from "./Landing";
+import { NeuroDeck90 } from "@/components/NeuroDeck90";
 
 const Index = () => {
-  return <Landing />;
+  return <NeuroDeck90 />;
 };
 
 export default Index;
