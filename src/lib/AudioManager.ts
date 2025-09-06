@@ -29,6 +29,14 @@ interface AmbientSource {
   isActive: boolean;
 }
 
+interface NeuralSource {
+  element: HTMLAudioElement;
+  source: MediaElementAudioSourceNode | null;
+  gain: GainNode | null;
+  mode: string;
+  isActive: boolean;
+}
+
 class AudioManagerSingleton {
   private static instance: AudioManagerSingleton;
   
@@ -53,6 +61,17 @@ class AudioManagerSingleton {
     rain: AmbientSource | null;
     ocean: AmbientSource | null;
   } = { brown: null, pink: null, rain: null, ocean: null };
+
+  // Neural Audio Sources (HTMLAudio for background playback)
+  private neuralSources: {
+    'NO THOUGHTS': NeuralSource | null;
+    'CONCENTRAZIONE': NeuralSource | null;
+    'ADHD': NeuralSource | null;  
+    'STRESS': NeuralSource | null;
+  } = { 'NO THOUGHTS': null, 'CONCENTRAZIONE': null, 'ADHD': null, 'STRESS': null };
+
+  // Dual-layer state
+  private isInForeground: boolean = true;
   
   // Timer and State
   private timer: NodeJS.Timeout | null = null;
@@ -89,6 +108,7 @@ class AudioManagerSingleton {
     this.setupVisibilityHandlers();
     this.setupMediaSession();
     this.createAmbientElements();
+    this.createNeuralElements();
   }
 
   static getInstance(): AudioManagerSingleton {
@@ -124,6 +144,7 @@ class AudioManagerSingleton {
 
   private handleForeground() {
     console.log('[AudioManager] App in foreground');
+    this.isInForeground = true;
     
     if (this.state.isPlaying && this.state.userUnlockedAudio) {
       setTimeout(() => this.resumeAll(), 100);
@@ -131,8 +152,14 @@ class AudioManagerSingleton {
   }
 
   private handleBackground() {
-    console.log('[AudioManager] App in background - soft pause timers only');
+    console.log('[AudioManager] App in background - switching to HTML audio');
+    this.isInForeground = false;
     this.softPauseTimersOnly();
+    
+    // Switch neural to HTML audio for background continuity
+    if (this.state.isPlaying && this.state.activeMode) {
+      this.startNeuralHTMLAudio();
+    }
   }
 
   private softPauseTimersOnly() {
@@ -144,11 +171,8 @@ class AudioManagerSingleton {
 
   private setupMediaSession() {
     if ('mediaSession' in navigator) {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: 'NeuroWave Session',
-        artist: 'NeuroDeck 90s',
-        album: 'Focus & Ambient Sounds'
-      });
+      // Set initial metadata
+      this.updateMediaSessionMetadata();
 
       navigator.mediaSession.setActionHandler('play', () => {
         console.log('[MediaSession] Play requested');
@@ -163,6 +187,20 @@ class AudioManagerSingleton {
       navigator.mediaSession.setActionHandler('stop', () => {
         console.log('[MediaSession] Stop requested');
         this.stop();
+      });
+    }
+  }
+
+  private updateMediaSessionMetadata() {
+    if ('mediaSession' in navigator) {
+      const mode = this.state.activeMode || 'Audio Psyco';
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: `${mode} Session`,
+        artist: 'Audio Psyco',
+        album: 'Neuro Focus Session',
+        artwork: [
+          { src: '/favicon.ico', sizes: '96x96', type: 'image/x-icon' }
+        ]
       });
     }
   }
@@ -195,6 +233,40 @@ class AudioManagerSingleton {
         element: audio,
         source: null,
         gain: null,
+        isActive: false
+      };
+    });
+  }
+
+  private createNeuralElements() {
+    const neuralFiles = [
+      { mode: 'NO THOUGHTS', src: '/audio/neural-no-thoughts.mp3' },
+      { mode: 'CONCENTRAZIONE', src: '/audio/neural-gamma.mp3' },
+      { mode: 'ADHD', src: '/audio/neural-gamma.mp3' },
+      { mode: 'STRESS', src: '/audio/neural-theta.mp3' }
+    ];
+
+    neuralFiles.forEach(({ mode, src }) => {
+      const audio = new Audio(src);
+      audio.loop = true;
+      audio.setAttribute('playsinline', 'true');
+      audio.preload = 'auto';
+      audio.crossOrigin = 'anonymous';
+      audio.volume = 0; // Will be controlled by Web Audio gain
+      
+      audio.addEventListener('error', (e) => {
+        console.error(`[AudioManager] Error loading neural ${mode}:`, e);
+      });
+
+      audio.addEventListener('canplaythrough', () => {
+        console.log(`[AudioManager] Neural ${mode} loaded and ready`);
+      });
+
+      this.neuralSources[mode as keyof typeof this.neuralSources] = {
+        element: audio,
+        source: null,
+        gain: null,
+        mode,
         isActive: false
       };
     });
@@ -245,8 +317,9 @@ class AudioManagerSingleton {
   }
 
   private async setupAmbientSources() {
-    if (!this.audioCtx || !this.ambientChain) return;
+    if (!this.audioCtx || !this.ambientChain || !this.neuralChain) return;
 
+    // Setup ambient sources
     Object.entries(this.ambientSources).forEach(([key, ambientSource]) => {
       if (ambientSource && !ambientSource.source) {
         try {
@@ -264,6 +337,24 @@ class AudioManagerSingleton {
           console.log(`[AudioManager] ${key} connected to Web Audio chain`);
         } catch (error) {
           console.error(`[AudioManager] Failed to setup ${key} source:`, error);
+        }
+      }
+    });
+
+    // Setup neural sources
+    Object.entries(this.neuralSources).forEach(([mode, neuralSource]) => {
+      if (neuralSource && !neuralSource.source) {
+        try {
+          neuralSource.source = this.audioCtx!.createMediaElementSource(neuralSource.element);
+          neuralSource.gain = this.audioCtx!.createGain();
+          neuralSource.gain.gain.value = 0; // Start muted
+          
+          neuralSource.source.connect(neuralSource.gain);
+          neuralSource.gain.connect(this.neuralChain!);
+          
+          console.log(`[AudioManager] Neural ${mode} connected to Web Audio chain`);
+        } catch (error) {
+          console.error(`[AudioManager] Failed to setup neural ${mode}:`, error);
         }
       }
     });
@@ -338,6 +429,48 @@ class AudioManagerSingleton {
     this.binauralNodes = { left: null, right: null, gain: null };
   }
 
+  // DUAL-LAYER NEURAL MANAGEMENT
+
+  private startNeuralHTMLAudio() {
+    const neuralSource = this.neuralSources[this.state.activeMode as keyof typeof this.neuralSources];
+    if (!neuralSource || !this.state.activeMode) return;
+
+    console.log(`[AudioManager] Starting HTML neural audio for ${this.state.activeMode}`);
+    
+    // Stop all neural elements first
+    Object.values(this.neuralSources).forEach(ns => {
+      if (ns?.element && !ns.element.paused) {
+        ns.element.pause();
+        ns.isActive = false;
+      }
+    });
+    
+    // Start the current mode
+    neuralSource.isActive = true;
+    neuralSource.element.volume = this.mapNeuralVolume(this.state.neuralVolume);
+    neuralSource.element.play().catch(e => 
+      console.warn(`[AudioManager] Could not play neural ${this.state.activeMode}:`, e)
+    );
+  }
+
+  private stopNeuralHTMLAudio() {
+    Object.values(this.neuralSources).forEach(neuralSource => {
+      if (neuralSource?.element && !neuralSource.element.paused) {
+        neuralSource.element.pause();
+        neuralSource.isActive = false;
+      }
+    });
+  }
+
+  private updateNeuralGains() {
+    Object.values(this.neuralSources).forEach(neuralSource => {
+      if (neuralSource?.gain) {
+        const volume = neuralSource.isActive ? this.state.neuralVolume : 0;
+        neuralSource.gain.gain.value = this.mapNeuralVolume(volume);
+      }
+    });
+  }
+
   private updateAmbientGains() {
     // Only update gain values, never trigger playback
     Object.entries(this.ambientSources).forEach(([key, ambientSource]) => {
@@ -410,14 +543,25 @@ class AudioManagerSingleton {
     
     await this.audioCtx.resume();
     
-    // Start neural audio (binaural beats)
-    if (!this.binauralNodes.left) {
+    // Start neural audio based on foreground/background state
+    if (!this.binauralNodes.left && this.state.activeMode) {
       const preset = this.presets[this.state.activeMode]();
-      await this.startBinaural(preset.beat, preset.carrier);
+      
+      if (this.isInForeground) {
+        // Foreground: use WebAudio binaural beats
+        await this.startBinaural(preset.beat, preset.carrier);
+      } else {
+        // Background: use HTML audio
+        this.startNeuralHTMLAudio();
+      }
     }
     
     // Update gain values (but don't start ambient sounds automatically)
     this.updateAmbientGains();
+    this.updateNeuralGains();
+    
+    // Update MediaSession metadata
+    this.updateMediaSessionMetadata();
     
     // Start timer
     this.startTimer();
@@ -493,6 +637,18 @@ class AudioManagerSingleton {
       this.audioCtx.resume();
     }
     
+    // Resume neural audio based on current state
+    if (this.state.isPlaying && this.state.activeMode) {
+      if (this.isInForeground && !this.binauralNodes.left) {
+        // Foreground: restart WebAudio binaural
+        const preset = this.presets[this.state.activeMode]();
+        this.startBinaural(preset.beat, preset.carrier);
+      } else if (!this.isInForeground) {
+        // Background: ensure HTML audio is playing
+        this.startNeuralHTMLAudio();
+      }
+    }
+    
     this.resumeActiveAmbientSounds();
     
     if (this.state.isPlaying && !this.timer) {
@@ -514,6 +670,7 @@ class AudioManagerSingleton {
     this.setState({ neuralVolume: volume });
     const mappedVolume = this.mapNeuralVolume(volume);
     
+    // Update WebAudio chain
     if (this.neuralChain) {
       this.smoothGain(this.neuralChain.gain, mappedVolume, 0.1);
     }
@@ -521,6 +678,15 @@ class AudioManagerSingleton {
     if (this.binauralNodes.gain) {
       this.smoothGain(this.binauralNodes.gain.gain, mappedVolume, 0.1);
     }
+    
+    // Update HTML Audio neural sources directly
+    Object.values(this.neuralSources).forEach(neuralSource => {
+      if (neuralSource?.element && neuralSource.isActive) {
+        neuralSource.element.volume = mappedVolume;
+      }
+    });
+    
+    this.updateNeuralGains();
   }
 
   setBinauralVolume(volume: number) {
@@ -594,21 +760,33 @@ class AudioManagerSingleton {
     const config = this.presets[mode]?.();
     if (!config) return;
 
+    // Stop current neural audio before switching
+    this.stopBinaural();
+    this.stopNeuralHTMLAudio();
+
     this.setState({
       activeMode: mode,
       neuralVolume: config.neuralVolume
       // Removed ambientVolume - focus modes don't affect ambient settings
     });
 
+    // Update MediaSession metadata
+    this.updateMediaSessionMetadata();
+
     // Update only neural gain nodes - ambient chain remains untouched
     if (this.neuralChain) {
       this.smoothGain(this.neuralChain.gain, this.mapNeuralVolume(config.neuralVolume), 0.2);
     }
-    // Removed ambient chain update - ambient settings preserved
 
-    // Start timer if session is playing and neural mode becomes active
+    // Start appropriate neural audio if session is active
     if (this.state.isPlaying && this.audioCtx?.state === 'running') {
-      this.startBinaural(config.beat, config.carrier);
+      if (this.isInForeground) {
+        // Foreground: use WebAudio binaural beats
+        this.startBinaural(config.beat, config.carrier);
+      } else {
+        // Background: use HTML audio
+        this.startNeuralHTMLAudio();
+      }
       this.startTimer(); // Start timer when neural mode activates during active session
     }
   }
