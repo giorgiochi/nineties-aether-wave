@@ -135,10 +135,10 @@ const Landing = () => {
     @media (max-width:640px){
       .h1{font-size:26px}
       .section h2{font-size:24px}
-      .device{width:min(280px,96%)}
+      .device{width:100%;margin-left:0;margin-right:0}
       .wrap{padding:12px 10px}
       .hero{padding:16px 0}
-      .hero.wrap{padding-left:10px;padding-right:10px}
+      .hero.wrap{padding-left:0;padding-right:0}
       .section.wrap{padding-left:10px;padding-right:10px}
     }
 
