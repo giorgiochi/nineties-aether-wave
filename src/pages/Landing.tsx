@@ -99,11 +99,13 @@ const Landing = () => {
 
     @media (max-width:1000px){
       .hero{grid-template-columns:1fr;min-height:auto;text-align:center;gap:32px}
-      .device{order:-1;margin:24px auto 0;width:min(380px,95%)}
+      .hero.wrap{padding-left:10px;padding-right:10px}
+      .device{order:-1;margin:24px auto 0;width:min(400px,98%)}
       .h1{font-size:36px;line-height:1.1;margin:20px 0 12px}
       .lead{font-size:18px;max-width:none;line-height:1.6;margin-bottom:16px}
       .grid.cols-3{grid-template-columns:1fr;gap:24px}
       .wrap{padding:24px 16px}
+      .section.wrap{padding-left:10px;padding-right:10px}
       .section{padding:80px 0}
       .section h2{font-size:32px;margin-bottom:16px}
       .section p.lead{font-size:18px;margin-bottom:32px}
@@ -136,6 +138,8 @@ const Landing = () => {
       .device{width:min(280px,96%)}
       .wrap{padding:12px 10px}
       .hero{padding:16px 0}
+      .hero.wrap{padding-left:10px;padding-right:10px}
+      .section.wrap{padding-left:10px;padding-right:10px}
     }
 
     details.card summary{cursor:pointer;font-weight:600;padding:4px 0}
