@@ -107,8 +107,11 @@ class AudioManagerSingleton {
     this.setupGlobalRefs();
     this.setupVisibilityHandlers();
     this.setupMediaSession();
+    console.log('[AudioManager] Creating ambient audio elements...');
     this.createAmbientElements();
+    console.log('[AudioManager] Creating neural audio elements...');
     this.createNeuralElements();
+    console.log('[AudioManager] AudioManager initialized');
   }
 
   static getInstance(): AudioManagerSingleton {
@@ -213,6 +216,22 @@ class AudioManagerSingleton {
       { key: 'ocean', src: '/OCEANO.mp3' }
     ];
 
+    console.log('[AudioManager] Testing audio file accessibility...');
+    // Test se i file sono accessibili
+    audioFiles.forEach(({ key, src }) => {
+      fetch(src, { method: 'HEAD' })
+        .then(response => {
+          if (response.ok) {
+            console.log(`[AudioManager] ✓ ${key} file accessible at ${src}`);
+          } else {
+            console.error(`[AudioManager] ✗ ${key} file not accessible: ${response.status} ${response.statusText}`);
+          }
+        })
+        .catch(error => {
+          console.error(`[AudioManager] ✗ Failed to check ${key} file:`, error);
+        });
+    });
+
     audioFiles.forEach(({ key, src }) => {
       const audio = new Audio(src);
       audio.loop = true;
@@ -222,11 +241,24 @@ class AudioManagerSingleton {
       audio.volume = 0; // Will be controlled by Web Audio gain
       
       audio.addEventListener('error', (e) => {
-        console.error(`[AudioManager] Error loading ${key}:`, e);
+        console.error(`[AudioManager] Error loading ${key} from ${src}:`, e);
+        console.error(`[AudioManager] Audio error details:`, {
+          error: e.error,
+          code: audio.error?.code,
+          message: audio.error?.message
+        });
       });
 
       audio.addEventListener('canplaythrough', () => {
-        console.log(`[AudioManager] ${key} loaded and ready`);
+        console.log(`[AudioManager] ${key} loaded and ready from ${src}`);
+      });
+
+      audio.addEventListener('loadstart', () => {
+        console.log(`[AudioManager] Started loading ${key} from ${src}`);
+      });
+
+      audio.addEventListener('progress', () => {
+        console.log(`[AudioManager] Loading progress for ${key}`);
       });
 
       this.ambientSources[key as keyof typeof this.ambientSources] = {
