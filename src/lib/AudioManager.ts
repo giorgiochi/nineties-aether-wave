@@ -153,10 +153,6 @@ class AudioManagerSingleton {
     console.log('[AudioManager] App in foreground');
     this.isInForeground = true;
     
-    // Mute HTML elements to avoid double playback while using Web Audio
-    Object.values(this.ambientSources).forEach(src => { if (src?.element) src.element.muted = true; });
-    Object.values(this.neuralSources).forEach(src => { if (src?.element) src.element.muted = true; });
-    
     if (this.state.isPlaying && this.state.userUnlockedAudio) {
       setTimeout(() => this.resumeAll(), 100);
     }
@@ -166,10 +162,6 @@ class AudioManagerSingleton {
     console.log('[AudioManager] App in background - switching to HTML audio');
     this.isInForeground = false;
     this.softPauseTimersOnly();
-    
-    // Unmute elements for background playback when needed
-    Object.values(this.ambientSources).forEach(src => { if (src?.element) src.element.muted = false; });
-    Object.values(this.neuralSources).forEach(src => { if (src?.element) src.element.muted = false; });
     
     // Switch neural to HTML audio for background continuity
     if (this.state.isPlaying && this.state.activeMode) {
@@ -250,7 +242,7 @@ class AudioManagerSingleton {
       audio.setAttribute('playsinline', 'true');
       audio.preload = 'auto';
       audio.crossOrigin = 'anonymous';
-      audio.volume = 1;
+      audio.volume = 0; // Silence element output; Web Audio handles gain
       
       audio.addEventListener('error', (e) => {
         console.error(`[AudioManager] Error loading ${key} from ${src}:`, e);
@@ -296,7 +288,7 @@ class AudioManagerSingleton {
       audio.setAttribute('playsinline', 'true');
       audio.preload = 'auto';
       audio.crossOrigin = 'anonymous';
-      audio.volume = 1;
+      audio.volume = 0; // Default silent; set in background HTML mode
       
       audio.addEventListener('error', (e) => {
         console.error(`[AudioManager] Error loading neural ${mode}:`, e);
@@ -668,7 +660,6 @@ class AudioManagerSingleton {
       if (volume > 0 && this.state.isPlaying) {
         // Ensure flag reflects actual state derived from volume
         ambientSource.isActive = true;
-        ambientSource.element.muted = this.isInForeground;
         ambientSource.element.play().catch(e =>
           console.warn(`[AudioManager] Could not resume ${key}:`, e)
         );
@@ -760,7 +751,6 @@ class AudioManagerSingleton {
 
       // Play ONLY if a session is active and audio is unlocked
       if (this.state.isPlaying && this.state.userUnlockedAudio) {
-        ambientSource.element.muted = this.isInForeground; // mute in foreground to avoid double playback
         ambientSource.element.play().catch(e => 
           console.warn(`[AudioManager] Could not play ${type}:`, e)
         );
