@@ -238,7 +238,8 @@ class AudioManagerSingleton {
       audio.setAttribute('playsinline', 'true');
       audio.preload = 'auto';
       audio.crossOrigin = 'anonymous';
-      audio.volume = 0; // Will be controlled by Web Audio gain
+      audio.volume = 1; // Use Web Audio for gain control
+      audio.muted = true; // Prevent direct element playback (avoid double audio)
       
       audio.addEventListener('error', (e) => {
         console.error(`[AudioManager] Error loading ${key} from ${src}:`, e);
@@ -284,7 +285,8 @@ class AudioManagerSingleton {
       audio.setAttribute('playsinline', 'true');
       audio.preload = 'auto';
       audio.crossOrigin = 'anonymous';
-      audio.volume = 0; // Will be controlled by Web Audio gain
+      audio.volume = 1; // Use Web Audio for gain control
+      audio.muted = true; // Prevent direct element playback (avoid double audio)
       
       audio.addEventListener('error', (e) => {
         console.error(`[AudioManager] Error loading neural ${mode}:`, e);
@@ -736,28 +738,33 @@ class AudioManagerSingleton {
     const ambientSource = this.ambientSources[type];
     if (!ambientSource) return;
 
+    // Update gain immediately
     if (volume > 0) {
-      // Activate ambient sound
       ambientSource.isActive = true;
       if (ambientSource.gain) {
         const mappedVolume = this.mapAmbientVolume(volume);
         this.smoothGain(ambientSource.gain.gain, mappedVolume, 0.1);
       }
-      
-      // Start playing if session is active
-      if (this.state.isPlaying && this.state.userUnlockedAudio) {
-        ambientSource.element.play().catch(e => 
-          console.warn(`[AudioManager] Could not play ${type}:`, e)
-        );
-      }
     } else {
-      // Deactivate ambient sound
       ambientSource.isActive = false;
       if (ambientSource.gain) {
         this.smoothGain(ambientSource.gain.gain, 0, 0.1);
       }
       ambientSource.element.pause();
     }
+
+    // Ensure AudioContext and graph are ready even outside a session, then handle playback
+    this.ensureAudioContext().then(() => {
+      if (volume > 0) {
+        if (this.state.userUnlockedAudio) {
+          ambientSource.element.play().catch(e => 
+            console.warn(`[AudioManager] Could not play ${type}:`, e)
+          );
+        } else {
+          console.warn('[AudioManager] Audio is locked; ambient will start after unlock');
+        }
+      }
+    });
   }
 
   // NEURAL MODE TOGGLE - NEW METHOD
