@@ -73,6 +73,10 @@ class AudioManagerSingleton {
   // Dual-layer state
   private isInForeground: boolean = true;
   
+  // Base multipliers (independent from UI sliders)
+  private ambientBaseMultiplier = 1.35; // +35%
+  private neuralBaseMultiplier = 0.65;  // -35%
+  
   // Timer and State
   private timer: NodeJS.Timeout | null = null;
   private sessionStartTime: number | null = null;
@@ -82,9 +86,9 @@ class AudioManagerSingleton {
     isPlaying: false,
     isPaused: false,
     activeMode: 'CONCENTRAZIONE',
-    ambientVolume: 1.00, // Master ambient volume - increased by 35% (0.90 * 1.35 = 1.215, capped at 1.0)
-    neuralVolume: 0.23,  // Master neural volume - reduced by 35% (0.35 * 0.65 = 0.2275)
-    binauralVolume: 0.23, // Deprecated - kept for compatibility
+    ambientVolume: 0.90, // Master ambient volume - higher default for audibility
+    neuralVolume: 0.35,  // Master neural volume
+    binauralVolume: 0.35, // Deprecated - kept for compatibility
     brownVolume: 0.00,
     pinkVolume: 0.00,
     rainVolume: 0.00,
@@ -96,10 +100,10 @@ class AudioManagerSingleton {
   };
 
   private presets: Record<string, () => AudioPreset> = {
-    CONCENTRAZIONE: () => ({ beat: 16.0, carrier: 220, neuralVolume: 0.23, ambientVolume: 1.00 }), // Reduced neural by 35%
-    ADHD: () => ({ beat: 13.0, carrier: 210, neuralVolume: 0.25, ambientVolume: 1.00 }), // Reduced neural by 35%
-    STRESS: () => ({ beat: 10.0, carrier: 190, neuralVolume: 0.21, ambientVolume: 1.00 }), // Reduced neural by 35%
-    'NO THOUGHTS': () => ({ beat: 8.0, carrier: 190, neuralVolume: 0.20, ambientVolume: 1.00 }) // Reduced neural by 35%
+    CONCENTRAZIONE: () => ({ beat: 16.0, carrier: 220, neuralVolume: 0.35, ambientVolume: 0.90 }),
+    ADHD: () => ({ beat: 13.0, carrier: 210, neuralVolume: 0.38, ambientVolume: 0.88 }),
+    STRESS: () => ({ beat: 10.0, carrier: 190, neuralVolume: 0.32, ambientVolume: 0.86 }),
+    'NO THOUGHTS': () => ({ beat: 8.0, carrier: 190, neuralVolume: 0.30, ambientVolume: 0.84 })
   };
 
   constructor() {
@@ -149,6 +153,10 @@ class AudioManagerSingleton {
     console.log('[AudioManager] App in foreground');
     this.isInForeground = true;
     
+    // Mute HTML elements to avoid double playback while using Web Audio
+    Object.values(this.ambientSources).forEach(src => { if (src?.element) src.element.muted = true; });
+    Object.values(this.neuralSources).forEach(src => { if (src?.element) src.element.muted = true; });
+    
     if (this.state.isPlaying && this.state.userUnlockedAudio) {
       setTimeout(() => this.resumeAll(), 100);
     }
@@ -158,6 +166,10 @@ class AudioManagerSingleton {
     console.log('[AudioManager] App in background - switching to HTML audio');
     this.isInForeground = false;
     this.softPauseTimersOnly();
+    
+    // Unmute elements for background playback when needed
+    Object.values(this.ambientSources).forEach(src => { if (src?.element) src.element.muted = false; });
+    Object.values(this.neuralSources).forEach(src => { if (src?.element) src.element.muted = false; });
     
     // Switch neural to HTML audio for background continuity
     if (this.state.isPlaying && this.state.activeMode) {
@@ -238,8 +250,7 @@ class AudioManagerSingleton {
       audio.setAttribute('playsinline', 'true');
       audio.preload = 'auto';
       audio.crossOrigin = 'anonymous';
-      audio.volume = 1; // Use Web Audio for gain control
-      audio.muted = true; // Prevent direct element playback (avoid double audio)
+      audio.volume = 1;
       
       audio.addEventListener('error', (e) => {
         console.error(`[AudioManager] Error loading ${key} from ${src}:`, e);
@@ -285,8 +296,7 @@ class AudioManagerSingleton {
       audio.setAttribute('playsinline', 'true');
       audio.preload = 'auto';
       audio.crossOrigin = 'anonymous';
-      audio.volume = 1; // Use Web Audio for gain control
-      audio.muted = true; // Prevent direct element playback (avoid double audio)
+      audio.volume = 1;
       
       audio.addEventListener('error', (e) => {
         console.error(`[AudioManager] Error loading neural ${mode}:`, e);
@@ -441,7 +451,7 @@ class AudioManagerSingleton {
     rightOsc.start();
 
     // Use the current neural volume with proper mapping
-    this.smoothGain(gain.gain, this.mapNeuralVolume(this.state.neuralVolume), 2.5);
+    this.smoothGain(gain.gain, Math.min(1, this.mapNeuralVolume(this.state.neuralVolume) * this.neuralBaseMultiplier), 2.5);
 
     this.binauralNodes = { left: leftOsc, right: rightOsc, gain };
   }
@@ -481,7 +491,8 @@ class AudioManagerSingleton {
     
     // Start the current mode
     neuralSource.isActive = true;
-    neuralSource.element.volume = this.mapNeuralVolume(this.state.neuralVolume);
+    neuralSource.element.muted = false;
+    neuralSource.element.volume = Math.min(1, this.mapNeuralVolume(this.state.neuralVolume) * this.neuralBaseMultiplier);
     neuralSource.element.play().catch(e => 
       console.warn(`[AudioManager] Could not play neural ${this.state.activeMode}:`, e)
     );
@@ -500,7 +511,7 @@ class AudioManagerSingleton {
     Object.values(this.neuralSources).forEach(neuralSource => {
       if (neuralSource?.gain) {
         const volume = neuralSource.isActive ? this.state.neuralVolume : 0;
-        neuralSource.gain.gain.value = this.mapNeuralVolume(volume);
+        neuralSource.gain.gain.value = Math.min(1, this.mapNeuralVolume(volume) * this.neuralBaseMultiplier);
       }
     });
   }
@@ -511,7 +522,7 @@ class AudioManagerSingleton {
       if (ambientSource?.gain) {
         const volumeKey = `${key}Volume` as keyof AudioState;
         const individualVolume = this.state[volumeKey] as number;
-        ambientSource.gain.gain.value = this.mapAmbientVolume(individualVolume);
+        ambientSource.gain.gain.value = Math.min(1, this.mapAmbientVolume(individualVolume) * this.ambientBaseMultiplier);
       }
     });
   }
@@ -657,6 +668,7 @@ class AudioManagerSingleton {
       if (volume > 0 && this.state.isPlaying) {
         // Ensure flag reflects actual state derived from volume
         ambientSource.isActive = true;
+        ambientSource.element.muted = this.isInForeground;
         ambientSource.element.play().catch(e =>
           console.warn(`[AudioManager] Could not resume ${key}:`, e)
         );
@@ -673,11 +685,11 @@ class AudioManagerSingleton {
     
     // Resume neural audio based on current state
     if (this.state.isPlaying && this.state.activeMode) {
-      if (this.isInForeground && !this.binauralNodes.left) {
-        // Foreground: restart WebAudio binaural
-        const preset = this.presets[this.state.activeMode]();
-        this.startBinaural(preset.beat, preset.carrier);
-      } else if (!this.isInForeground) {
+        if (this.isInForeground && !this.binauralNodes.left) {
+          // Foreground: restart WebAudio binaural
+          const preset = this.presets[this.state.activeMode]!();
+          this.startBinaural(preset.beat, preset.carrier);
+        } else if (!this.isInForeground) {
         // Background: ensure HTML audio is playing
         this.startNeuralHTMLAudio();
       }
@@ -738,33 +750,29 @@ class AudioManagerSingleton {
     const ambientSource = this.ambientSources[type];
     if (!ambientSource) return;
 
-    // Update gain immediately
     if (volume > 0) {
+      // Activate ambient sound (gain only)
       ambientSource.isActive = true;
       if (ambientSource.gain) {
-        const mappedVolume = this.mapAmbientVolume(volume);
+        const mappedVolume = Math.min(1, this.mapAmbientVolume(volume) * this.ambientBaseMultiplier);
         this.smoothGain(ambientSource.gain.gain, mappedVolume, 0.1);
       }
+
+      // Play ONLY if a session is active and audio is unlocked
+      if (this.state.isPlaying && this.state.userUnlockedAudio) {
+        ambientSource.element.muted = this.isInForeground; // mute in foreground to avoid double playback
+        ambientSource.element.play().catch(e => 
+          console.warn(`[AudioManager] Could not play ${type}:`, e)
+        );
+      }
     } else {
+      // Deactivate ambient sound
       ambientSource.isActive = false;
       if (ambientSource.gain) {
         this.smoothGain(ambientSource.gain.gain, 0, 0.1);
       }
       ambientSource.element.pause();
     }
-
-    // Ensure AudioContext and graph are ready even outside a session, then handle playback
-    this.ensureAudioContext().then(() => {
-      if (volume > 0) {
-        if (this.state.userUnlockedAudio) {
-          ambientSource.element.play().catch(e => 
-            console.warn(`[AudioManager] Could not play ${type}:`, e)
-          );
-        } else {
-          console.warn('[AudioManager] Audio is locked; ambient will start after unlock');
-        }
-      }
-    });
   }
 
   // NEURAL MODE TOGGLE - NEW METHOD
