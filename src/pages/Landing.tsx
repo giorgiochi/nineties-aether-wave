@@ -98,28 +98,36 @@ const Landing = () => {
     .mobile-menu .close-menu{position:absolute;top:24px;right:24px;width:48px;height:48px;background:var(--panel);border:1px solid var(--stroke);border-radius:12px;color:var(--ink);font-size:20px;cursor:pointer}
 
     @media (max-width:1000px){
-      .hero{grid-template-columns:1fr;min-height:auto;text-align:center}
-      .device{order:-1;margin:20px auto 0;width:min(360px,98%)}
-      .h1{font-size:32px;line-height:1.1}
-      .lead{font-size:16px;max-width:none}
-      .grid.cols-3{grid-template-columns:1fr}
-      .wrap{padding:20px 10px}
-      .section{padding:60px 0}
-      .cta{justify-content:center}
-      .btn{padding:16px 24px;font-size:16px}
+      .hero{grid-template-columns:1fr;min-height:auto;text-align:center;gap:32px}
+      .device{order:-1;margin:24px auto 0;width:min(380px,95%)}
+      .h1{font-size:36px;line-height:1.1;margin:20px 0 12px}
+      .lead{font-size:18px;max-width:none;line-height:1.6;margin-bottom:16px}
+      .grid.cols-3{grid-template-columns:1fr;gap:24px}
+      .wrap{padding:24px 16px}
+      .section{padding:80px 0}
+      .section h2{font-size:32px;margin-bottom:16px}
+      .section p.lead{font-size:18px;margin-bottom:32px}
+      .cta{justify-content:center;gap:16px;margin-top:32px}
+      .btn{padding:18px 28px;font-size:17px;font-weight:700}
       
       /* Show hamburger, hide regular menu */
       .hamburger{display:flex}
       .desktop-nav{display:none !important}
       
       /* Touch-friendly sliders */
-      .slider{height:14px;margin:10px 0}
-      .slider .thumb{width:22px;height:22px}
+      .slider{height:16px;margin:12px 0}
+      .slider .thumb{width:24px;height:24px}
       
       /* Better card spacing on mobile */
-      .card{padding:14px}
-      .card h3{font-size:16px;margin-bottom:8px}
-      .card p{font-size:14px;line-height:1.4}
+      .card{padding:20px;margin-bottom:20px}
+      .card h3{font-size:20px;margin-bottom:12px;font-weight:700}
+      .card p{font-size:16px;line-height:1.5}
+      
+      /* Better badge styling */
+      .badge{padding:12px 16px;font-size:14px}
+      
+      /* Better kpi text */
+      .kpi{font-size:14px;line-height:1.4}
     }
     
     @media (max-width:640px){
