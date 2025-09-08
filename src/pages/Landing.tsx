@@ -1,15 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
-  const [timer, setTimer] = useState(0);
-  const [selectedMode, setSelectedMode] = useState("FOCUS");
-  const [neuralVolume, setNeuralVolume] = useState(30);
-  const [ambientVolume, setAmbientVolume] = useState(80);
-  const [selectedSound, setSelectedSound] = useState("Ocean");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const navigate = useNavigate();
 
   const styles = `
     :root{
@@ -85,11 +79,6 @@ const Landing = () => {
     .card{background:linear-gradient(180deg,#161b23,#10151c);border:1px solid var(--stroke);border-radius:16px;padding:18px;box-shadow:var(--shadow-soft)}
     .kpi{font-family:"JetBrains Mono",monospace;color:var(--ink-dim);font-size:13px}
 
-    .modal{position:fixed;inset:0;background:rgba(6,8,12,.8);display:none;align-items:center;justify-content:center;padding:24px;z-index:1000}
-    .modal.is-open{display:flex}
-    .modal .sheet{width:min(860px,96%);background:linear-gradient(180deg,#161b23,#0f141b);border:1px solid var(--stroke);border-radius:22px;box-shadow:var(--shadow-big);padding:26px}
-    .modal .sheet header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-    .x{background:#11151b;border:1px solid var(--stroke);border-radius:10px;padding:8px 10px;cursor:pointer}
 
     footer{padding:26px 0;color:var(--ink-dim);border-top:1px solid var(--stroke)}
 
@@ -123,20 +112,6 @@ const Landing = () => {
       .hamburger{display:flex}
       .desktop-nav{display:none !important}
       
-      /* Mobile modal optimizations */
-      .modal{padding:12px;align-items:flex-start;padding-top:20px}
-      .modal .sheet{width:100%;max-width:none;margin:0;padding:16px;border-radius:16px;max-height:95vh;overflow-y:auto}
-      .modal .sheet header{margin-bottom:16px;align-items:flex-start}
-      .modal .sheet .grid{grid-template-columns:1fr;gap:16px}
-      .modal .device{width:100%;max-width:300px;margin:0 auto}
-      .modal .lcd{height:70px}
-      .modal .lcd-text{font-size:11px}
-      .modal .panel{margin:6px 0;padding:10px}
-      .modal .pill{padding:8px 10px;font-size:13px}
-      .modal .seg-title{font-size:10px}
-      .modal .btn-round{padding:8px 12px;font-size:13px}
-      .modal .x{width:40px;height:40px;display:flex;align-items:center;justify-content:center}
-      
       /* Touch-friendly sliders */
       .slider{height:14px;margin:10px 0}
       .slider .thumb{width:22px;height:22px}
@@ -153,24 +128,6 @@ const Landing = () => {
       .device{width:min(280px,90%)}
       .wrap{padding:12px}
       .hero{padding:16px 0}
-      
-      /* Ultra-compact mobile modal */
-      .modal{padding:4px;padding-top:12px}
-      .modal .sheet{padding:12px;border-radius:12px;max-height:98vh}
-      .modal .device{max-width:260px}
-      .modal .lcd{height:60px}
-      .modal .lcd-text{font-size:10px}
-      .modal .row{gap:6px;grid-template-columns:1fr 1fr}
-      .modal .pill{padding:6px 8px;font-size:12px;min-height:36px}
-      .modal .panel{margin:4px 0;padding:8px}
-      .modal .seg-title{margin-bottom:6px}
-      .modal .btn-round{min-height:36px;font-size:12px}
-      .modal .card{padding:10px;margin-bottom:10px}
-      .modal .card h3{font-size:14px}
-      .modal .card p{font-size:12px}
-      
-      /* Stack pills for "NO THOUGHTS" mode on very small screens */
-      .modal .row{grid-template-columns:1fr 1fr 1fr 1fr}
     }
 
     details.card summary{cursor:pointer;font-weight:600;padding:4px 0}
@@ -186,72 +143,8 @@ const Landing = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (isRunning) {
-      intervalRef.current = setInterval(() => {
-        setTimer(prev => prev + 1);
-      }, 1000);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    }
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [isRunning]);
-
-  const formatTime = (seconds: number) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setIsRunning(false);
-    setTimer(0);
-  };
-
-  const handleSliderClick = (e: React.MouseEvent, type: 'neural' | 'ambient') => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const pct = Math.round(100 * x / rect.width);
-    const clampedPct = Math.max(0, Math.min(100, pct));
-    
-    if (type === 'neural') {
-      setNeuralVolume(clampedPct);
-    } else {
-      setAmbientVolume(clampedPct);
-    }
-  };
-
-  const toggleSession = () => {
-    if (isRunning) {
-      setIsRunning(false);
-    } else {
-      setIsRunning(true);
-    }
-  };
-
-  const getLcdText = () => {
-    const status = isRunning ? formatTime(timer) : "00:00:00";
-    return (
-      <>
-        {selectedMode} • {status}
-        <br />
-        <span style={{ opacity: 0.75 }}>
-          NEURAL {neuralVolume}% • AMBIENT {ambientVolume}%
-        </span>
-      </>
-    );
+  const goToApp = () => {
+    navigate('/app');
   };
 
   return (
@@ -268,7 +161,7 @@ const Landing = () => {
             <a href="#funzioni" className="kpi" style={{ padding: "8px" }}>Funzioni</a>
             <a href="#come" className="kpi" style={{ padding: "8px" }}>Come funziona</a>
             <a href="#faq" className="kpi" style={{ padding: "8px" }}>FAQ</a>
-            <button className="btn btn-primary" onClick={openModal}>Provala ora</button>
+            <button className="btn btn-primary" onClick={goToApp}>Provala ora</button>
           </div>
 
           {/* Mobile Hamburger */}
@@ -299,7 +192,7 @@ const Landing = () => {
             className="btn btn-primary" 
             onClick={() => {
               setIsMobileMenuOpen(false);
-              openModal();
+              goToApp();
             }}
             style={{ width: "200px" }}
           >
@@ -315,7 +208,7 @@ const Landing = () => {
             <h1 className="h1">Audiopsyco – Focus e Relax con un tocco</h1>
             <p className="lead">Audiopsyco combina stimoli neurali e suoni ambientali in un'interfaccia semplice per entrare nello stato mentale giusto in meno tempo. Modalità Focus, Relax, ADHD e No Thoughts, con volumi indipendenti e avvio sessione.</p>
             <div className="cta">
-              <button className="btn btn-primary" onClick={openModal}>Avvia demo interattiva</button>
+              <button className="btn btn-primary" onClick={goToApp}>Avvia demo interattiva</button>
               <a className="btn btn-ghost" href="#funzioni">Scopri le funzioni</a>
             </div>
             <p className="kpi" style={{ marginTop: "10px" }}>Non è un dispositivo medico. Per problemi di attenzione o stress si consiglia di rivolgersi a un medico qualificato.</p>
@@ -419,7 +312,7 @@ const Landing = () => {
             </article>
           </div>
           <div className="cta">
-            <button className="btn btn-primary" onClick={openModal}>Provala adesso</button>
+            <button className="btn btn-primary" onClick={goToApp}>Provala adesso</button>
           </div>
         </section>
 
@@ -448,7 +341,7 @@ const Landing = () => {
           <h2>Demo gratuita: provala subito</h2>
           <p className="lead">Sperimenta l'interfaccia e i controlli senza installare nulla.</p>
           <div className="cta">
-            <button className="btn btn-primary" onClick={openModal}>Avvia demo interattiva</button>
+            <button className="btn btn-primary" onClick={goToApp}>Avvia demo interattiva</button>
           </div>
         </section>
 
@@ -477,164 +370,6 @@ const Landing = () => {
           <div className="kpi">OCN 08 • PGG 68 • FOR e0 • AER e0</div>
         </div>
       </footer>
-
-      {isModalOpen && (
-        <div 
-          className="modal is-open" 
-          onClick={closeModal} 
-          style={{ touchAction: "manipulation", zIndex: 2000 }}
-        >
-          <div className="sheet" onClick={(e) => e.stopPropagation()}>
-            <header style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
-              <h3 style={{ margin: 0, fontSize: "18px", flexGrow: 1 }}>Demo interattiva</h3>
-              <button 
-                className="x" 
-                onClick={closeModal}
-                style={{ 
-                  minWidth: "40px", 
-                  minHeight: "40px", 
-                  fontSize: "16px", 
-                  flexShrink: 0,
-                  marginLeft: "16px"
-                }}
-                aria-label="Chiudi"
-              >
-                ✕
-              </button>
-            </header>
-            
-            <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-              {/* Device Panel */}
-              <div className="device" style={{ margin: 0 }}>
-                <div className="lcd">
-                  <div className="lcd-text">{getLcdText()}</div>
-                </div>
-                
-                <div className="panel">
-                  <div className="seg-title">Focus Modes</div>
-                  <div className="row" style={{ gap: "8px" }}>
-                    {["FOCUS", "RELAX", "ADHD", "NO THOUGHTS"].map((mode, index) => (
-                      <button
-                        key={mode}
-                        className={`pill pill--${mode.toLowerCase().replace(" ", "-")} ${selectedMode === mode ? "is-active" : ""}`}
-                        onClick={() => setSelectedMode(mode)}
-                        style={{ 
-                          minHeight: "40px", 
-                          touchAction: "manipulation",
-                          fontSize: "12px",
-                          padding: "6px 8px",
-                          gridColumn: mode === "NO THOUGHTS" && window.innerWidth < 640 ? "1 / -1" : "auto"
-                        }}
-                      >
-                        {mode === "NO THOUGHTS" ? "No Thoughts" : mode.charAt(0) + mode.slice(1).toLowerCase()}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="panel">
-                  <div className="seg-title">Neural Volume <span className="kpi">{neuralVolume}%</span></div>
-                  <div 
-                    className="slider" 
-                    onClick={(e) => handleSliderClick(e, 'neural')}
-                    style={{ touchAction: "manipulation", cursor: "pointer" }}
-                  >
-                    <div className="fill" style={{ width: `${neuralVolume}%` }}></div>
-                    <div className="thumb" style={{ left: `${neuralVolume}%` }}></div>
-                  </div>
-                </div>
-                
-                <div className="panel">
-                  <div className="seg-title">Ambient Volume <span className="kpi">{ambientVolume}%</span></div>
-                  <div 
-                    className="slider green" 
-                    onClick={(e) => handleSliderClick(e, 'ambient')}
-                    style={{ touchAction: "manipulation", cursor: "pointer" }}
-                  >
-                    <div className="fill" style={{ width: `${ambientVolume}%` }}></div>
-                    <div className="thumb" style={{ left: `${ambientVolume}%` }}></div>
-                  </div>
-                </div>
-                
-                <div className="panel session">
-                  <button 
-                    className="btn-round" 
-                    onClick={toggleSession}
-                    style={{ 
-                      minHeight: "40px", 
-                      touchAction: "manipulation",
-                      fontSize: "14px",
-                      padding: "8px 12px"
-                    }}
-                  >
-                    {isRunning ? "❚❚ Pause" : "▶ Start"}
-                  </button>
-                </div>
-                
-                <div className="panel">
-                  <div className="seg-title">Ambient Sounds</div>
-                  <div className="row" style={{ gap: "6px" }}>
-                    {["Ocean", "Rain", "Forest", "Airport"].map((sound) => (
-                      <button
-                        key={sound}
-                        className={`pill ${selectedSound === sound ? "is-active" : ""}`}
-                        onClick={() => setSelectedSound(sound)}
-                        style={{ 
-                          minHeight: "40px", 
-                          touchAction: "manipulation",
-                          fontSize: "12px",
-                          padding: "6px 8px"
-                        }}
-                      >
-                        {sound}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Info Panel */}
-              <div>
-                <div className="card" style={{ marginBottom: "12px" }}>
-                  <h3 style={{ marginTop: 0, fontSize: "15px", marginBottom: "8px" }}>Cosa fa la demo</h3>
-                  <p style={{ fontSize: "13px", lineHeight: 1.4 }}>È una simulazione dell'interfaccia: puoi cambiare modalità e regolare i volumi per vedere il comportamento del display. Non riproduce audio.</p>
-                </div>
-                
-                <div className="card" style={{ marginBottom: "12px" }}>
-                  <h3 style={{ marginTop: 0, fontSize: "15px", marginBottom: "8px" }}>Suggerimento rapido</h3>
-                  <p style={{ fontSize: "13px", lineHeight: 1.4 }}>Parti con Neural tra 20 e 35, Ambient tra 60 e 90. Se svolgi attività ripetitive puoi alzare Neural di poco.</p>
-                </div>
-                
-                <div className="card" style={{ 
-                  textAlign: "center", 
-                  background: "linear-gradient(180deg, #1a202a, #131820)", 
-                  border: "2px solid var(--accent)" 
-                }}>
-                  <h3 style={{ marginTop: 0, fontSize: "15px", color: "var(--accent)", marginBottom: "8px" }}>Prova l'app completa</h3>
-                  <p style={{ fontSize: "13px", marginBottom: "12px", lineHeight: 1.4 }}>Audio neurali reali e suoni ambientali completi ti aspettano nell'applicazione.</p>
-                  <a 
-                    href="/app" 
-                    className="btn btn-primary" 
-                    style={{ 
-                      width: "100%", 
-                      minHeight: "44px",
-                      fontSize: "14px",
-                      touchAction: "manipulation",
-                      textDecoration: "none",
-                      color: "#05150d",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                  >
-                    Apri l'App Completa →
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
