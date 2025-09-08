@@ -93,10 +93,60 @@ const Landing = () => {
     footer{padding:26px 0;color:var(--ink-dim);border-top:1px solid var(--stroke)}
 
     @media (max-width:1000px){
-      .hero{grid-template-columns:1fr;min-height:auto}
-      .device{order:-1;margin:20px auto 0}
-      .h1{font-size:36px}
+      .hero{grid-template-columns:1fr;min-height:auto;text-align:center}
+      .device{order:-1;margin:20px auto 0;width:min(360px,95%)}
+      .h1{font-size:32px;line-height:1.1}
+      .lead{font-size:16px;max-width:none}
       .grid.cols-3{grid-template-columns:1fr}
+      .wrap{padding:20px}
+      .section{padding:60px 0}
+      .cta{justify-content:center}
+      .btn{padding:16px 24px;font-size:16px}
+      
+      /* Mobile navigation */
+      nav{flex-wrap:wrap;gap:12px}
+      nav > div:last-child{display:none}
+      
+      /* Mobile modal optimizations */
+      .modal{padding:16px;align-items:flex-start;padding-top:40px}
+      .modal .sheet{width:100%;max-width:none;margin:0;padding:20px;border-radius:16px;max-height:90vh;overflow-y:auto}
+      .modal .sheet header{margin-bottom:20px}
+      .modal .sheet .grid{grid-template-columns:1fr;gap:20px}
+      .modal .device{width:100%;max-width:320px;margin:0 auto}
+      .modal .lcd{height:80px}
+      .modal .lcd-text{font-size:12px}
+      .modal .panel{margin:8px 0;padding:12px}
+      .modal .pill{padding:10px 12px;font-size:14px}
+      .modal .seg-title{font-size:11px}
+      .modal .btn-round{padding:10px 14px;font-size:14px}
+      
+      /* Touch-friendly sliders */
+      .slider{height:12px;margin:8px 0}
+      .slider .thumb{width:20px;height:20px}
+      
+      /* Better card spacing on mobile */
+      .card{padding:16px}
+    }
+    
+    @media (max-width:640px){
+      .h1{font-size:28px}
+      .section h2{font-size:28px}
+      .device{width:min(300px,90%)}
+      .wrap{padding:16px}
+      .hero{padding:20px 0}
+      
+      /* Stack navigation items */
+      nav{justify-content:center;text-align:center}
+      nav > div:first-child{margin-bottom:16px}
+      
+      /* Mobile-first modal */
+      .modal{padding:8px;padding-top:20px}
+      .modal .sheet{padding:16px;border-radius:12px}
+      .modal .device{max-width:280px}
+      .modal .lcd{height:70px}
+      .modal .lcd-text{font-size:11px}
+      .modal .row{gap:8px}
+      .modal .pill{padding:8px 10px;font-size:13px}
     }
 
     details.card summary{cursor:pointer;font-weight:600;padding:4px 0}
@@ -183,15 +233,15 @@ const Landing = () => {
   return (
     <div style={{ background: "var(--bg)", color: "var(--ink)", minHeight: "100vh" }}>
       <header className="wrap" aria-label="Intestazione del sito">
-        <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+        <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div style={{ width: "24px", height: "24px", borderRadius: "6px", border: "1px solid var(--stroke)", background: "linear-gradient(180deg,#10151b,#0c1016)" }}></div>
             <strong>Audiopsyco</strong>
           </div>
-          <div style={{ display: "flex", gap: "14px", alignItems: "center" }}>
-            <a href="#funzioni" className="kpi">Funzioni</a>
-            <a href="#come" className="kpi">Come funziona</a>
-            <a href="#faq" className="kpi">FAQ</a>
+          <div style={{ display: "flex", gap: "14px", alignItems: "center", flexWrap: "wrap" }}>
+            <a href="#funzioni" className="kpi" style={{ padding: "8px" }}>Funzioni</a>
+            <a href="#come" className="kpi" style={{ padding: "8px" }}>Come funziona</a>
+            <a href="#faq" className="kpi" style={{ padding: "8px" }}>FAQ</a>
             <button className="btn btn-primary" onClick={openModal}>Provala ora</button>
           </div>
         </nav>
@@ -368,11 +418,18 @@ const Landing = () => {
       </footer>
 
       {isModalOpen && (
-        <div className="modal is-open" onClick={closeModal}>
+        <div className="modal is-open" onClick={closeModal} style={{ touchAction: "manipulation" }}>
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <header>
-              <h3 style={{ margin: 0 }}>Demo interattiva</h3>
-              <button className="x" onClick={closeModal}>✕</button>
+              <h3 style={{ margin: 0, fontSize: "18px" }}>Demo interattiva</h3>
+              <button 
+                className="x" 
+                onClick={closeModal}
+                style={{ minWidth: "44px", minHeight: "44px", fontSize: "16px" }}
+                aria-label="Chiudi"
+              >
+                ✕
+              </button>
             </header>
             <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "22px" }}>
               <div className="device" style={{ margin: 0 }}>
@@ -387,6 +444,10 @@ const Landing = () => {
                         key={mode}
                         className={`pill pill--${mode.toLowerCase().replace(" ", "-")} ${selectedMode === mode ? "is-active" : ""}`}
                         onClick={() => setSelectedMode(mode)}
+                        style={{ 
+                          minHeight: "44px", 
+                          touchAction: "manipulation"
+                        }}
                       >
                         {mode === "NO THOUGHTS" ? "No Thoughts" : mode.charAt(0) + mode.slice(1).toLowerCase()}
                       </button>
@@ -395,20 +456,35 @@ const Landing = () => {
                 </div>
                 <div className="panel">
                   <div className="seg-title">Neural Volume <span className="kpi">{neuralVolume}%</span></div>
-                  <div className="slider" onClick={(e) => handleSliderClick(e, 'neural')}>
+                  <div 
+                    className="slider" 
+                    onClick={(e) => handleSliderClick(e, 'neural')}
+                    style={{ touchAction: "manipulation", cursor: "pointer" }}
+                  >
                     <div className="fill" style={{ width: `${neuralVolume}%` }}></div>
                     <div className="thumb" style={{ left: `${neuralVolume}%` }}></div>
                   </div>
                 </div>
                 <div className="panel">
                   <div className="seg-title">Ambient Volume <span className="kpi">{ambientVolume}%</span></div>
-                  <div className="slider green" onClick={(e) => handleSliderClick(e, 'ambient')}>
+                  <div 
+                    className="slider green" 
+                    onClick={(e) => handleSliderClick(e, 'ambient')}
+                    style={{ touchAction: "manipulation", cursor: "pointer" }}
+                  >
                     <div className="fill" style={{ width: `${ambientVolume}%` }}></div>
                     <div className="thumb" style={{ left: `${ambientVolume}%` }}></div>
                   </div>
                 </div>
                 <div className="panel session">
-                  <button className="btn-round" onClick={toggleSession}>
+                  <button 
+                    className="btn-round" 
+                    onClick={toggleSession}
+                    style={{ 
+                      minHeight: "44px", 
+                      touchAction: "manipulation"
+                    }}
+                  >
                     {isRunning ? "❚❚ Pause" : "▶ Start"}
                   </button>
                 </div>
@@ -420,6 +496,10 @@ const Landing = () => {
                         key={sound}
                         className={`pill ${selectedSound === sound ? "is-active" : ""}`}
                         onClick={() => setSelectedSound(sound)}
+                        style={{ 
+                          minHeight: "44px", 
+                          touchAction: "manipulation"
+                        }}
                       >
                         {sound}
                       </button>
@@ -429,18 +509,29 @@ const Landing = () => {
               </div>
               <div>
                 <div className="card" style={{ marginBottom: "16px" }}>
-                  <h3 style={{ marginTop: 0 }}>Cosa fa la demo</h3>
-                  <p>È una simulazione dell'interfaccia: puoi cambiare modalità e regolare i volumi per vedere il comportamento del display. Non riproduce audio.</p>
+                  <h3 style={{ marginTop: 0, fontSize: "16px" }}>Cosa fa la demo</h3>
+                  <p style={{ fontSize: "14px" }}>È una simulazione dell'interfaccia: puoi cambiare modalità e regolare i volumi per vedere il comportamento del display. Non riproduce audio.</p>
                 </div>
-                <div className="card">
-                  <h3 style={{ marginTop: 0 }}>Suggerimento rapido</h3>
-                  <p>Parti con Neural tra 20 e 35, Ambient tra 60 e 90. Se svolgi attività ripetitive puoi alzare Neural di poco.</p>
+                <div className="card" style={{ marginBottom: "16px" }}>
+                  <h3 style={{ marginTop: 0, fontSize: "16px" }}>Suggerimento rapido</h3>
+                  <p style={{ fontSize: "14px" }}>Parti con Neural tra 20 e 35, Ambient tra 60 e 90. Se svolgi attività ripetitive puoi alzare Neural di poco.</p>
                 </div>
-                <div className="card">
-                  <h3 style={{ marginTop: 0 }}>Prova l'app completa</h3>
-                  <p>Vuoi provare l'applicazione vera con audio neurali e suoni ambientali?</p>
-                  <a href="/app" className="btn btn-primary" style={{ marginTop: "10px" }}>
-                    Vai all'app →
+                <div className="card" style={{ textAlign: "center", background: "linear-gradient(180deg, #1a202a, #131820)", border: "2px solid var(--accent)" }}>
+                  <h3 style={{ marginTop: 0, fontSize: "16px", color: "var(--accent)" }}>Prova l'app completa</h3>
+                  <p style={{ fontSize: "14px", marginBottom: "16px" }}>Audio neurali reali e suoni ambientali completi ti aspettano nell'applicazione.</p>
+                  <a 
+                    href="/app" 
+                    className="btn btn-primary" 
+                    style={{ 
+                      width: "100%", 
+                      minHeight: "48px",
+                      fontSize: "16px",
+                      touchAction: "manipulation",
+                      textDecoration: "none",
+                      color: "#05150d"
+                    }}
+                  >
+                    Apri l'App Completa →
                   </a>
                 </div>
               </div>
