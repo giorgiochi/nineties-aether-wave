@@ -82,9 +82,9 @@ class AudioManagerSingleton {
     isPlaying: false,
     isPaused: false,
     activeMode: 'CONCENTRAZIONE',
-    ambientVolume: 0.90, // Master ambient volume - higher default for audibility
-    neuralVolume: 0.35,  // Master neural volume
-    binauralVolume: 0.35, // Deprecated - kept for compatibility
+    ambientVolume: 1.00, // Master ambient volume - increased by 35% (0.90 * 1.35 = 1.215, capped at 1.0)
+    neuralVolume: 0.23,  // Master neural volume - reduced by 35% (0.35 * 0.65 = 0.2275)
+    binauralVolume: 0.23, // Deprecated - kept for compatibility
     brownVolume: 0.00,
     pinkVolume: 0.00,
     rainVolume: 0.00,
@@ -96,10 +96,10 @@ class AudioManagerSingleton {
   };
 
   private presets: Record<string, () => AudioPreset> = {
-    CONCENTRAZIONE: () => ({ beat: 16.0, carrier: 220, neuralVolume: 0.35, ambientVolume: 0.90 }),
-    ADHD: () => ({ beat: 13.0, carrier: 210, neuralVolume: 0.38, ambientVolume: 0.88 }),
-    STRESS: () => ({ beat: 10.0, carrier: 190, neuralVolume: 0.32, ambientVolume: 0.86 }),
-    'NO THOUGHTS': () => ({ beat: 8.0, carrier: 190, neuralVolume: 0.30, ambientVolume: 0.84 })
+    CONCENTRAZIONE: () => ({ beat: 16.0, carrier: 220, neuralVolume: 0.23, ambientVolume: 1.00 }), // Reduced neural by 35%
+    ADHD: () => ({ beat: 13.0, carrier: 210, neuralVolume: 0.25, ambientVolume: 1.00 }), // Reduced neural by 35%
+    STRESS: () => ({ beat: 10.0, carrier: 190, neuralVolume: 0.21, ambientVolume: 1.00 }), // Reduced neural by 35%
+    'NO THOUGHTS': () => ({ beat: 8.0, carrier: 190, neuralVolume: 0.20, ambientVolume: 1.00 }) // Reduced neural by 35%
   };
 
   constructor() {
