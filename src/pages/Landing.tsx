@@ -201,7 +201,7 @@ const Landing = () => {
         <section className="hero wrap" id="home">
           <div>
             <div className="badge">Nuova versione • Demo interattiva inclusa</div>
-            <h1 className="h1">Focus istantaneo. Relax controllato. Un pannello, quattro modalità.</h1>
+            <h1 className="h1">Audiopsyco – Focus e Relax con un tocco</h1>
             <p className="lead">Audiopsyco combina stimoli neurali e suoni ambientali in un'interfaccia semplice per entrare nello stato mentale giusto in meno tempo. Modalità Focus, Relax, ADHD e No Thoughts, con volumi indipendenti e avvio sessione.</p>
             <div className="cta">
               <button className="btn btn-primary" onClick={openModal}>Avvia demo interattiva</button>
@@ -261,7 +261,7 @@ const Landing = () => {
         </section>
 
         <section className="section wrap" id="funzioni">
-          <h2>Le funzioni principali</h2>
+          <h2>Quattro modalità per il tuo stato mentale</h2>
           <p className="lead">Tutto quello che serve per guidare lo stato mentale senza distrazioni.</p>
           <div className="grid cols-3">
             <article className="card">
@@ -292,7 +292,7 @@ const Landing = () => {
         </section>
 
         <section className="section wrap" id="come">
-          <h2>Come funziona</h2>
+          <h2>Suoni ambientali e stimoli neurali personalizzabili</h2>
           <div className="grid cols-3">
             <article className="card">
               <h3>1. Scegli la modalità</h3>
@@ -312,8 +312,37 @@ const Landing = () => {
           </div>
         </section>
 
+        {/* Interface Section */}
+        <section className="section wrap" id="interfaccia">
+          <h2>Un'interfaccia scura, elegante e intuitiva</h2>
+          <p className="lead">Design pensato per l'uso prolungato senza affaticare la vista.</p>
+          <div className="grid cols-3">
+            <article className="card">
+              <h3>Display LCD Verde</h3>
+              <p>Schermo retroilluminato che mostra stato, timer e parametri senza abbagliare. Perfetto anche in ambienti bui.</p>
+            </article>
+            <article className="card">
+              <h3>Controlli a Pillola</h3>
+              <p>Pulsanti grandi e chiari per modalità e suoni ambientali. Feedback visivo immediato per la selezione attiva.</p>
+            </article>
+            <article className="card">
+              <h3>Slider Precisi</h3>
+              <p>Regolazione fine dei volumi Neural e Ambient con indicatori percentuali in tempo reale.</p>
+            </article>
+          </div>
+        </section>
+
+        {/* Demo Section */}
+        <section className="section wrap" id="demo">
+          <h2>Demo gratuita: provala subito</h2>
+          <p className="lead">Sperimenta l'interfaccia e i controlli senza installare nulla.</p>
+          <div className="cta">
+            <button className="btn btn-primary" onClick={openModal}>Avvia demo interattiva</button>
+          </div>
+        </section>
+
         <section className="section wrap" id="faq">
-          <h2>Domande frequenti</h2>
+          <h2>Domande frequenti (FAQ)</h2>
           <div className="grid">
             <details className="card">
               <summary><strong>L'app è un dispositivo medico?</strong></summary>
