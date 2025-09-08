@@ -93,8 +93,8 @@ const Landing = () => {
 
     footer{padding:26px 0;color:var(--ink-dim);border-top:1px solid var(--stroke)}
 
-    /* Mobile navigation and hamburger */
-    .mobile-nav{display:none}
+    /* Desktop and mobile navigation */
+    .desktop-nav{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
     .hamburger{display:none;flex-direction:column;cursor:pointer;padding:8px;gap:4px;border:1px solid var(--stroke);border-radius:8px;background:var(--panel)}
     .hamburger span{display:block;width:20px;height:2px;background:var(--ink);transition:all 0.3s ease;border-radius:1px}
     .hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px, 5px)}
@@ -121,7 +121,7 @@ const Landing = () => {
       
       /* Show hamburger, hide regular menu */
       .hamburger{display:flex}
-      .desktop-nav{display:none}
+      .desktop-nav{display:none !important}
       
       /* Mobile modal optimizations */
       .modal{padding:12px;align-items:flex-start;padding-top:20px}
@@ -264,7 +264,7 @@ const Landing = () => {
           </div>
           
           {/* Desktop Navigation */}
-          <div className="desktop-nav" style={{ display: "flex", gap: "14px", alignItems: "center", flexWrap: "wrap" }}>
+          <div className="desktop-nav">
             <a href="#funzioni" className="kpi" style={{ padding: "8px" }}>Funzioni</a>
             <a href="#come" className="kpi" style={{ padding: "8px" }}>Come funziona</a>
             <a href="#faq" className="kpi" style={{ padding: "8px" }}>FAQ</a>
