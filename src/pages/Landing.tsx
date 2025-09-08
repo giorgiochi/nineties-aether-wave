@@ -31,7 +31,7 @@ const Landing = () => {
     html,body{height:100%}
     body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;}
     a{color:var(--ink)}
-    .wrap{max-width:1120px;margin:0 auto;padding:32px}
+    .wrap{max-width:1120px;margin:0 auto;padding:32px 10px}
 
     .hero{position:relative;min-height:86vh;display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:center;background:var(--grad);} 
     .badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,#11151c,#0c0f14);border:1px solid var(--stroke);padding:8px 12px;border-radius:999px;color:var(--ink-dim);box-shadow:var(--shadow-soft)}
@@ -44,7 +44,7 @@ const Landing = () => {
     .btn-primary{background:linear-gradient(180deg,#1ad06a,#1ab65e);color:#08140c;box-shadow:0 10px 24px rgba(26,208,106,.35)}
     .btn-ghost{background:#11151b;border:1px solid var(--stroke);color:var(--ink)}
 
-    .device{justify-self:center;width:min(420px,92%);background:linear-gradient(180deg,#161b23,#0f131a);border:1px solid #212733;border-radius:26px;padding:18px;box-shadow:var(--shadow-big);position:relative}
+    .device{justify-self:center;width:min(420px,98%);background:linear-gradient(180deg,#161b23,#0f131a);border:1px solid #212733;border-radius:26px;padding:18px;box-shadow:var(--shadow-big);position:relative}
     .device:before,.device:after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:#202633;top:10px}
     .device:before{left:10px}
     .device:after{right:10px}
@@ -99,11 +99,11 @@ const Landing = () => {
 
     @media (max-width:1000px){
       .hero{grid-template-columns:1fr;min-height:auto;text-align:center}
-      .device{order:-1;margin:20px auto 0;width:min(360px,95%)}
+      .device{order:-1;margin:20px auto 0;width:min(360px,98%)}
       .h1{font-size:32px;line-height:1.1}
       .lead{font-size:16px;max-width:none}
       .grid.cols-3{grid-template-columns:1fr}
-      .wrap{padding:20px}
+      .wrap{padding:20px 10px}
       .section{padding:60px 0}
       .cta{justify-content:center}
       .btn{padding:16px 24px;font-size:16px}
@@ -125,8 +125,8 @@ const Landing = () => {
     @media (max-width:640px){
       .h1{font-size:26px}
       .section h2{font-size:24px}
-      .device{width:min(280px,90%)}
-      .wrap{padding:12px}
+      .device{width:min(280px,96%)}
+      .wrap{padding:12px 10px}
       .hero{padding:16px 0}
     }
 
