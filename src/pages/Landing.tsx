@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import audiopsycoLogo from "../assets/audiopsyco-logo.png";
+
 
 const Landing = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -165,7 +165,7 @@ const Landing = () => {
       <header className="wrap" aria-label="Intestazione del sito">
         <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", position: "relative" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <img src={audiopsycoLogo} alt="Audiopsyco Logo" style={{ width: "32px", height: "32px", borderRadius: "6px" }} />
+            <img src="/lovable-uploads/c8835ebb-51c0-49f6-99f4-36df359e5fb4.png" alt="Audiopsyco Logo" style={{ width: "32px", height: "32px", borderRadius: "6px" }} />
             <strong>Audiopsyco</strong>
           </div>
           
