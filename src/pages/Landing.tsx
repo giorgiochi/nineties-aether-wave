@@ -8,6 +8,7 @@ const Landing = () => {
   const [neuralVolume, setNeuralVolume] = useState(30);
   const [ambientVolume, setAmbientVolume] = useState(80);
   const [selectedSound, setSelectedSound] = useState("Ocean");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout>();
 
   const styles = `
@@ -92,6 +93,21 @@ const Landing = () => {
 
     footer{padding:26px 0;color:var(--ink-dim);border-top:1px solid var(--stroke)}
 
+    /* Mobile navigation and hamburger */
+    .mobile-nav{display:none}
+    .hamburger{display:none;flex-direction:column;cursor:pointer;padding:8px;gap:4px;border:1px solid var(--stroke);border-radius:8px;background:var(--panel)}
+    .hamburger span{display:block;width:20px;height:2px;background:var(--ink);transition:all 0.3s ease;border-radius:1px}
+    .hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px, 5px)}
+    .hamburger.active span:nth-child(2){opacity:0}
+    .hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(7px, -6px)}
+    
+    .mobile-menu{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(14,17,22,0.95);backdrop-filter:blur(8px);z-index:1000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:32px}
+    .mobile-menu.is-open{display:flex}
+    .mobile-menu a, .mobile-menu button{font-size:20px;padding:16px 24px;border-radius:12px;transition:all 0.2s;min-height:56px;display:flex;align-items:center;justify-content:center}
+    .mobile-menu a{color:var(--ink);text-decoration:none;background:var(--panel);border:1px solid var(--stroke)}
+    .mobile-menu a:hover{background:var(--panel-2);transform:translateY(-2px)}
+    .mobile-menu .close-menu{position:absolute;top:24px;right:24px;width:48px;height:48px;background:var(--panel);border:1px solid var(--stroke);border-radius:12px;color:var(--ink);font-size:20px;cursor:pointer}
+
     @media (max-width:1000px){
       .hero{grid-template-columns:1fr;min-height:auto;text-align:center}
       .device{order:-1;margin:20px auto 0;width:min(360px,95%)}
@@ -103,50 +119,58 @@ const Landing = () => {
       .cta{justify-content:center}
       .btn{padding:16px 24px;font-size:16px}
       
-      /* Mobile navigation */
-      nav{flex-wrap:wrap;gap:12px}
-      nav > div:last-child{display:none}
+      /* Show hamburger, hide regular menu */
+      .hamburger{display:flex}
+      .desktop-nav{display:none}
       
       /* Mobile modal optimizations */
-      .modal{padding:16px;align-items:flex-start;padding-top:40px}
-      .modal .sheet{width:100%;max-width:none;margin:0;padding:20px;border-radius:16px;max-height:90vh;overflow-y:auto}
-      .modal .sheet header{margin-bottom:20px}
-      .modal .sheet .grid{grid-template-columns:1fr;gap:20px}
-      .modal .device{width:100%;max-width:320px;margin:0 auto}
-      .modal .lcd{height:80px}
-      .modal .lcd-text{font-size:12px}
-      .modal .panel{margin:8px 0;padding:12px}
-      .modal .pill{padding:10px 12px;font-size:14px}
-      .modal .seg-title{font-size:11px}
-      .modal .btn-round{padding:10px 14px;font-size:14px}
+      .modal{padding:12px;align-items:flex-start;padding-top:20px}
+      .modal .sheet{width:100%;max-width:none;margin:0;padding:16px;border-radius:16px;max-height:95vh;overflow-y:auto}
+      .modal .sheet header{margin-bottom:16px;align-items:flex-start}
+      .modal .sheet .grid{grid-template-columns:1fr;gap:16px}
+      .modal .device{width:100%;max-width:300px;margin:0 auto}
+      .modal .lcd{height:70px}
+      .modal .lcd-text{font-size:11px}
+      .modal .panel{margin:6px 0;padding:10px}
+      .modal .pill{padding:8px 10px;font-size:13px}
+      .modal .seg-title{font-size:10px}
+      .modal .btn-round{padding:8px 12px;font-size:13px}
+      .modal .x{width:40px;height:40px;display:flex;align-items:center;justify-content:center}
       
       /* Touch-friendly sliders */
-      .slider{height:12px;margin:8px 0}
-      .slider .thumb{width:20px;height:20px}
+      .slider{height:14px;margin:10px 0}
+      .slider .thumb{width:22px;height:22px}
       
       /* Better card spacing on mobile */
-      .card{padding:16px}
+      .card{padding:14px}
+      .card h3{font-size:16px;margin-bottom:8px}
+      .card p{font-size:14px;line-height:1.4}
     }
     
     @media (max-width:640px){
-      .h1{font-size:28px}
-      .section h2{font-size:28px}
-      .device{width:min(300px,90%)}
-      .wrap{padding:16px}
-      .hero{padding:20px 0}
+      .h1{font-size:26px}
+      .section h2{font-size:24px}
+      .device{width:min(280px,90%)}
+      .wrap{padding:12px}
+      .hero{padding:16px 0}
       
-      /* Stack navigation items */
-      nav{justify-content:center;text-align:center}
-      nav > div:first-child{margin-bottom:16px}
+      /* Ultra-compact mobile modal */
+      .modal{padding:4px;padding-top:12px}
+      .modal .sheet{padding:12px;border-radius:12px;max-height:98vh}
+      .modal .device{max-width:260px}
+      .modal .lcd{height:60px}
+      .modal .lcd-text{font-size:10px}
+      .modal .row{gap:6px;grid-template-columns:1fr 1fr}
+      .modal .pill{padding:6px 8px;font-size:12px;min-height:36px}
+      .modal .panel{margin:4px 0;padding:8px}
+      .modal .seg-title{margin-bottom:6px}
+      .modal .btn-round{min-height:36px;font-size:12px}
+      .modal .card{padding:10px;margin-bottom:10px}
+      .modal .card h3{font-size:14px}
+      .modal .card p{font-size:12px}
       
-      /* Mobile-first modal */
-      .modal{padding:8px;padding-top:20px}
-      .modal .sheet{padding:16px;border-radius:12px}
-      .modal .device{max-width:280px}
-      .modal .lcd{height:70px}
-      .modal .lcd-text{font-size:11px}
-      .modal .row{gap:8px}
-      .modal .pill{padding:8px 10px;font-size:13px}
+      /* Stack pills for "NO THOUGHTS" mode on very small screens */
+      .modal .row{grid-template-columns:1fr 1fr 1fr 1fr}
     }
 
     details.card summary{cursor:pointer;font-weight:600;padding:4px 0}
@@ -233,18 +257,55 @@ const Landing = () => {
   return (
     <div style={{ background: "var(--bg)", color: "var(--ink)", minHeight: "100vh" }}>
       <header className="wrap" aria-label="Intestazione del sito">
-        <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+        <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", position: "relative" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div style={{ width: "24px", height: "24px", borderRadius: "6px", border: "1px solid var(--stroke)", background: "linear-gradient(180deg,#10151b,#0c1016)" }}></div>
             <strong>Audiopsyco</strong>
           </div>
-          <div style={{ display: "flex", gap: "14px", alignItems: "center", flexWrap: "wrap" }}>
+          
+          {/* Desktop Navigation */}
+          <div className="desktop-nav" style={{ display: "flex", gap: "14px", alignItems: "center", flexWrap: "wrap" }}>
             <a href="#funzioni" className="kpi" style={{ padding: "8px" }}>Funzioni</a>
             <a href="#come" className="kpi" style={{ padding: "8px" }}>Come funziona</a>
             <a href="#faq" className="kpi" style={{ padding: "8px" }}>FAQ</a>
             <button className="btn btn-primary" onClick={openModal}>Provala ora</button>
           </div>
+
+          {/* Mobile Hamburger */}
+          <button 
+            className={`hamburger ${isMobileMenuOpen ? 'active' : ''}`}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
         </nav>
+
+        {/* Mobile Menu Overlay */}
+        <div className={`mobile-menu ${isMobileMenuOpen ? 'is-open' : ''}`}>
+          <button 
+            className="close-menu"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-label="Chiudi menu"
+          >
+            ✕
+          </button>
+          <a href="#funzioni" onClick={() => setIsMobileMenuOpen(false)}>Funzioni</a>
+          <a href="#come" onClick={() => setIsMobileMenuOpen(false)}>Come funziona</a>
+          <a href="#faq" onClick={() => setIsMobileMenuOpen(false)}>FAQ</a>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              openModal();
+            }}
+            style={{ width: "200px" }}
+          >
+            Provala ora
+          </button>
+        </div>
       </header>
 
       <main>
@@ -418,35 +479,51 @@ const Landing = () => {
       </footer>
 
       {isModalOpen && (
-        <div className="modal is-open" onClick={closeModal} style={{ touchAction: "manipulation" }}>
+        <div 
+          className="modal is-open" 
+          onClick={closeModal} 
+          style={{ touchAction: "manipulation", zIndex: 2000 }}
+        >
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
-            <header>
-              <h3 style={{ margin: 0, fontSize: "18px" }}>Demo interattiva</h3>
+            <header style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+              <h3 style={{ margin: 0, fontSize: "18px", flexGrow: 1 }}>Demo interattiva</h3>
               <button 
                 className="x" 
                 onClick={closeModal}
-                style={{ minWidth: "44px", minHeight: "44px", fontSize: "16px" }}
+                style={{ 
+                  minWidth: "40px", 
+                  minHeight: "40px", 
+                  fontSize: "16px", 
+                  flexShrink: 0,
+                  marginLeft: "16px"
+                }}
                 aria-label="Chiudi"
               >
                 ✕
               </button>
             </header>
-            <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "22px" }}>
+            
+            <div className="grid" style={{ gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+              {/* Device Panel */}
               <div className="device" style={{ margin: 0 }}>
                 <div className="lcd">
                   <div className="lcd-text">{getLcdText()}</div>
                 </div>
+                
                 <div className="panel">
                   <div className="seg-title">Focus Modes</div>
-                  <div className="row">
-                    {["FOCUS", "RELAX", "ADHD", "NO THOUGHTS"].map((mode) => (
+                  <div className="row" style={{ gap: "8px" }}>
+                    {["FOCUS", "RELAX", "ADHD", "NO THOUGHTS"].map((mode, index) => (
                       <button
                         key={mode}
                         className={`pill pill--${mode.toLowerCase().replace(" ", "-")} ${selectedMode === mode ? "is-active" : ""}`}
                         onClick={() => setSelectedMode(mode)}
                         style={{ 
-                          minHeight: "44px", 
-                          touchAction: "manipulation"
+                          minHeight: "40px", 
+                          touchAction: "manipulation",
+                          fontSize: "12px",
+                          padding: "6px 8px",
+                          gridColumn: mode === "NO THOUGHTS" && window.innerWidth < 640 ? "1 / -1" : "auto"
                         }}
                       >
                         {mode === "NO THOUGHTS" ? "No Thoughts" : mode.charAt(0) + mode.slice(1).toLowerCase()}
@@ -454,6 +531,7 @@ const Landing = () => {
                     ))}
                   </div>
                 </div>
+                
                 <div className="panel">
                   <div className="seg-title">Neural Volume <span className="kpi">{neuralVolume}%</span></div>
                   <div 
@@ -465,6 +543,7 @@ const Landing = () => {
                     <div className="thumb" style={{ left: `${neuralVolume}%` }}></div>
                   </div>
                 </div>
+                
                 <div className="panel">
                   <div className="seg-title">Ambient Volume <span className="kpi">{ambientVolume}%</span></div>
                   <div 
@@ -476,29 +555,35 @@ const Landing = () => {
                     <div className="thumb" style={{ left: `${ambientVolume}%` }}></div>
                   </div>
                 </div>
+                
                 <div className="panel session">
                   <button 
                     className="btn-round" 
                     onClick={toggleSession}
                     style={{ 
-                      minHeight: "44px", 
-                      touchAction: "manipulation"
+                      minHeight: "40px", 
+                      touchAction: "manipulation",
+                      fontSize: "14px",
+                      padding: "8px 12px"
                     }}
                   >
                     {isRunning ? "❚❚ Pause" : "▶ Start"}
                   </button>
                 </div>
+                
                 <div className="panel">
                   <div className="seg-title">Ambient Sounds</div>
-                  <div className="row">
+                  <div className="row" style={{ gap: "6px" }}>
                     {["Ocean", "Rain", "Forest", "Airport"].map((sound) => (
                       <button
                         key={sound}
                         className={`pill ${selectedSound === sound ? "is-active" : ""}`}
                         onClick={() => setSelectedSound(sound)}
                         style={{ 
-                          minHeight: "44px", 
-                          touchAction: "manipulation"
+                          minHeight: "40px", 
+                          touchAction: "manipulation",
+                          fontSize: "12px",
+                          padding: "6px 8px"
                         }}
                       >
                         {sound}
@@ -507,28 +592,39 @@ const Landing = () => {
                   </div>
                 </div>
               </div>
+              
+              {/* Info Panel */}
               <div>
-                <div className="card" style={{ marginBottom: "16px" }}>
-                  <h3 style={{ marginTop: 0, fontSize: "16px" }}>Cosa fa la demo</h3>
-                  <p style={{ fontSize: "14px" }}>È una simulazione dell'interfaccia: puoi cambiare modalità e regolare i volumi per vedere il comportamento del display. Non riproduce audio.</p>
+                <div className="card" style={{ marginBottom: "12px" }}>
+                  <h3 style={{ marginTop: 0, fontSize: "15px", marginBottom: "8px" }}>Cosa fa la demo</h3>
+                  <p style={{ fontSize: "13px", lineHeight: 1.4 }}>È una simulazione dell'interfaccia: puoi cambiare modalità e regolare i volumi per vedere il comportamento del display. Non riproduce audio.</p>
                 </div>
-                <div className="card" style={{ marginBottom: "16px" }}>
-                  <h3 style={{ marginTop: 0, fontSize: "16px" }}>Suggerimento rapido</h3>
-                  <p style={{ fontSize: "14px" }}>Parti con Neural tra 20 e 35, Ambient tra 60 e 90. Se svolgi attività ripetitive puoi alzare Neural di poco.</p>
+                
+                <div className="card" style={{ marginBottom: "12px" }}>
+                  <h3 style={{ marginTop: 0, fontSize: "15px", marginBottom: "8px" }}>Suggerimento rapido</h3>
+                  <p style={{ fontSize: "13px", lineHeight: 1.4 }}>Parti con Neural tra 20 e 35, Ambient tra 60 e 90. Se svolgi attività ripetitive puoi alzare Neural di poco.</p>
                 </div>
-                <div className="card" style={{ textAlign: "center", background: "linear-gradient(180deg, #1a202a, #131820)", border: "2px solid var(--accent)" }}>
-                  <h3 style={{ marginTop: 0, fontSize: "16px", color: "var(--accent)" }}>Prova l'app completa</h3>
-                  <p style={{ fontSize: "14px", marginBottom: "16px" }}>Audio neurali reali e suoni ambientali completi ti aspettano nell'applicazione.</p>
+                
+                <div className="card" style={{ 
+                  textAlign: "center", 
+                  background: "linear-gradient(180deg, #1a202a, #131820)", 
+                  border: "2px solid var(--accent)" 
+                }}>
+                  <h3 style={{ marginTop: 0, fontSize: "15px", color: "var(--accent)", marginBottom: "8px" }}>Prova l'app completa</h3>
+                  <p style={{ fontSize: "13px", marginBottom: "12px", lineHeight: 1.4 }}>Audio neurali reali e suoni ambientali completi ti aspettano nell'applicazione.</p>
                   <a 
                     href="/app" 
                     className="btn btn-primary" 
                     style={{ 
                       width: "100%", 
-                      minHeight: "48px",
-                      fontSize: "16px",
+                      minHeight: "44px",
+                      fontSize: "14px",
                       touchAction: "manipulation",
                       textDecoration: "none",
-                      color: "#05150d"
+                      color: "#05150d",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
                     }}
                   >
                     Apri l'App Completa →
